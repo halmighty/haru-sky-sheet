@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haru's Sky Music | Lời thì thầm của gió</title>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --paper-white: #fcfcfc;
@@ -16,7 +20,6 @@
             --key-active: #3867d6;
             --border-color: #d1d8e0;
 
-            /* Kích thước mặc định */
             --key-size: 22px;
             --beat-gap: 5px;
             --beat-padding: 10px;
@@ -187,7 +190,6 @@
             position: relative;
         }
 
-        /* Thanh Zoom & Chế độ số */
         .zoom-toolbar {
             position: absolute;
             top: 25px;
@@ -268,7 +270,6 @@
             align-content: flex-start;
         }
 
-        /* Vạch ngăn cách */
         .line-break {
             flex-basis: 100%;
             width: 100%;
@@ -327,18 +328,16 @@
             position: relative;
         }
 
-        /* Hiển thị số trong phím */
         .key-num {
             font-size: var(--num-font);
             font-family: system-ui, -apple-system, sans-serif;
             font-weight: 600;
             color: var(--ink-light);
-            display: none; /* Mặc định ẩn số */
+            display: none;
             user-select: none;
             pointer-events: none;
         }
 
-        /* Khi bật Chế độ số */
         body.number-mode .key-num {
             display: block;
         }
@@ -475,7 +474,7 @@
 
         <div class="main-content" id="mainContent">
             <div class="empty-state">
-                Lật mở một trang giấy, và lắng nghe âm thanh của những đám mây...
+                Đang kết nối tới kho ký ức...
             </div>
         </div>
     </div>
@@ -502,30 +501,68 @@
     </div>
 
     <script>
-        const defaultSongs = [
-            { id: 1, title: "Khúc hát của gió (Mẫu)", notes: "1 1 5 5 - / 6 6 5 - / 4 4 3 3 - / 2 2 1" },
-            { id: 2, title: "Giấc mơ đêm hè", notes: "1,5 3 - 8 / 6 4,8 - 5 / 10 8 - 1,5,10" }
-        ];
+        // ==========================================
+        // DÁN THÔNG TIN FIREBASE CỦA BẠN VÀO ĐÂY:
+        // ==========================================
+        const firebaseConfig = {
+  		apiKey: "AIzaSyB5rVXz8quhqatJwYJysLl5IBc_wZUJ8cQ",
+ 		 authDomain: "sky-sheet-bfc38.firebaseapp.com",
+ 		 databaseURL: "https://sky-sheet-bfc38-default-rtdb.asia-southeast1.firebasedatabase.app",
+ 		 projectId: "sky-sheet-bfc38",
+ 		 storageBucket: "sky-sheet-bfc38.firebasestorage.app",
+ 		 messagingSenderId: "29067311106",
+  		appId: "1:29067311106:web:4640a1139dd4a0c167cf1b",
+		  measurementId: "G-Z31L83GSTZ"
+		};
 
-        let songs = JSON.parse(localStorage.getItem('haruNovelMusic'));
-        if (!songs || songs.length === 0) {
-            songs = defaultSongs;
-            saveToStorage();
-        }
+        // Khởi tạo Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const songsRef = db.ref('songs');
 
+        let songs = [];
         let activeSongId = null;
         let editingSongId = null;
         let isAdmin = false;
         let zoomPercent = 100;
 
-        // Quản lý Chế độ hiển thị số
+        // Tải dữ liệu Realtime từ Firebase (Tự động cập nhật tức thì ở máy bạn bè)
+        songsRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            songs = [];
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    songs.push({ id: key, ...data[key] });
+                });
+            } else {
+                // Thêm bài hát mặc định nếu Database chưa có gì
+                const defaultSongs = [
+                    { title: "Khúc hát của gió (Mẫu)", notes: "1 1 5 5 - / 6 6 5 - / 4 4 3 3 - / 2 2 1" },
+                    { title: "Giấc mơ đêm hè", notes: "1,5 3 - 8 / 6 4,8 - 5 / 10 8 - 1,5,10" }
+                ];
+                defaultSongs.forEach(song => songsRef.push(song));
+                return;
+            }
+
+            renderList();
+
+            if (activeSongId && songs.some(s => s.id === activeSongId)) {
+                selectSong(activeSongId);
+            } else if (songs.length > 0) {
+                selectSong(songs[0].id);
+            } else {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="empty-state">Trang giấy này đã trở về khoảng không tĩnh lặng...</div>
+                `;
+            }
+        });
+
         function toggleNumberMode() {
             document.body.classList.toggle('number-mode');
             const btn = document.getElementById('numToggleBtn');
             if (btn) btn.classList.toggle('active-mode');
         }
 
-        // Quản lý Zoom
         function changeZoom(delta) {
             zoomPercent = Math.max(60, Math.min(160, zoomPercent + delta));
             applyZoom();
@@ -571,10 +608,6 @@
             }
         }
 
-        function saveToStorage() {
-            localStorage.setItem('haruNovelMusic', JSON.stringify(songs));
-        }
-
         function renderList() {
             const listEl = document.getElementById('songList');
             listEl.innerHTML = '';
@@ -617,15 +650,7 @@
         function deleteSong(event, id) {
             event.stopPropagation();
             if(confirm("Bạn có chắc chắn muốn xóa đi đoạn ký ức này không?")) {
-                songs = songs.filter(s => s.id !== id);
-                if(activeSongId === id) {
-                    activeSongId = null;
-                    document.getElementById('mainContent').innerHTML = `
-                        <div class="empty-state">Trang giấy này đã trở về khoảng không tĩnh lặng...</div>
-                    `;
-                }
-                saveToStorage();
-                renderList();
+                db.ref('songs/' + id).remove();
             }
         }
 
@@ -634,8 +659,9 @@
             renderList();
             
             const song = songs.find(s => s.id === id);
+            if (!song) return;
+
             const mainContent = document.getElementById('mainContent');
-            
             const normalizedNotes = song.notes.replace(/[\r\n]+/g, ' / ');
             const beats = normalizedNotes.trim().split(/\s+/);
             const isNumActive = document.body.classList.contains('number-mode');
@@ -719,29 +745,18 @@
             if (!title || !notes) return;
 
             if (editingSongId) {
-                const song = songs.find(s => s.id === editingSongId);
-                if (song) {
-                    song.title = title;
-                    song.notes = notes;
-                }
+                db.ref('songs/' + editingSongId).update({ title, notes });
             } else {
-                const newSong = { id: Date.now(), title, notes };
-                songs.push(newSong);
-                editingSongId = newSong.id;
+                db.ref('songs').push({ title, notes });
             }
 
-            saveToStorage();
             closeModal();
-            renderList();
-            selectSong(editingSongId);
         }
 
         window.onclick = function(event) {
             const modal = document.getElementById('addModal');
             if (event.target == modal) closeModal();
         }
-
-        renderList();
     </script>
 </body>
 </html>

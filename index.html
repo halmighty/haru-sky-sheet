@@ -25,6 +25,7 @@
             --beat-padding: 10px;
             --rest-font: 16px;
             --num-font: 11px;
+            --num-sheet-font: 16px;
         }
 
         * {
@@ -44,6 +45,34 @@
             line-height: 1.6;
         }
 
+        /* Nút Toggle Sidebar chung cho mọi màn hình */
+        .menu-toggle-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 200;
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink-dark);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .menu-toggle-btn:hover {
+            background: var(--dusty-blue);
+            color: var(--key-active);
+            border-color: var(--key-active);
+        }
+
         .container {
             display: flex;
             width: 100%;
@@ -53,18 +82,23 @@
             position: relative;
         }
 
-        /* Sidebar Responsive */
+        /* Sidebar Responsive & Collapsible */
         .sidebar {
             width: 320px;
             min-width: 320px;
             background: rgba(255, 255, 255, 0.98);
             border-right: 1.5px solid var(--border-color);
-            padding: 30px 20px;
+            padding: 70px 20px 30px 20px;
             display: flex;
             flex-direction: column;
             position: relative;
             z-index: 100;
-            transition: transform 0.3s ease;
+            transition: margin-left 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Trạng thái thu gọn Sidebar trên Máy tính */
+        body.sidebar-closed .sidebar {
+            margin-left: -320px;
         }
 
         .sidebar h1 {
@@ -194,27 +228,10 @@
             flex-direction: column;
             background: radial-gradient(circle at center, #ffffff 0%, #f7fafc 100%);
             position: relative;
+            transition: all 0.3s ease;
         }
 
-        /* Nút Toggle Menu trên Mobile */
-        .mobile-menu-btn {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 200;
-            background: #ffffff;
-            border: 1.5px solid var(--border-color);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--ink-dark);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            cursor: pointer;
-        }
-
-        /* Thanh công cụ Cố định phía trên (Sticky Toolbar) */
+        /* Thanh công cụ Cố định phía trên */
         .zoom-toolbar {
             position: sticky;
             top: 0;
@@ -240,7 +257,7 @@
             font-size: 13px;
             font-weight: bold;
             cursor: pointer;
-            padding: 0 8px;
+            padding: 0 10px;
             height: 28px;
             border-radius: 14px;
             display: flex;
@@ -312,6 +329,7 @@
             opacity: 0.6;
         }
 
+        /* KHUNG CHẾ ĐỘ PHÍM TRÒN (GRID 15 Ô) */
         .beat-block {
             background: #ffffff;
             padding: var(--beat-padding);
@@ -359,18 +377,6 @@
             position: relative;
         }
 
-        .key-num {
-            font-size: var(--num-font);
-            font-family: system-ui, -apple-system, sans-serif;
-            font-weight: 600;
-            color: var(--ink-light);
-            display: none;
-            user-select: none;
-            pointer-events: none;
-        }
-
-        body.number-mode .key-num { display: block; }
-
         .beat-block.rest-beat .key {
             border-color: #cfd8dc;
             background: transparent;
@@ -383,7 +389,49 @@
             box-shadow: 0 0 10px rgba(56, 103, 214, 0.6);
         }
 
-        .key.active .key-num { color: #ffffff; }
+        /* CHẾ ĐỘ SHEET SỐ THUẦN TÚY (NUMBER SHEET MODE) */
+        .num-block {
+            background: #ffffff;
+            border: 1.5px solid var(--key-border);
+            border-radius: 8px;
+            padding: 6px 10px;
+            min-width: 44px;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+            transition: all 0.15s ease-out;
+        }
+
+        .num-block:hover {
+            border-color: var(--key-active);
+        }
+
+        .num-badge {
+            background: var(--dusty-blue);
+            color: var(--key-active);
+            font-weight: 700;
+            font-size: var(--num-sheet-font, 16px);
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid #b3cbe5;
+            min-width: 28px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .num-block.rest-block {
+            border-style: dashed;
+            border-color: #b0bec5;
+            background: rgba(248, 249, 250, 0.6);
+            color: var(--ink-light);
+            font-size: var(--num-sheet-font, 16px);
+            font-weight: 600;
+            font-style: italic;
+        }
 
         .empty-state {
             text-align: center;
@@ -484,20 +532,20 @@
 
         .btn-save:hover { background: #1e3799; }
 
-        /* Tối ưu hóa đặc biệt cho Màn hình Nhỏ & Điện Thoại */
+        /* Tối ưu hóa Màn hình Nhỏ & Điện Thoại */
         @media (max-width: 768px) {
-            .mobile-menu-btn { display: block; }
-
             .sidebar {
                 position: fixed;
                 top: 0;
                 left: 0;
                 height: 100%;
-                box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+                margin-left: 0 !important;
                 transform: translateX(-100%);
             }
 
-            .sidebar.active { transform: translateX(0); }
+            body.sidebar-open .sidebar {
+                transform: translateX(0);
+            }
 
             .main-content {
                 padding: 65px 12px 100px 12px;
@@ -517,7 +565,7 @@
 </head>
 <body>
 
-    <button class="mobile-menu-btn" onclick="toggleSidebar()">☰ Danh sách</button>
+    <button class="menu-toggle-btn" onclick="toggleSidebar()">☰ <span>Danh sách</span></button>
 
     <div class="container">
         <div class="sidebar" id="sidebar">
@@ -556,7 +604,6 @@
     </div>
 
     <script>
-        // Thông tin cấu hình Firebase của bạn
         const firebaseConfig = {
             apiKey: "AIzaSyB5rVXz8quhqatJwYJysLl5IBc_wZUJ8cQ",
             authDomain: "sky-sheet-bfc38.firebaseapp.com",
@@ -568,7 +615,6 @@
             measurementId: "G-Z31L83GSTZ"
         };
 
-        // Khởi tạo Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const songsRef = db.ref('songs');
@@ -580,9 +626,8 @@
         let zoomPercent = 100;
         let scrollTimer = null;
         let isScrolling = false;
-        let scrollSpeed = 1.0; // Tốc độ cuộn mặc định (1.0x)
+        let scrollSpeed = 1.0;
 
-        // Tải dữ liệu Realtime
         songsRef.on('value', (snapshot) => {
             const data = snapshot.val();
             songs = [];
@@ -612,22 +657,25 @@
             }
         });
 
+        // Toggle Sidebar hỗ trợ cả PC và Mobile
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
+            if (window.innerWidth <= 768) {
+                document.body.classList.toggle('sidebar-open');
+            } else {
+                document.body.classList.toggle('sidebar-closed');
+            }
         }
 
         function startScrollTimer() {
             if (scrollTimer) clearInterval(scrollTimer);
             const container = document.getElementById('mainContent');
-            
-            // Tính toán khoảng thời gian cuộn dựa trên tốc độ (1.0x ≈ 35ms)
             const interval = Math.max(10, Math.round(35 / scrollSpeed));
             
             scrollTimer = setInterval(() => {
                 if (!container) return;
                 container.scrollTop += 1;
                 if (container.scrollTop + container.clientHeight >= container.scrollHeight - 2) {
-                    toggleAutoScroll(); // Tự dừng khi cuộn tới cuối
+                    toggleAutoScroll();
                 }
             }, interval);
         }
@@ -657,16 +705,17 @@
             const valEl = document.getElementById('speedVal');
             if (valEl) valEl.textContent = scrollSpeed.toFixed(1) + 'x';
 
-            // Nếu đang chạy cuộn thì cập nhật lại tốc độ tức thì
             if (isScrolling) {
                 startScrollTimer();
             }
         }
 
+        // Đổi chế độ hiển thị phím tròn / Sheet số
         function toggleNumberMode() {
             document.body.classList.toggle('number-mode');
-            const btn = document.getElementById('numToggleBtn');
-            if (btn) btn.classList.toggle('active-mode');
+            if (activeSongId) {
+                selectSong(activeSongId);
+            }
         }
 
         function changeZoom(delta) {
@@ -685,13 +734,13 @@
             const beatGap = Math.max(2, Math.round(5 * scale));
             const beatPadding = Math.max(3, Math.round(10 * scale));
             const restFont = Math.max(9, Math.round(16 * scale));
-            const numFont = Math.max(7, Math.round(11 * scale));
+            const numSheetFont = Math.max(11, Math.round(16 * scale));
 
             document.documentElement.style.setProperty('--key-size', keySize + 'px');
             document.documentElement.style.setProperty('--beat-gap', beatGap + 'px');
             document.documentElement.style.setProperty('--beat-padding', beatPadding + 'px');
             document.documentElement.style.setProperty('--rest-font', restFont + 'px');
-            document.documentElement.style.setProperty('--num-font', numFont + 'px');
+            document.documentElement.style.setProperty('--num-sheet-font', numSheetFont + 'px');
 
             const valEl = document.getElementById('zoomVal');
             if (valEl) valEl.textContent = zoomPercent + '%';
@@ -725,7 +774,9 @@
                 li.className = `song-item ${song.id === activeSongId ? 'active' : ''}`;
                 li.onclick = () => {
                     selectSong(song.id);
-                    document.getElementById('sidebar').classList.remove('active'); // Đóng menu mobile khi chọn bài
+                    if (window.innerWidth <= 768) {
+                        document.body.classList.remove('sidebar-open');
+                    }
                 };
                 
                 const titleSpan = document.createElement('span');
@@ -764,7 +815,7 @@
         }
 
         function selectSong(id) {
-            if (isScrolling) toggleAutoScroll(); // Dừng cuộn bài cũ nếu đang bật
+            if (isScrolling) toggleAutoScroll();
             
             activeSongId = id;
             renderList();
@@ -784,7 +835,7 @@
                     <span class="zoom-text" id="speedVal" title="Tốc độ cuộn">${scrollSpeed.toFixed(1)}x</span>
                     <button class="zoom-btn" onclick="changeSpeed(0.25)" title="Tăng tốc độ cuộn">+</button>
                     <div class="toolbar-divider"></div>
-                    <button class="zoom-btn ${isNumActive ? 'active-mode' : ''}" id="numToggleBtn" onclick="toggleNumberMode()" title="Bật/Tắt hiển thị số nốt">123</button>
+                    <button class="zoom-btn ${isNumActive ? 'active-mode' : ''}" id="numToggleBtn" onclick="toggleNumberMode()" title="Chuyển đổi giữa Phím tròn và Sheet Số">123</button>
                     <div class="toolbar-divider"></div>
                     <button class="zoom-btn" onclick="changeZoom(-10)" title="Thu nhỏ">-</button>
                     <span class="zoom-text" id="zoomVal">${zoomPercent}%</span>
@@ -799,28 +850,41 @@
                 if (beat === '/' || beat === '|') {
                     html += `<div class="line-break"></div>`;
                 }
-                else if (beat === '-' || beat === '0' || beat === '.') {
-                    html += `<div class="beat-block rest-beat">`;
-                    for (let i = 1; i <= 15; i++) {
-                        html += `<div class="key"><span class="key-num">${i}</span></div>`;
+                else if (isNumActive) {
+                    // CÁCH HIỂN THỊ SHEET SỐ THUẦN TÚY
+                    if (beat === '-' || beat === '0' || beat === '.') {
+                        html += `<div class="num-block rest-block">~</div>`;
+                    } else {
+                        const activeNotes = beat.split(/[,]/).map(n => parseInt(n)).filter(n => !isNaN(n));
+                        const badges = activeNotes.map(n => `<span class="num-badge">${n}</span>`).join('');
+                        html += `<div class="num-block">${badges}</div>`;
                     }
-                    html += `<span class="rest-mark">~</span>`;
-                    html += `</div>`;
                 } 
                 else {
-                    const activeNotes = beat.split(/[,]/).map(n => parseInt(n));
-                    html += `<div class="beat-block">`;
-                    for (let i = 1; i <= 15; i++) {
-                        const isActive = activeNotes.includes(i) ? 'active' : '';
-                        html += `<div class="key ${isActive}"><span class="key-num">${i}</span></div>`; 
+                    // CÁCH HIỂN THỊ PHÍM TRÒN (GRID 15 Ô)
+                    if (beat === '-' || beat === '0' || beat === '.') {
+                        html += `<div class="beat-block rest-beat">`;
+                        for (let i = 1; i <= 15; i++) {
+                            html += `<div class="key"></div>`;
+                        }
+                        html += `<span class="rest-mark">~</span>`;
+                        html += `</div>`;
+                    } 
+                    else {
+                        const activeNotes = beat.split(/[,]/).map(n => parseInt(n));
+                        html += `<div class="beat-block">`;
+                        for (let i = 1; i <= 15; i++) {
+                            const isActive = activeNotes.includes(i) ? 'active' : '';
+                            html += `<div class="key ${isActive}"></div>`; 
+                        }
+                        html += `</div>`;
                     }
-                    html += `</div>`;
                 }
             });
 
             html += `</div>`;
             mainContent.innerHTML = html;
-            mainContent.scrollTop = 0; // Đưa cuộn về đầu bài
+            mainContent.scrollTop = 0;
             applyZoom();
         }
 

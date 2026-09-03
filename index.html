@@ -597,7 +597,7 @@
                 <input type="text" id="songTitle" placeholder="Tên bản nhạc...">
             </div>
             <div class="form-group">
-                <input type="number" id="songBpm" placeholder="Tốc độ BPM (ví dụ: 120, mặc định là 120)" min="30" max="300">
+                <input type="number" id="songBpm" placeholder="Tốc độ BPM (ví dụ: 250, mặc định là 250)" min="30" max="300">
             </div>
             <div class="form-group">
                 <textarea id="songNotes" placeholder="Nhập phím (vd: 1 3,5 - / 8 0 10)..."></textarea>
@@ -724,7 +724,7 @@
             const beats = normalizedNotes.trim().split(/\s+/);
 
             // Tự động tính khoảng thời gian nhịp dựa vào BPM của bài (mặc định 120 BPM nếu bỏ trống)
-            const bpm = song.bpm || 120;
+            const bpm = song.bpm || 250;
             const tempo = 60000 / bpm; 
             let delay = 0;
 
@@ -1032,7 +1032,7 @@
                 if (song) {
                     modalTitle.textContent = "Chỉnh sửa bản nhạc";
                     titleInput.value = song.title;
-                    bpmInput.value = song.bpm || 120;
+                    bpmInput.value = song.bpm || 250;
                     notesInput.value = song.notes;
                 }
             } else {
@@ -1051,7 +1051,7 @@
 
         function saveSong() {
             const title = document.getElementById('songTitle').value.trim();
-            const bpm = parseInt(document.getElementById('songBpm').value) || 120;
+            const bpm = parseInt(document.getElementById('songBpm').value) || 250;
             const notes = document.getElementById('songNotes').value.trim();
 
             if (!title || !notes) {

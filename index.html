@@ -659,51 +659,36 @@
             11: 698.46, 12: 783.99, 13: 880.00, 14: 987.77, 15: 1046.50
         };
 
-        function playSkyNote(freq, duration = 0.45, chordSize = 1) {
-            if (!freq) return;
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+        // DÁN ĐOẠN NÀY VÀO THAY THẾ:
+function playSkyNote(freq, duration = 0.5, chordSize = 1) {
+    if (!freq) return;
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
 
-            const oscSine = audioCtx.createOscillator();
-            const oscTri = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
+    const now = audioCtx.currentTime;
 
-            oscSine.type = 'sine';
-            oscTri.type = 'triangle';
+    const osc = audioCtx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now);
 
-            oscSine.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            oscTri.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    const gainNode = audioCtx.createGain();
+    const baseVolume = 0.25; 
+    const peakGain = baseVolume / Math.max(1, chordSize * 0.85);
 
-            const gainSine = audioCtx.createGain();
-            const gainTri = audioCtx.createGain();
+    gainNode.gain.setValueAtTime(0.0001, now);
+    gainNode.gain.linearRampToValueAtTime(peakGain, now + 0.004);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
-            gainSine.gain.value = 0.8;
-            gainTri.gain.value = 0.2;
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
 
-            oscSine.connect(gainSine);
-            oscTri.connect(gainTri);
-
-            gainSine.connect(gainNode);
-            gainTri.connect(gainNode);
-
-            const peakGain = 0.15 / Math.sqrt(chordSize);
-
-            const now = audioCtx.currentTime;
-            gainNode.gain.setValueAtTime(0.0001, now);
-            gainNode.gain.linearRampToValueAtTime(peakGain, now + 0.02);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-
-            gainNode.connect(audioCtx.destination);
-
-            oscSine.start(now);
-            oscTri.start(now);
-            oscSine.stop(now + duration);
-            oscTri.stop(now + duration);
-        }
+    osc.start(now);
+    osc.stop(now + duration);
+}
 
         function stopPreview() {
             previewTimeouts.forEach(t => clearTimeout(t));

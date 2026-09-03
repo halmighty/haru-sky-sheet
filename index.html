@@ -45,7 +45,6 @@
             line-height: 1.6;
         }
 
-        /* Nút Toggle Sidebar chung cho mọi màn hình */
         .menu-toggle-btn {
             position: fixed;
             top: 15px;
@@ -82,7 +81,6 @@
             position: relative;
         }
 
-        /* Sidebar Responsive & Collapsible */
         .sidebar {
             width: 320px;
             min-width: 320px;
@@ -96,7 +94,6 @@
             transition: margin-left 0.3s ease, transform 0.3s ease;
         }
 
-        /* Trạng thái thu gọn Sidebar trên Máy tính */
         body.sidebar-closed .sidebar {
             margin-left: -320px;
         }
@@ -188,7 +185,22 @@
             color: #b0bec5;
             cursor: pointer;
             font-size: 13px;
-            transition: color 0.2s;
+            transition: all 0.2s;
+        }
+
+        .btn-action.play-preview {
+            color: #b0bec5;
+            opacity: 0.5;
+            margin-left: 8px;
+            font-size: 13px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .btn-action.play-preview:hover, .btn-action.play-preview.is-playing {
+            opacity: 1;
+            color: var(--key-active);
         }
 
         .btn-action.edit:hover { color: var(--key-active); }
@@ -231,7 +243,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Thanh công cụ Cố định phía trên */
         .zoom-toolbar {
             position: sticky;
             top: 0;
@@ -329,7 +340,6 @@
             opacity: 0.6;
         }
 
-        /* KHUNG CHẾ ĐỘ PHÍM TRÒN (GRID 15 Ô) */
         .beat-block {
             background: #ffffff;
             padding: var(--beat-padding);
@@ -389,7 +399,6 @@
             box-shadow: 0 0 10px rgba(56, 103, 214, 0.6);
         }
 
-        /* CHẾ ĐỘ SHEET SỐ THUẦN TÚY (NUMBER SHEET MODE) */
         .num-block {
             background: #ffffff;
             border: 1.5px solid var(--key-border);
@@ -532,7 +541,6 @@
 
         .btn-save:hover { background: #1e3799; }
 
-        /* Tối ưu hóa Màn hình Nhỏ & Điện Thoại */
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -589,6 +597,9 @@
                 <input type="text" id="songTitle" placeholder="Tên bản nhạc...">
             </div>
             <div class="form-group">
+                <input type="number" id="songBpm" placeholder="Tốc độ BPM (ví dụ: 120, mặc định là 120)" min="30" max="300">
+            </div>
+            <div class="form-group">
                 <textarea id="songNotes" placeholder="Nhập phím (vd: 1 3,5 - / 8 0 10)..."></textarea>
                 <div class="note-guide">
                     * Nốt đơn: <code>1 2 3</code> | Hợp âm: <code>1,3,5</code><br>
@@ -628,6 +639,120 @@
         let isScrolling = false;
         let scrollSpeed = 1.0;
 
+        let audioCtx = null;
+        let previewTimeouts = [];
+        let playingPreviewId = null;
+
+        const SKY_PITCHES = {
+            1: 261.63, 2: 293.66, 3: 329.63, 4: 349.23, 5: 392.00,
+            6: 440.00, 7: 493.88, 8: 523.25, 9: 587.33, 10: 659.25,
+            11: 698.46, 12: 783.99, 13: 880.00, 14: 987.77, 15: 1046.50
+        };
+
+        // Âm thanh Harp / Kalimba dịu nhẹ, ngân mượt và không rè
+        function playSkyNote(freq, duration = 0.45, chordSize = 1) {
+            if (!freq) return;
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const oscSine = audioCtx.createOscillator();
+            const oscTri = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscSine.type = 'sine';
+            oscTri.type = 'triangle';
+
+            oscSine.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            oscTri.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+            const gainSine = audioCtx.createGain();
+            const gainTri = audioCtx.createGain();
+
+            gainSine.gain.value = 0.8;
+            gainTri.gain.value = 0.2;
+
+            oscSine.connect(gainSine);
+            oscTri.connect(gainTri);
+
+            gainSine.connect(gainNode);
+            gainTri.connect(gainNode);
+
+            // Tự động phân bổ âm lượng để không bao giờ bị clipping khi phát hợp âm
+            const peakGain = 0.15 / Math.sqrt(chordSize);
+
+            const now = audioCtx.currentTime;
+            gainNode.gain.setValueAtTime(0.0001, now);
+            gainNode.gain.linearRampToValueAtTime(peakGain, now + 0.02); // Attack mượt
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration); // Ngân vang tự nhiên
+
+            gainNode.connect(audioCtx.destination);
+
+            oscSine.start(now);
+            oscTri.start(now);
+            oscSine.stop(now + duration);
+            oscTri.stop(now + duration);
+        }
+
+        function stopPreview() {
+            previewTimeouts.forEach(t => clearTimeout(t));
+            previewTimeouts = [];
+            playingPreviewId = null;
+        }
+
+        function togglePreview(event, id) {
+            event.stopPropagation();
+
+            if (playingPreviewId === id) {
+                stopPreview();
+                renderList();
+                return;
+            }
+
+            stopPreview();
+
+            const song = songs.find(s => s.id === id);
+            if (!song) return;
+
+            playingPreviewId = id;
+            renderList();
+
+            const normalizedNotes = song.notes.replace(/[\r\n]+/g, ' / ');
+            const beats = normalizedNotes.trim().split(/\s+/);
+
+            // Tự động tính khoảng thời gian nhịp dựa vào BPM của bài (mặc định 120 BPM nếu bỏ trống)
+            const bpm = song.bpm || 120;
+            const tempo = 60000 / bpm; 
+            let delay = 0;
+
+            beats.forEach(beat => {
+                if (beat === '/' || beat === '|') {
+                    delay += tempo * 0.8;
+                    return;
+                }
+
+                if (beat !== '-' && beat !== '0' && beat !== '.') {
+                    const notes = beat.split(',').map(n => parseInt(n)).filter(n => SKY_PITCHES[n]);
+                    
+                    const t = setTimeout(() => {
+                        notes.forEach(key => playSkyNote(SKY_PITCHES[key], 0.45, notes.length));
+                    }, delay);
+                    
+                    previewTimeouts.push(t);
+                }
+                delay += tempo;
+            });
+
+            const endT = setTimeout(() => {
+                stopPreview();
+                renderList();
+            }, delay + 300);
+            previewTimeouts.push(endT);
+        }
+
         songsRef.on('value', (snapshot) => {
             const data = snapshot.val();
             songs = [];
@@ -637,8 +762,8 @@
                 });
             } else {
                 const defaultSongs = [
-                    { title: "Khúc hát của gió (Mẫu)", notes: "1 1 5 5 - / 6 6 5 - / 4 4 3 3 - / 2 2 1" },
-                    { title: "Giấc mơ đêm hè", notes: "1,5 3 - 8 / 6 4,8 - 5 / 10 8 - 1,5,10" }
+                    { title: "Khúc hát của gió (Mẫu)", bpm: 120, notes: "1 1 5 5 - / 6 6 5 - / 4 4 3 3 - / 2 2 1" },
+                    { title: "Giấc mơ đêm hè", bpm: 100, notes: "1,5 3 - 8 / 6 4,8 - 5 / 10 8 - 1,5,10" }
                 ];
                 defaultSongs.forEach(song => songsRef.push(song));
                 return;
@@ -657,7 +782,6 @@
             }
         });
 
-        // Toggle Sidebar hỗ trợ cả PC và Mobile
         function toggleSidebar() {
             if (window.innerWidth <= 768) {
                 document.body.classList.toggle('sidebar-open');
@@ -710,7 +834,6 @@
             }
         }
 
-        // Đổi chế độ hiển thị phím tròn / Sheet số
         function toggleNumberMode() {
             document.body.classList.toggle('number-mode');
             if (activeSongId) {
@@ -784,6 +907,14 @@
                 titleSpan.textContent = song.title;
                 li.appendChild(titleSpan);
 
+                const isThisPlaying = playingPreviewId === song.id;
+                const playBtn = document.createElement('button');
+                playBtn.className = `btn-action play-preview ${isThisPlaying ? 'is-playing' : ''}`;
+                playBtn.innerHTML = isThisPlaying ? '⏹' : '▶';
+                playBtn.title = isThisPlaying ? 'Dừng nghe' : 'Nghe giai điệu (Harp Sky)';
+                playBtn.onclick = (e) => togglePreview(e, song.id);
+                li.appendChild(playBtn);
+
                 const actionsDiv = document.createElement('div');
                 actionsDiv.className = 'song-actions';
 
@@ -835,47 +966,47 @@
                     <span class="zoom-text" id="speedVal" title="Tốc độ cuộn">${scrollSpeed.toFixed(1)}x</span>
                     <button class="zoom-btn" onclick="changeSpeed(0.25)" title="Tăng tốc độ cuộn">+</button>
                     <div class="toolbar-divider"></div>
-                    <button class="zoom-btn ${isNumActive ? 'active-mode' : ''}" id="numToggleBtn" onclick="toggleNumberMode()" title="Chuyển đổi giữa Phím tròn và Sheet Số">123</button>
+                    <button class="zoom-btn ${isNumActive ? 'active-mode' : ''}" id="numToggleBtn" onclick="toggleNumberMode()" title="Chuyển chế độ Sheet Số"># Sheet Số</button>
                     <div class="toolbar-divider"></div>
                     <button class="zoom-btn" onclick="changeZoom(-10)" title="Thu nhỏ">-</button>
                     <span class="zoom-text" id="zoomVal">${zoomPercent}%</span>
                     <button class="zoom-btn" onclick="changeZoom(10)" title="Phóng to">+</button>
-                    <button class="zoom-btn" onclick="resetZoom()" title="Đặt lại kích thước chuẩn">↺</button>
+                    <button class="zoom-btn" onclick="resetZoom()" title="Đặt lại">100%</button>
                 </div>
+                <h2 class="sheet-title">${escapeHtml(song.title)}</h2>
+                <div class="sheet-container">
             `;
-            html += `<h2 class="sheet-title">${song.title}</h2>`;
-            html += `<div class="sheet-container">`;
 
             beats.forEach(beat => {
                 if (beat === '/' || beat === '|') {
                     html += `<div class="line-break"></div>`;
+                    return;
                 }
-                else if (isNumActive) {
-                    // CÁCH HIỂN THỊ SHEET SỐ THUẦN TÚY
+
+                if (isNumActive) {
                     if (beat === '-' || beat === '0' || beat === '.') {
-                        html += `<div class="num-block rest-block">~</div>`;
+                        html += `<div class="num-block rest-block">--</div>`;
                     } else {
-                        const activeNotes = beat.split(/[,]/).map(n => parseInt(n)).filter(n => !isNaN(n));
-                        const badges = activeNotes.map(n => `<span class="num-badge">${n}</span>`).join('');
-                        html += `<div class="num-block">${badges}</div>`;
-                    }
-                } 
-                else {
-                    // CÁCH HIỂN THỊ PHÍM TRÒN (GRID 15 Ô)
-                    if (beat === '-' || beat === '0' || beat === '.') {
-                        html += `<div class="beat-block rest-beat">`;
-                        for (let i = 1; i <= 15; i++) {
-                            html += `<div class="key"></div>`;
-                        }
-                        html += `<span class="rest-mark">~</span>`;
+                        const notes = beat.split(',');
+                        html += `<div class="num-block">`;
+                        notes.forEach(n => {
+                            html += `<span class="num-badge">${escapeHtml(n)}</span>`;
+                        });
                         html += `</div>`;
-                    } 
-                    else {
-                        const activeNotes = beat.split(/[,]/).map(n => parseInt(n));
+                    }
+                } else {
+                    if (beat === '-' || beat === '0' || beat === '.') {
+                        html += `
+                            <div class="beat-block rest-beat">
+                                <span class="rest-mark">~</span>
+                            </div>
+                        `;
+                    } else {
+                        const activeKeys = beat.split(',').map(n => parseInt(n));
                         html += `<div class="beat-block">`;
                         for (let i = 1; i <= 15; i++) {
-                            const isActive = activeNotes.includes(i) ? 'active' : '';
-                            html += `<div class="key ${isActive}"></div>`; 
+                            const isActive = activeKeys.includes(i);
+                            html += `<div class="key ${isActive ? 'active' : ''}"></div>`;
                         }
                         html += `</div>`;
                     }
@@ -884,59 +1015,65 @@
 
             html += `</div>`;
             mainContent.innerHTML = html;
-            mainContent.scrollTop = 0;
             applyZoom();
         }
 
-        function openModal(event = null, id = null) {
-            if (event) event.stopPropagation();
+        function openModal(e, id = null) {
+            if (e) e.stopPropagation();
             editingSongId = id;
-            
             const modal = document.getElementById('addModal');
-            const titleEl = document.getElementById('modalTitle');
-            const saveBtn = document.getElementById('saveBtn');
+            const modalTitle = document.getElementById('modalTitle');
+            const titleInput = document.getElementById('songTitle');
+            const bpmInput = document.getElementById('songBpm');
+            const notesInput = document.getElementById('songNotes');
 
             if (id) {
                 const song = songs.find(s => s.id === id);
                 if (song) {
-                    document.getElementById('songTitle').value = song.title;
-                    document.getElementById('songNotes').value = song.notes;
-                    titleEl.textContent = "Hiệu chỉnh đoạn ký ức";
-                    saveBtn.textContent = "Cập nhật";
+                    modalTitle.textContent = "Chỉnh sửa bản nhạc";
+                    titleInput.value = song.title;
+                    bpmInput.value = song.bpm || 120;
+                    notesInput.value = song.notes;
                 }
             } else {
-                document.getElementById('songTitle').value = '';
-                document.getElementById('songNotes').value = '';
-                titleEl.textContent = "Ghi chép ký ức mới";
-                saveBtn.textContent = "Lưu giữ";
+                modalTitle.textContent = "Ghi chép ký ức mới";
+                titleInput.value = "";
+                bpmInput.value = "";
+                notesInput.value = "";
             }
-
-            modal.style.display = 'flex';
-            document.getElementById('songTitle').focus();
+            modal.style.display = "flex";
         }
 
         function closeModal() {
-            document.getElementById('addModal').style.display = 'none';
+            document.getElementById('addModal').style.display = "none";
+            editingSongId = null;
         }
 
         function saveSong() {
             const title = document.getElementById('songTitle').value.trim();
+            const bpm = parseInt(document.getElementById('songBpm').value) || 120;
             const notes = document.getElementById('songNotes').value.trim();
 
-            if (!title || !notes) return;
-
-            if (editingSongId) {
-                db.ref('songs/' + editingSongId).update({ title, notes });
-            } else {
-                db.ref('songs').push({ title, notes });
+            if (!title || !notes) {
+                alert("Vui lòng nhập đầy đủ tên bài hát và nốt nhạc!");
+                return;
             }
 
-            closeModal();
+            if (editingSongId) {
+                db.ref('songs/' + editingSongId).update({ title, bpm, notes }, () => closeModal());
+            } else {
+                db.ref('songs').push({ title, bpm, notes }, () => closeModal());
+            }
         }
 
-        window.onclick = function(event) {
-            const modal = document.getElementById('addModal');
-            if (event.target == modal) closeModal();
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
     </script>
 </body>

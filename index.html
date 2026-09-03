@@ -38,6 +38,7 @@
             background-color: var(--paper-white);
             color: var(--ink-dark);
             height: 100vh;
+            height: 100dvh;
             display: flex;
             overflow: hidden;
             line-height: 1.6;
@@ -49,24 +50,28 @@
             height: 100%;
             max-width: 100%;
             margin: 0 auto;
+            position: relative;
         }
 
+        /* Sidebar Responsive */
         .sidebar {
             width: 320px;
             min-width: 320px;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             border-right: 1.5px solid var(--border-color);
-            padding: 40px 25px;
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
             position: relative;
+            z-index: 100;
+            transition: transform 0.3s ease;
         }
 
         .sidebar h1 {
             font-size: 22px;
             font-weight: 600;
             color: var(--ink-dark);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-align: center;
             letter-spacing: 0.5px;
             font-style: italic;
@@ -85,7 +90,7 @@
             font-style: italic;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: none; 
             white-space: nowrap;
         }
@@ -117,6 +122,7 @@
             justify-content: space-between;
             align-items: center;
             overflow: hidden;
+            border-radius: 4px;
         }
 
         .song-title-text {
@@ -155,20 +161,20 @@
         .btn-action.delete:hover { color: #e74c3c; }
 
         .admin-toggle {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--ink-light);
-            opacity: 0.35;
+            opacity: 0.5;
             text-align: center;
             margin-top: 15px;
             cursor: pointer;
             transition: all 0.4s;
             font-style: italic;
-            padding: 8px 0;
+            padding: 10px 0;
             user-select: none;
         }
         
         .admin-toggle:hover { 
-            opacity: 0.85; 
+            opacity: 1; 
             color: var(--key-active); 
         }
 
@@ -182,7 +188,7 @@
 
         .main-content {
             flex-grow: 1;
-            padding: 40px 5vw;
+            padding: 80px 4vw 120px 4vw;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -190,31 +196,53 @@
             position: relative;
         }
 
+        /* Nút Toggle Menu trên Mobile */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 200;
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink-dark);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+
+        /* Thanh công cụ Cố định phía trên (Sticky Toolbar) */
         .zoom-toolbar {
-            position: absolute;
-            top: 25px;
-            right: 40px;
+            position: sticky;
+            top: 0;
+            align-self: flex-end;
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border: 1.5px solid var(--border-color);
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            z-index: 90;
+            margin-bottom: 20px;
+            backdrop-filter: blur(5px);
+            flex-wrap: wrap;
         }
 
         .zoom-btn {
             background: none;
             border: none;
             color: var(--ink-dark);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
-            padding: 0 6px;
-            height: 26px;
-            border-radius: 13px;
+            padding: 0 8px;
+            height: 28px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -232,17 +260,25 @@
             color: #ffffff !important;
         }
 
+        .btn-scroll {
+            background: #e17055;
+            color: #fff;
+        }
+        .btn-scroll.scrolling {
+            background: #00b894;
+        }
+
         .toolbar-divider {
             width: 1px;
             height: 14px;
             background: var(--border-color);
-            margin: 0 3px;
+            margin: 0 2px;
         }
 
         .zoom-text {
             font-size: 12px;
             color: var(--ink-light);
-            min-width: 40px;
+            min-width: 35px;
             text-align: center;
             user-select: none;
             font-family: sans-serif;
@@ -252,29 +288,26 @@
             font-size: clamp(20px, 2vw, 26px);
             font-weight: 500;
             color: var(--ink-dark);
-            margin-bottom: 35px;
+            margin-bottom: 25px;
             text-align: center;
             letter-spacing: 0.5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding-right: 180px;
-            padding-left: 180px;
+            padding: 0 20px;
         }
 
         .sheet-container {
             display: flex;
             flex-wrap: wrap;
-            gap: clamp(10px, 1.2vw, 20px);
+            gap: clamp(8px, 1.2vw, 18px);
             justify-content: flex-start;
             align-content: flex-start;
+            padding-bottom: 60px;
         }
 
         .line-break {
             flex-basis: 100%;
             width: 100%;
             height: 0;
-            margin: 15px 0;
+            margin: 12px 0;
             border-top: 1.5px dashed var(--border-color);
             opacity: 0.6;
         }
@@ -293,9 +326,7 @@
             transition: all 0.15s ease-out;
         }
 
-        .beat-block:hover {
-            border-color: var(--key-active);
-        }
+        .beat-block:hover { border-color: var(--key-active); }
 
         .beat-block.rest-beat {
             border-style: dashed;
@@ -338,9 +369,7 @@
             pointer-events: none;
         }
 
-        body.number-mode .key-num {
-            display: block;
-        }
+        body.number-mode .key-num { display: block; }
 
         .beat-block.rest-beat .key {
             border-color: #cfd8dc;
@@ -354,9 +383,7 @@
             box-shadow: 0 0 10px rgba(56, 103, 214, 0.6);
         }
 
-        .key.active .key-num {
-            color: #ffffff;
-        }
+        .key.active .key-num { color: #ffffff; }
 
         .empty-state {
             text-align: center;
@@ -380,7 +407,7 @@
 
         .modal-content {
             background: #fff;
-            padding: 35px;
+            padding: 30px;
             width: 90%;
             max-width: 480px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.1);
@@ -396,9 +423,7 @@
             font-style: italic;
         }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+        .form-group { margin-bottom: 15px; }
 
         .form-group input, .form-group textarea {
             width: 100%;
@@ -413,12 +438,10 @@
             font-size: 14px;
         }
 
-        .form-group input:focus, .form-group textarea:focus {
-            border-color: var(--key-active);
-        }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--key-active); }
 
         .form-group textarea {
-            height: 130px;
+            height: 120px;
             resize: none;
             line-height: 1.6;
         }
@@ -460,12 +483,44 @@
         }
 
         .btn-save:hover { background: #1e3799; }
+
+        /* Tối ưu hóa đặc biệt cho Màn hình Nhỏ & Điện Thoại */
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active { transform: translateX(0); }
+
+            .main-content {
+                padding: 65px 12px 100px 12px;
+            }
+
+            .zoom-toolbar {
+                align-self: center;
+                margin-bottom: 15px;
+            }
+
+            .sheet-title {
+                font-size: 18px;
+                padding: 0;
+            }
+        }
     </style>
 </head>
 <body>
 
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">☰ Danh sách</button>
+
     <div class="container">
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <h1>Tập Tản Nhạc</h1>
             <button class="btn-add" id="addBtn" onclick="openModal()">+ Ghi chép bản nhạc mới</button>
             <ul class="song-list" id="songList"></ul>
@@ -501,19 +556,17 @@
     </div>
 
     <script>
-        // ==========================================
-        // DÁN THÔNG TIN FIREBASE CỦA BẠN VÀO ĐÂY:
-        // ==========================================
+        // Thông tin cấu hình Firebase của bạn
         const firebaseConfig = {
-  		apiKey: "AIzaSyB5rVXz8quhqatJwYJysLl5IBc_wZUJ8cQ",
- 		 authDomain: "sky-sheet-bfc38.firebaseapp.com",
- 		 databaseURL: "https://sky-sheet-bfc38-default-rtdb.asia-southeast1.firebasedatabase.app",
- 		 projectId: "sky-sheet-bfc38",
- 		 storageBucket: "sky-sheet-bfc38.firebasestorage.app",
- 		 messagingSenderId: "29067311106",
-  		appId: "1:29067311106:web:4640a1139dd4a0c167cf1b",
-		  measurementId: "G-Z31L83GSTZ"
-		};
+            apiKey: "AIzaSyB5rVXz8quhqatJwYJysLl5IBc_wZUJ8cQ",
+            authDomain: "sky-sheet-bfc38.firebaseapp.com",
+            databaseURL: "https://sky-sheet-bfc38-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "sky-sheet-bfc38",
+            storageBucket: "sky-sheet-bfc38.firebasestorage.app",
+            messagingSenderId: "29067311106",
+            appId: "1:29067311106:web:4640a1139dd4a0c167cf1b",
+            measurementId: "G-Z31L83GSTZ"
+        };
 
         // Khởi tạo Firebase
         firebase.initializeApp(firebaseConfig);
@@ -525,8 +578,11 @@
         let editingSongId = null;
         let isAdmin = false;
         let zoomPercent = 100;
+        let scrollTimer = null;
+        let isScrolling = false;
+        let scrollSpeed = 1.0; // Tốc độ cuộn mặc định (1.0x)
 
-        // Tải dữ liệu Realtime từ Firebase (Tự động cập nhật tức thì ở máy bạn bè)
+        // Tải dữ liệu Realtime
         songsRef.on('value', (snapshot) => {
             const data = snapshot.val();
             songs = [];
@@ -535,7 +591,6 @@
                     songs.push({ id: key, ...data[key] });
                 });
             } else {
-                // Thêm bài hát mặc định nếu Database chưa có gì
                 const defaultSongs = [
                     { title: "Khúc hát của gió (Mẫu)", notes: "1 1 5 5 - / 6 6 5 - / 4 4 3 3 - / 2 2 1" },
                     { title: "Giấc mơ đêm hè", notes: "1,5 3 - 8 / 6 4,8 - 5 / 10 8 - 1,5,10" }
@@ -557,6 +612,57 @@
             }
         });
 
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        function startScrollTimer() {
+            if (scrollTimer) clearInterval(scrollTimer);
+            const container = document.getElementById('mainContent');
+            
+            // Tính toán khoảng thời gian cuộn dựa trên tốc độ (1.0x ≈ 35ms)
+            const interval = Math.max(10, Math.round(35 / scrollSpeed));
+            
+            scrollTimer = setInterval(() => {
+                if (!container) return;
+                container.scrollTop += 1;
+                if (container.scrollTop + container.clientHeight >= container.scrollHeight - 2) {
+                    toggleAutoScroll(); // Tự dừng khi cuộn tới cuối
+                }
+            }, interval);
+        }
+
+        function toggleAutoScroll() {
+            const btn = document.getElementById('scrollBtn');
+
+            if (isScrolling) {
+                clearInterval(scrollTimer);
+                isScrolling = false;
+                if (btn) {
+                    btn.classList.remove('scrolling');
+                    btn.textContent = '▶ Cuộn nhạc';
+                }
+            } else {
+                isScrolling = true;
+                if (btn) {
+                    btn.classList.add('scrolling');
+                    btn.textContent = '⏸ Dừng cuộn';
+                }
+                startScrollTimer();
+            }
+        }
+
+        function changeSpeed(delta) {
+            scrollSpeed = Math.max(0.25, Math.min(3.0, Math.round((scrollSpeed + delta) * 100) / 100));
+            const valEl = document.getElementById('speedVal');
+            if (valEl) valEl.textContent = scrollSpeed.toFixed(1) + 'x';
+
+            // Nếu đang chạy cuộn thì cập nhật lại tốc độ tức thì
+            if (isScrolling) {
+                startScrollTimer();
+            }
+        }
+
         function toggleNumberMode() {
             document.body.classList.toggle('number-mode');
             const btn = document.getElementById('numToggleBtn');
@@ -564,7 +670,7 @@
         }
 
         function changeZoom(delta) {
-            zoomPercent = Math.max(60, Math.min(160, zoomPercent + delta));
+            zoomPercent = Math.max(50, Math.min(160, zoomPercent + delta));
             applyZoom();
         }
 
@@ -575,11 +681,11 @@
 
         function applyZoom() {
             const scale = zoomPercent / 100;
-            const keySize = Math.max(12, Math.round(22 * scale));
+            const keySize = Math.max(10, Math.round(22 * scale));
             const beatGap = Math.max(2, Math.round(5 * scale));
-            const beatPadding = Math.max(4, Math.round(10 * scale));
-            const restFont = Math.max(10, Math.round(16 * scale));
-            const numFont = Math.max(8, Math.round(11 * scale));
+            const beatPadding = Math.max(3, Math.round(10 * scale));
+            const restFont = Math.max(9, Math.round(16 * scale));
+            const numFont = Math.max(7, Math.round(11 * scale));
 
             document.documentElement.style.setProperty('--key-size', keySize + 'px');
             document.documentElement.style.setProperty('--beat-gap', beatGap + 'px');
@@ -617,7 +723,10 @@
             songs.forEach(song => {
                 const li = document.createElement('li');
                 li.className = `song-item ${song.id === activeSongId ? 'active' : ''}`;
-                li.onclick = () => selectSong(song.id);
+                li.onclick = () => {
+                    selectSong(song.id);
+                    document.getElementById('sidebar').classList.remove('active'); // Đóng menu mobile khi chọn bài
+                };
                 
                 const titleSpan = document.createElement('span');
                 titleSpan.className = 'song-title-text';
@@ -655,6 +764,8 @@
         }
 
         function selectSong(id) {
+            if (isScrolling) toggleAutoScroll(); // Dừng cuộn bài cũ nếu đang bật
+            
             activeSongId = id;
             renderList();
             
@@ -668,6 +779,11 @@
 
             let html = `
                 <div class="zoom-toolbar">
+                    <button class="zoom-btn btn-scroll" id="scrollBtn" onclick="toggleAutoScroll()" title="Tự động cuộn trang khi đánh nhạc">▶ Cuộn nhạc</button>
+                    <button class="zoom-btn" onclick="changeSpeed(-0.25)" title="Giảm tốc độ cuộn">-</button>
+                    <span class="zoom-text" id="speedVal" title="Tốc độ cuộn">${scrollSpeed.toFixed(1)}x</span>
+                    <button class="zoom-btn" onclick="changeSpeed(0.25)" title="Tăng tốc độ cuộn">+</button>
+                    <div class="toolbar-divider"></div>
                     <button class="zoom-btn ${isNumActive ? 'active-mode' : ''}" id="numToggleBtn" onclick="toggleNumberMode()" title="Bật/Tắt hiển thị số nốt">123</button>
                     <div class="toolbar-divider"></div>
                     <button class="zoom-btn" onclick="changeZoom(-10)" title="Thu nhỏ">-</button>
@@ -704,6 +820,7 @@
 
             html += `</div>`;
             mainContent.innerHTML = html;
+            mainContent.scrollTop = 0; // Đưa cuộn về đầu bài
             applyZoom();
         }
 

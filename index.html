@@ -264,7 +264,6 @@
             transition: all 0.3s ease;
         }
 
-        /* THANH BAR NẰM DỌC CỐ ĐỊNH Ở GÓC PHẢI */
         .zoom-toolbar {
             position: fixed;
             right: 20px;
@@ -352,7 +351,7 @@
             justify-content: flex-start;
             align-content: flex-start;
             padding-bottom: 60px;
-            padding-right: 60px; /* Tránh bị thanh bar dọc che đè nội dung */
+            padding-right: 60px;
         }
 
         .line-break {
@@ -464,6 +463,15 @@
             font-size: var(--num-sheet-font, 16px);
             font-weight: 600;
             font-style: italic;
+        }
+
+        /* --- HIỆU ỨNG VIỀN SÁNG REAL-TIME KHI PREVIEW --- */
+        .beat-block.playing-now, 
+        .num-block.playing-now {
+            border-color: var(--key-active) !important;
+            box-shadow: 0 0 15px rgba(75, 123, 236, 0.8), 0 0 25px rgba(75, 123, 236, 0.4) !important;
+            transform: scale(1.08);
+            z-index: 10;
         }
 
         .empty-state {
@@ -634,10 +642,11 @@
                 <input type="number" id="songBpm" placeholder="Tốc độ BPM (ví dụ: 250, mặc định là 250)" min="30" max="300">
             </div>
             <div class="form-group">
-                <textarea id="songNotes" placeholder="Nhập phím (vd: 1 3,5 - / 8 0 10)..."></textarea>
+                <textarea id="songNotes" placeholder="Nhập phím (vd: 1 3,5 - / A1B2 A3 .)..."></textarea>
                 <div class="note-guide">
-                    * Nốt đơn: <code>1 2 3</code> | Hợp âm: <code>1,3,5</code><br>
-                    * Khoảng lặng: Nhập <code>-</code> hoặc <code>0</code><br>
+                    * Nốt dạng Số: <code>1 2 3</code> | Hợp âm: <code>1,3,5</code><br>
+                    * Nốt dạng Chữ: <code>A1 B2 C3</code> | Hợp âm: <code>A1B2</code><br>
+                    * Khoảng lặng: Nhập <code>.</code>, <code>-</code> hoặc <code>0</code><br>
                     * Ngắt đoạn/Xuống dòng: Nhập <code>/</code>, <code>|</code> hoặc <code>Gõ xuống dòng</code>
                 </div>
             </div>
@@ -672,6 +681,7 @@
         let scrollTimer = null;
         let isScrolling = false;
         let scrollSpeed = 1.0;
+        let displayMode = 'grid'; // 'grid' | 'number' | 'letter'
 
         let audioCtx = null;
         let previewTimeouts = [];
@@ -682,6 +692,36 @@
             6: 440.00, 7: 493.88, 8: 523.25, 9: 587.33, 10: 659.25,
             11: 698.46, 12: 783.99, 13: 880.00, 14: 987.77, 15: 1046.50
         };
+
+        const LETTER_TO_KEY = {
+            'A1': 1, 'A2': 2, 'A3': 3, 'A4': 4, 'A5': 5,
+            'B1': 6, 'B2': 7, 'B3': 8, 'B4': 9, 'B5': 10,
+            'C1': 11, 'C2': 12, 'C3': 13, 'C4': 14, 'C5': 15
+        };
+
+        const KEY_TO_LETTER = {
+            1: 'A1', 2: 'A2', 3: 'A3', 4: 'A4', 5: 'A5',
+            6: 'B1', 7: 'B2', 8: 'B3', 9: 'B4', 10: 'B5',
+            11: 'C1', 12: 'C2', 13: 'C3', 14: 'C4', 15: 'C5'
+        };
+
+        function parseBeatToKeys(beat) {
+            if (!beat) return [];
+            const cleanBeat = beat.trim().toUpperCase();
+
+            if (cleanBeat === '.' || cleanBeat === '-' || cleanBeat === '0') {
+                return [];
+            }
+
+            const letterMatches = cleanBeat.match(/[ABC][1-5]/g);
+            if (letterMatches && letterMatches.length > 0) {
+                return letterMatches.map(m => LETTER_TO_KEY[m]).filter(Boolean);
+            }
+
+            return cleanBeat.split(',')
+                .map(n => parseInt(n.trim(), 10))
+                .filter(n => !isNaN(n) && n >= 1 && n <= 15);
+        }
 
         function playSkyNote(freq, duration = 0.5, chordSize = 1) {
             if (!freq) return;
@@ -713,10 +753,17 @@
             osc.stop(now + duration);
         }
 
+        function clearAllHighlights() {
+            document.querySelectorAll('.beat-item.playing-now').forEach(el => {
+                el.classList.remove('playing-now');
+            });
+        }
+
         function stopPreview() {
             previewTimeouts.forEach(t => clearTimeout(t));
             previewTimeouts = [];
             playingPreviewId = null;
+            clearAllHighlights();
         }
 
         function togglePreview(event, id) {
@@ -733,6 +780,11 @@
             const song = songs.find(s => s.id === id);
             if (!song) return;
 
+            // Tự động mở bài hát đang Preview trên màn hình chính
+            if (activeSongId !== id) {
+                selectSong(id);
+            }
+
             playingPreviewId = id;
             renderList();
 
@@ -742,6 +794,7 @@
             const bpm = song.bpm || 250;
             const tempo = 60000 / bpm; 
             let delay = 0;
+            let beatIndex = 0;
 
             beats.forEach(beat => {
                 if (beat === '/' || beat === '|') {
@@ -749,15 +802,26 @@
                     return;
                 }
 
-                if (beat !== '-' && beat !== '0' && beat !== '.') {
-                    const notes = beat.split(',').map(n => parseInt(n)).filter(n => SKY_PITCHES[n]);
-                    
-                    const t = setTimeout(() => {
-                        notes.forEach(key => playSkyNote(SKY_PITCHES[key], 0.45, notes.length));
-                    }, delay);
-                    
-                    previewTimeouts.push(t);
-                }
+                const currentBeatIndex = beatIndex;
+                const keys = parseBeatToKeys(beat);
+
+                // Lên lịch Highlight nốt nhạc & âm thanh tương ứng
+                const tHighlight = setTimeout(() => {
+                    clearAllHighlights();
+                    const targetBlock = document.querySelector(`.beat-item[data-beat-index="${currentBeatIndex}"]`);
+                    if (targetBlock) {
+                        targetBlock.classList.add('playing-now');
+                        targetBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                    }
+
+                    if (keys.length > 0) {
+                        keys.forEach(key => playSkyNote(SKY_PITCHES[key], 0.45, keys.length));
+                    }
+                }, delay);
+
+                previewTimeouts.push(tHighlight);
+
+                beatIndex++;
                 delay += tempo;
             });
 
@@ -777,7 +841,7 @@
                 });
             } else {
                 const defaultSongs = [
-                    { title: "Khúc hát của gió (Mẫu)", bpm: 250, notes: "1 1 5 5 - / 6 6 5 - / 4 4 3 3 - / 2 2 1" },
+                    { title: "Khúc hát của gió (Mẫu)", bpm: 250, notes: "A1 A1 A5 A5 . / B1 B1 A5 . / A4 A4 A3 A3 . / A2 A2 A1" },
                     { title: "Giấc mơ đêm hè", bpm: 250, notes: "1,5 3 - 8 / 6 4,8 - 5 / 10 8 - 1,5,10" }
                 ];
                 defaultSongs.forEach(song => songsRef.push(song));
@@ -849,11 +913,19 @@
             }
         }
 
-        function toggleNumberMode() {
-            document.body.classList.toggle('number-mode');
-            if (activeSongId) {
-                selectSong(activeSongId);
-            }
+        function cycleDisplayMode() {
+            if (displayMode === 'grid') displayMode = 'number';
+            else if (displayMode === 'number') displayMode = 'letter';
+            else displayMode = 'grid';
+
+            if (activeSongId) selectSong(activeSongId);
+        }
+
+        function getModeButtonText() {
+            if (displayMode === 'grid') return 'Lưới';
+            if (displayMode === 'number') return '123';
+            if (displayMode === 'letter') return 'ABC';
+            return 'Lưới';
         }
 
         function changeZoom(delta) {
@@ -1007,7 +1079,6 @@
             const mainContent = document.getElementById('mainContent');
             const normalizedNotes = song.notes.replace(/[\r\n]+/g, ' / ');
             const beats = normalizedNotes.trim().split(/\s+/);
-            const isNumActive = document.body.classList.contains('number-mode');
 
             let html = `
                 <div class="zoom-toolbar">
@@ -1016,7 +1087,7 @@
                     <span class="zoom-text" id="speedVal" title="Tốc độ cuộn">${scrollSpeed.toFixed(1)}x</span>
                     <button class="zoom-btn" onclick="changeSpeed(0.25)" title="Tăng tốc độ">+</button>
                     <div class="toolbar-divider"></div>
-                    <button class="zoom-btn ${isNumActive ? 'active-mode' : ''}" id="numToggleBtn" onclick="toggleNumberMode()" title="Chuyển Chế độ Sheet Số">123</button>
+                    <button class="zoom-btn ${displayMode !== 'grid' ? 'active-mode' : ''}" id="modeToggleBtn" onclick="cycleDisplayMode()" title="Đổi dạng hiển thị: Lưới / Số / Chữ">${getModeButtonText()}</button>
                     <div class="toolbar-divider"></div>
                     <button class="zoom-btn" onclick="changeZoom(10)" title="Phóng to">+</button>
                     <span class="zoom-text" id="zoomVal">${zoomPercent}%</span>
@@ -1027,33 +1098,47 @@
                 <div class="sheet-container">
             `;
 
+            let beatIndex = 0;
+
             beats.forEach(beat => {
                 if (beat === '/' || beat === '|') {
                     html += `<div class="line-break"></div>`;
                     return;
                 }
 
-                if (isNumActive) {
-                    if (beat === '-' || beat === '0' || beat === '.') {
-                        html += `<div class="num-block rest-block">-</div>`;
+                const isRest = (beat === '-' || beat === '0' || beat === '.');
+                const activeKeys = parseBeatToKeys(beat);
+                const currentBeatIndex = beatIndex++;
+
+                if (displayMode === 'number') {
+                    if (isRest || activeKeys.length === 0) {
+                        html += `<div class="num-block rest-block beat-item" data-beat-index="${currentBeatIndex}">-</div>`;
                     } else {
-                        const notesArr = beat.split(',').map(n => n.trim());
-                        html += `<div class="num-block">`;
-                        notesArr.forEach(n => {
-                            html += `<span class="num-badge">${n}</span>`;
+                        html += `<div class="num-block beat-item" data-beat-index="${currentBeatIndex}">`;
+                        activeKeys.forEach(k => {
+                            html += `<span class="num-badge">${k}</span>`;
                         });
                         html += `</div>`;
                     }
-                } else {
-                    if (beat === '-' || beat === '0' || beat === '.') {
+                } else if (displayMode === 'letter') {
+                    if (isRest || activeKeys.length === 0) {
+                        html += `<div class="num-block rest-block beat-item" data-beat-index="${currentBeatIndex}">.</div>`;
+                    } else {
+                        html += `<div class="num-block beat-item" data-beat-index="${currentBeatIndex}">`;
+                        activeKeys.forEach(k => {
+                            html += `<span class="num-badge">${KEY_TO_LETTER[k]}</span>`;
+                        });
+                        html += `</div>`;
+                    }
+                } else { // Grid mode
+                    if (isRest || activeKeys.length === 0) {
                         html += `
-                            <div class="beat-block rest-beat">
-                                <span class="rest-mark">-</span>
+                            <div class="beat-block rest-beat beat-item" data-beat-index="${currentBeatIndex}">
+                                <span class="rest-mark">${beat === '.' ? '.' : '-'}</span>
                             </div>
                         `;
                     } else {
-                        const activeKeys = beat.split(',').map(n => parseInt(n));
-                        html += `<div class="beat-block">`;
+                        html += `<div class="beat-block beat-item" data-beat-index="${currentBeatIndex}">`;
                         for (let k = 1; k <= 15; k++) {
                             const isActive = activeKeys.includes(k);
                             html += `<div class="key ${isActive ? 'active' : ''}"></div>`;

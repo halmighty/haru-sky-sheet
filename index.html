@@ -393,33 +393,75 @@
             font-size: var(--rest-font);
             color: var(--ink-light);
             pointer-events: none;
-            font-style: italic;
-            opacity: 0.7;
+            font-weight: bold;
+            opacity: 0.8;
+            line-height: 1;
         }
 
         .key {
             width: 100%;
             height: 100%;
-            background: #f0f4f8;
-            border: 1.5px solid #a0b2c6;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
             position: relative;
+            overflow: hidden;
+        }
+
+        /* --- PHÂN MÀU THEO 3 HÀNG NỐT TRONG SHEET --- */
+
+        /* Hàng 1: Nốt Trầm (Nốt 1 - 5) - Tone Xanh Dương */
+        .key:nth-child(-n+5) {
+            background: #ebf5fb;
+            border: 1.5px solid #a9cce3;
+        }
+        .key:nth-child(-n+5).active {
+            background: #2980b9;
+            border-color: #1a5276;
+            box-shadow: 0 0 10px rgba(41, 128, 185, 0.7);
+        }
+
+        /* Hàng 2: Nốt Giữa (Nốt 6 - 10) - Tone Tím Mộng Mơ */
+        .key:nth-child(n+6):nth-child(-n+10) {
+            background: #f4ecf7;
+            border: 1.5px solid #d2b4de;
+        }
+        .key:nth-child(n+6):nth-child(-n+10).active {
+            background: #8e44ad;
+            border-color: #512e5f;
+            box-shadow: 0 0 10px rgba(142, 68, 173, 0.7);
+        }
+
+        /* Hàng 3: Nốt Cao (Nốt 11 - 15) - Tone Cam/Hồng Dịu */
+        .key:nth-child(n+11) {
+            background: #fdf2e9;
+            border: 1.5px solid #f5cba7;
+        }
+        .key:nth-child(n+11).active {
+            background: #e67e22;
+            border-color: #a04000;
+            box-shadow: 0 0 10px rgba(230, 126, 34, 0.7);
+        }
+
+        /* --- HOA VĂN BÊN TRONG NỐT ĐƯỢC ĐÁNH DẤU (CÁO/TRẦM/GIỮA) --- */
+        .key.active::after {
+            content: '✦';
+            color: #ffffff;
+            font-size: calc(var(--key-size) * 0.55);
+            font-weight: bold;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
         }
 
         .beat-block.rest-beat .key {
-            border-color: #cfd8dc;
-            background: transparent;
+            border-color: #cfd8dc !important;
+            background: transparent !important;
             opacity: 0.3;
-        }
-
-        .key.active {
-            background: var(--key-active);
-            border-color: #1e3799;
-            box-shadow: 0 0 10px rgba(56, 103, 214, 0.6);
         }
 
         .num-block {
@@ -460,9 +502,8 @@
             border-color: #b0bec5;
             background: rgba(248, 249, 250, 0.6);
             color: var(--ink-light);
-            font-size: var(--num-sheet-font, 16px);
-            font-weight: 600;
-            font-style: italic;
+            font-size: var(--num-sheet-font, 18px);
+            font-weight: bold;
         }
 
         /* --- HIỆU ỨNG VIỀN SÁNG REAL-TIME KHI PREVIEW --- */
@@ -1112,7 +1153,7 @@
 
                 if (displayMode === 'number') {
                     if (isRest || activeKeys.length === 0) {
-                        html += `<div class="num-block rest-block beat-item" data-beat-index="${currentBeatIndex}">-</div>`;
+                        html += `<div class="num-block rest-block beat-item" data-beat-index="${currentBeatIndex}">•</div>`;
                     } else {
                         html += `<div class="num-block beat-item" data-beat-index="${currentBeatIndex}">`;
                         activeKeys.forEach(k => {
@@ -1122,7 +1163,7 @@
                     }
                 } else if (displayMode === 'letter') {
                     if (isRest || activeKeys.length === 0) {
-                        html += `<div class="num-block rest-block beat-item" data-beat-index="${currentBeatIndex}">.</div>`;
+                        html += `<div class="num-block rest-block beat-item" data-beat-index="${currentBeatIndex}">•</div>`;
                     } else {
                         html += `<div class="num-block beat-item" data-beat-index="${currentBeatIndex}">`;
                         activeKeys.forEach(k => {
@@ -1134,7 +1175,7 @@
                     if (isRest || activeKeys.length === 0) {
                         html += `
                             <div class="beat-block rest-beat beat-item" data-beat-index="${currentBeatIndex}">
-                                <span class="rest-mark">${beat === '.' ? '.' : '-'}</span>
+                                <span class="rest-mark">•</span>
                             </div>
                         `;
                     } else {

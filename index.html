@@ -111,6 +111,27 @@
             white-space: nowrap;
         }
 
+        .search-box {
+            margin-bottom: 12px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1.5px solid var(--border-color);
+            background: var(--paper-white);
+            color: var(--ink-dark);
+            font-family: inherit;
+            font-size: 13px;
+            border-radius: 6px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--key-active);
+        }
+
         .btn-add {
             background: var(--paper-white);
             color: var(--ink-dark);
@@ -589,6 +610,9 @@
         <div class="sidebar" id="sidebar">
             <h1>Tập Tản Nhạc</h1>
             <button class="btn-add" id="addBtn" onclick="openModal()">+ Ghi chép bản nhạc mới</button>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm bài hát..." oninput="renderList()">
+            </div>
             <ul class="song-list" id="songList"></ul>
             <div class="admin-toggle" id="adminToggleBtn" onclick="toggleAdmin()">Quyền quản trị</div>
         </div>
@@ -659,36 +683,35 @@
             11: 698.46, 12: 783.99, 13: 880.00, 14: 987.77, 15: 1046.50
         };
 
-        // DÁN ĐOẠN NÀY VÀO THAY THẾ:
-function playSkyNote(freq, duration = 0.5, chordSize = 1) {
-    if (!freq) return;
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
+        function playSkyNote(freq, duration = 0.5, chordSize = 1) {
+            if (!freq) return;
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
 
-    const now = audioCtx.currentTime;
+            const now = audioCtx.currentTime;
 
-    const osc = audioCtx.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, now);
+            const osc = audioCtx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now);
 
-    const gainNode = audioCtx.createGain();
-    const baseVolume = 0.25; 
-    const peakGain = baseVolume / Math.max(1, chordSize * 0.85);
+            const gainNode = audioCtx.createGain();
+            const baseVolume = 0.25; 
+            const peakGain = baseVolume / Math.max(1, chordSize * 0.85);
 
-    gainNode.gain.setValueAtTime(0.0001, now);
-    gainNode.gain.linearRampToValueAtTime(peakGain, now + 0.004);
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+            gainNode.gain.setValueAtTime(0.0001, now);
+            gainNode.gain.linearRampToValueAtTime(peakGain, now + 0.004);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
-    osc.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
 
-    osc.start(now);
-    osc.stop(now + duration);
-}
+            osc.start(now);
+            osc.stop(now + duration);
+        }
 
         function stopPreview() {
             previewTimeouts.forEach(t => clearTimeout(t));
@@ -878,13 +901,48 @@ function playSkyNote(freq, duration = 0.5, chordSize = 1) {
             }
         }
 
+        function getSearchScore(title, query) {
+            const t = title.toLowerCase();
+            if (t.startsWith(query)) return 0;
+
+            const words = t.split(/\s+/);
+            for (let i = 0; i < words.length; i++) {
+                if (words[i].startsWith(query)) {
+                    return i + 1;
+                }
+            }
+
+            const pos = t.indexOf(query);
+            if (pos !== -1) return 100 + pos;
+
+            return 999;
+        }
+
         function renderList() {
             const listEl = document.getElementById('songList');
             listEl.innerHTML = '';
             
-            songs.sort((a, b) => a.title.localeCompare(b.title));
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
-            songs.forEach(song => {
+            let filteredSongs = songs.filter(song => 
+                song.title.toLowerCase().includes(query)
+            );
+
+            if (query) {
+                filteredSongs.sort((a, b) => {
+                    const scoreA = getSearchScore(a.title, query);
+                    const scoreB = getSearchScore(b.title, query);
+                    if (scoreA !== scoreB) {
+                        return scoreA - scoreB;
+                    }
+                    return a.title.localeCompare(b.title);
+                });
+            } else {
+                filteredSongs.sort((a, b) => a.title.localeCompare(b.title));
+            }
+
+            filteredSongs.forEach(song => {
                 const li = document.createElement('li');
                 li.className = `song-item ${song.id === activeSongId ? 'active' : ''}`;
                 li.onclick = () => {

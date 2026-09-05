@@ -955,13 +955,14 @@
             renderList();
 
             if (activeSongId && songs.some(s => s.id === activeSongId)) {
-                selectSong(activeSongId);
-            } else if (songs.length > 0) {
-                selectSong(songs[0].id);
+             selectSong(activeSongId);
             } else {
-                document.getElementById('mainContent').innerHTML = `
-                    <div class="empty-state">Trang giấy này đã trở về khoảng không tĩnh lặng...</div>
-                `;
+            // Hiển thị màn hình chờ thay vì tự động mở bài hát
+            document.getElementById('mainContent').innerHTML = `
+                <div class="empty-state">
+                    ✦ Vui lòng chọn một bài hát từ danh sách để bắt đầu ✦
+                </div>
+            `;
             }
         });
 

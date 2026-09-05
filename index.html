@@ -163,7 +163,7 @@
         .song-list::-webkit-scrollbar-thumb, .main-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 
         .song-item {
-            padding: 12px 15px;
+            padding: 10px 12px;
             margin-bottom: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -177,20 +177,41 @@
             border-radius: 4px;
         }
 
+        /* --- THÊM KHUNG THÔNG TIN BÀI HÁT & TÁC GIẢ --- */
+        .song-info-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+            padding-right: 6px;
+        }
+
         .song-title-text {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            flex: 1;
-            min-width: 0;
             display: block;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .song-artist-text {
+            font-size: 11px;
+            color: var(--ink-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            opacity: 0.8;
+            margin-top: -1px;
+            font-style: italic;
         }
 
         .song-tag-badge {
             font-size: 14px;
             background: transparent;
             border: none;
-            margin-left: 6px;
+            margin-left: 4px;
             flex-shrink: 0;
         }
 
@@ -198,7 +219,11 @@
             color: var(--ink-dark);
             background: var(--dusty-blue);
             border-left-color: var(--key-active);
-            font-weight: 500;
+        }
+
+        .song-item:hover .song-artist-text, .song-item.active .song-artist-text {
+            color: var(--key-active);
+            opacity: 0.9;
         }
 
         .song-actions {
@@ -220,7 +245,7 @@
         .btn-action.play-preview {
             color: #b0bec5;
             opacity: 0.5;
-            margin-left: 8px;
+            margin-left: 6px;
             font-size: 13px;
             padding: 2px 4px;
             border-radius: 4px;
@@ -346,10 +371,19 @@
             font-size: clamp(20px, 2vw, 26px);
             font-weight: 500;
             color: var(--ink-dark);
-            margin-bottom: 25px;
+            margin-bottom: 4px;
             text-align: center;
             letter-spacing: 0.5px;
             padding: 0 20px;
+        }
+
+        .sheet-artist {
+            font-size: clamp(13px, 1.2vw, 15px);
+            color: var(--ink-light);
+            text-align: center;
+            margin-bottom: 25px;
+            font-style: italic;
+            opacity: 0.9;
         }
 
         .sheet-container {
@@ -419,8 +453,6 @@
         }
 
         /* --- PHÂN MÀU THEO 3 HÀNG NỐT TRONG SHEET --- */
-
-        /* Hàng 1: Nốt Trầm (Nốt 1 - 5) - Tone Xanh Dương */
         .key:nth-child(-n+5) {
             background: #ebf5fb;
             border: 1.5px solid #a9cce3;
@@ -431,7 +463,6 @@
             box-shadow: 0 0 10px rgba(41, 128, 185, 0.7);
         }
 
-        /* Hàng 2: Nốt Giữa (Nốt 6 - 10) - Tone Tím Mộng Mơ */
         .key:nth-child(n+6):nth-child(-n+10) {
             background: #f4ecf7;
             border: 1.5px solid #d2b4de;
@@ -442,7 +473,6 @@
             box-shadow: 0 0 10px rgba(142, 68, 173, 0.7);
         }
 
-        /* Hàng 3: Nốt Cao (Nốt 11 - 15) - Tone Cam/Hồng Dịu */
         .key:nth-child(n+11) {
             background: #fdf2e9;
             border: 1.5px solid #f5cba7;
@@ -453,7 +483,6 @@
             box-shadow: 0 0 10px rgba(230, 126, 34, 0.7);
         }
 
-        /* --- HOA VĂN BÊN TRONG NỐT ĐƯỢC ĐÁNH DẤU (CÁO/TRẦM/GIỮA) --- */
         .key.active::after {
             content: '✦';
             color: #ffffff;
@@ -514,7 +543,6 @@
             font-weight: bold;
         }
 
-        /* --- HIỆU ỨNG VIỀN SÁNG REAL-TIME KHI PREVIEW --- */
         .beat-block.playing-now, 
         .num-block.playing-now {
             border-color: var(--key-active) !important;
@@ -668,7 +696,7 @@
             <h1>Tập Tản Nhạc</h1>
             <button class="btn-add" id="addBtn" onclick="openModal()">+ Ghi chép bản nhạc mới</button>
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Tìm kiếm bài hát..." oninput="renderList()">
+                <input type="text" id="searchInput" placeholder="Tìm tên bài hát, tác giả..." oninput="renderList()">
             </div>
             <div class="filter-box" style="margin-bottom: 12px;">
                 <select id="tagFilter" onchange="renderList()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 13px; background: var(--paper-white); color: var(--ink-dark); outline: none; cursor: pointer;">
@@ -694,11 +722,15 @@
         </div>
     </div>
 
+    <!-- MODAL EDIT / THÊM MỚI -->
     <div class="modal" id="addModal">
         <div class="modal-content">
             <h2 id="modalTitle">Ghi chép ký ức mới</h2>
             <div class="form-group">
                 <input type="text" id="songTitle" placeholder="Tên bản nhạc...">
+            </div>
+            <div class="form-group">
+                <input type="text" id="songArtist" placeholder="Tác giả / Ca sĩ / Nguồn gốc">
             </div>
             <div class="form-group">
                 <select id="songTag" style="width: 100%; padding: 12px; border: 1.5px solid var(--border-color); background: var(--paper-white); font-family: inherit; color: var(--ink-dark); outline: none; border-radius: 6px; font-size: 14px; cursor: pointer;">
@@ -913,8 +945,8 @@
                 });
             } else {
                 const defaultSongs = [
-                    { title: "Khúc hát của gió (Mẫu)", tag: "Việt Nam", bpm: 250, notes: "A1 A1 A5 A5 . / B1 B1 A5 . / A4 A4 A3 A3 . / A2 A2 A1" },
-                    { title: "Giấc mơ đêm hè", tag: "Japan", bpm: 250, notes: "1,5 3 - 8 / 6 4,8 - 5 / 10 8 - 1,5,10" }
+                    { title: "Khúc hát của gió (Mẫu)", artist: "Trịnh Công Sơn", tag: "Việt Nam", bpm: 250, notes: "A1 A1 A5 A5 . / B1 B1 A5 . / A4 A4 A3 A3 . / A2 A2 A1" },
+                    { title: "Giấc mơ đêm hè", artist: "Radwimps", tag: "Japan", bpm: 250, notes: "1,5 3 - 8 / 6 4,8 - 5 / 10 8 - 1,5,10" }
                 ];
                 defaultSongs.forEach(song => songsRef.push(song));
                 return;
@@ -1045,8 +1077,9 @@
             }
         }
 
-        function getSearchScore(title, query) {
-            const t = title.toLowerCase();
+        function getSearchScore(str, query) {
+            if (!str) return 999;
+            const t = str.toLowerCase();
             if (t.startsWith(query)) return 0;
 
             const words = t.split(/\s+/);
@@ -1072,26 +1105,19 @@
             const tagFilter = document.getElementById('tagFilter');
             const selectedTag = tagFilter ? tagFilter.value : 'all';
 
-            // Bảng quy đổi: Mọi tag cũ/mới đều biến thành 1 biểu tượng lá cờ
             const TAG_MAP = {
-                'Việt Nam': '🇻🇳',
-                'Nhật Bản': '🇯🇵',
-                'Japan': '🇯🇵',
-                'Hàn Quốc': '🇰🇷',
-                'Korean': '🇰🇷',
-                'Trung Quốc': '🇨🇳',
-                'China': '🇨🇳',
-                'US-UK': '🇺🇸',
-                'Châu Âu': '🇪🇺',
-                'Europe': '🇪🇺',
-                'Thái Lan': '🇹🇭',
-                'Thailand': '🇹🇭',
-                'Khác': '🌐',
-                'others': '🌐'
+                'Việt Nam': '🇻🇳', 'Nhật Bản': '🇯🇵', 'Japan': '🇯🇵',
+                'Hàn Quốc': '🇰🇷', 'Korean': '🇰🇷', 'Trung Quốc': '🇨🇳',
+                'China': '🇨🇳', 'US-UK': '🇺🇸', 'Châu Âu': '🇪🇺',
+                'Europe': '🇪🇺', 'Thái Lan': '🇹🇭', 'Thailand': '🇹🇭',
+                'Khác': '🌐', 'others': '🌐'
             };
 
+            // Lọc danh sách theo ô Tìm kiếm và Tag
             let filteredSongs = songs.filter(song => {
-                const matchesQuery = song.title.toLowerCase().includes(query);
+                const titleStr = song.title || '';
+                const artistStr = song.artist || '';
+                const matchesQuery = titleStr.toLowerCase().includes(query) || artistStr.toLowerCase().includes(query);
                 
                 const rawTag = song.tag || 'others';
                 const matchesTag = (selectedTag === 'all') || 
@@ -1105,16 +1131,24 @@
                 return matchesQuery && matchesTag;
             });
 
-            if (query) {
-                filteredSongs.sort((a, b) => {
-                    const scoreA = getSearchScore(a.title, query);
-                    const scoreB = getSearchScore(b.title, query);
+            // LOGIC SẮP XẾP: ƯU TIÊN TÊN TÁC GIẢ TRƯỚC -> TÊN BÀI HÁT SAU
+            filteredSongs.sort((a, b) => {
+                if (query) {
+                    const scoreA = Math.min(getSearchScore(a.title, query), getSearchScore(a.artist, query));
+                    const scoreB = Math.min(getSearchScore(b.title, query), getSearchScore(b.artist, query));
                     if (scoreA !== scoreB) return scoreA - scoreB;
-                    return a.title.localeCompare(b.title);
-                });
-            } else {
-                filteredSongs.sort((a, b) => a.title.localeCompare(b.title));
-            }
+                }
+
+                const artistA = (a.artist || 'ZZZ_NO_ARTIST').trim();
+                const artistB = (b.artist || 'ZZZ_NO_ARTIST').trim();
+                
+                const artistCompare = artistA.localeCompare(artistB, 'vi', { sensitivity: 'base' });
+                if (artistCompare !== 0) return artistCompare;
+
+                const titleA = (a.title || '').trim();
+                const titleB = (b.title || '').trim();
+                return titleA.localeCompare(titleB, 'vi', { sensitivity: 'base' });
+            });
 
             filteredSongs.forEach(song => {
                 const li = document.createElement('li');
@@ -1126,12 +1160,22 @@
                     }
                 };
                 
+                // Khung chứa Tên bài hát + Tên tác giả
+                const infoWrapper = document.createElement('div');
+                infoWrapper.className = 'song-info-wrapper';
+
                 const titleSpan = document.createElement('span');
                 titleSpan.className = 'song-title-text';
                 titleSpan.textContent = song.title;
-                li.appendChild(titleSpan);
+                infoWrapper.appendChild(titleSpan);
 
-                // Chỉ hiển thị lá cờ thay vì dòng chữ dài
+                const artistSpan = document.createElement('span');
+                artistSpan.className = 'song-artist-text';
+                artistSpan.textContent = song.artist ? song.artist : 'Unknown';
+                infoWrapper.appendChild(artistSpan);
+
+                li.appendChild(infoWrapper);
+
                 const tagBadge = document.createElement('span');
                 tagBadge.className = 'song-tag-badge';
                 tagBadge.textContent = TAG_MAP[song.tag] || '🌐';
@@ -1203,6 +1247,7 @@
                     <button class="zoom-btn" onclick="resetZoom()" title="Về mặc định">↺</button>
                 </div>
                 <div class="sheet-title">${escapeHtml(song.title)}</div>
+                ${song.artist ? `<div class="sheet-artist">Tác giả / Ca sĩ: ${escapeHtml(song.artist)}</div>` : ''}
                 <div class="sheet-container">
             `;
 
@@ -1280,6 +1325,7 @@
             editingSongId = id;
             const modal = document.getElementById('addModal');
             const titleInput = document.getElementById('songTitle');
+            const artistInput = document.getElementById('songArtist');
             const bpmInput = document.getElementById('songBpm');
             const tagSelect = document.getElementById('songTag');
             const notesInput = document.getElementById('songNotes');
@@ -1290,6 +1336,7 @@
                 if (song) {
                     modalTitle.textContent = "Hiệu chỉnh ký ức";
                     titleInput.value = song.title || '';
+                    artistInput.value = song.artist || '';
                     bpmInput.value = song.bpm || 300;
                     tagSelect.value = song.tag || 'Việt Nam';
                     notesInput.value = song.notes || '';
@@ -1297,6 +1344,7 @@
             } else {
                 modalTitle.textContent = "Ghi chép ký ức mới";
                 titleInput.value = '';
+                artistInput.value = '';
                 bpmInput.value = '';
                 tagSelect.value = 'Việt Nam';
                 notesInput.value = '';
@@ -1311,6 +1359,7 @@
 
         function saveSong() {
             const title = document.getElementById('songTitle').value.trim();
+            const artist = document.getElementById('songArtist').value.trim();
             const bpm = parseInt(document.getElementById('songBpm').value) || 300;
             const tag = document.getElementById('songTag').value;
             const notes = document.getElementById('songNotes').value.trim();
@@ -1320,7 +1369,7 @@
                 return;
             }
 
-            const songData = { title, bpm, tag, notes };
+            const songData = { title, artist, bpm, tag, notes };
 
             if (editingSongId) {
                 db.ref('songs/' + editingSongId).update(songData);
@@ -1330,18 +1379,17 @@
 
             closeModal();
         }
-	// --- XỬ LÝ PHÍM TẮT (KEYBOARD SHORTCUTS) ---
+
+        // --- XỬ LÝ PHÍM TẮT (KEYBOARD SHORTCUTS) ---
         document.addEventListener('keydown', function(e) {
             const modal = document.getElementById('addModal');
             const isModalOpen = modal && modal.style.display === 'flex';
 
             if (isModalOpen) {
-                // 1. KHI ĐANG MỞ KHUNG EDIT / THÊM MỚI
                 if (e.key === 'Escape') {
                     e.preventDefault();
                     closeModal();
                 } else if (e.key === 'Enter') {
-                    // Nếu đang gõ ở ô nốt nhạc (textarea), giữ Shift+Enter để xuống dòng, Enter đơn để Lưu
                     if (e.target.tagName === 'TEXTAREA' && e.shiftKey) {
                         return;
                     }
@@ -1349,32 +1397,25 @@
                     saveSong();
                 }
             } else {
-                // 2. KHI Ở MÀN HÌNH BÌNH THƯỜNG
-                // Nếu đang gõ trong ô tìm kiếm hoặc ô chọn tag thì không kích hoạt phím tắt
                 if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
                     return;
                 }
 
                 if (e.key === ' ') { 
-                    // Space: Bật / Tắt nghe thử bài đang chọn
                     e.preventDefault();
                     if (activeSongId) {
                         togglePreview(e, activeSongId);
                     }
                 } else if (e.key === 'Tab') { 
-                    // Tab: Đóng / Mở danh sách
                     e.preventDefault();
                     toggleSidebar();
                 } else if (e.key === 'Enter') { 
-                    // Enter: Bật / Tắt tự động cuộn (Scroll)
                     e.preventDefault();
                     toggleAutoScroll();
                 } else if (e.key === 'ArrowUp') { 
-                    // Mũi tên lên: Giảm tốc độ cuộn
                     e.preventDefault();
                     changeSpeed(-0.25);
                 } else if (e.key === 'ArrowDown') { 
-                    // Mũi tên xuống: Tăng tốc độ cuộn
                     e.preventDefault();
                     changeSpeed(0.25);
                 }

@@ -187,12 +187,9 @@
         }
 
         .song-tag-badge {
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            background: var(--dusty-blue);
-            color: var(--key-active);
-            border: 1px solid #b3cbe5;
+            font-size: 14px;
+            background: transparent;
+            border: none;
             margin-left: 6px;
             flex-shrink: 0;
         }
@@ -677,13 +674,13 @@
                 <select id="tagFilter" onchange="renderList()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 13px; background: var(--paper-white); color: var(--ink-dark); outline: none; cursor: pointer;">
                     <option value="all">🌍 All</option>
                     <option value="Việt Nam">Việt Nam</option>
-                    <option value="Nhật Bản">Japan</option>
-                    <option value="Hàn Quốc">Korean</option>
-                    <option value="Trung Quốc">China</option>
+                    <option value="Japan">Japan</option>
+                    <option value="Korean">Korean</option>
+                    <option value="China">China</option>
                     <option value="US-UK">US-UK</option>
-                    <option value="Châu Âu">Europe</option>
-                    <option value="Thái Lan">Thailand</option>
-                    <option value="Khác">Others</option>
+                    <option value="Europe">Europe</option>
+                    <option value="Thailand">Thailand</option>
+                    <option value="others">Others</option>
                 </select>
             </div>
             <ul class="song-list" id="songList"></ul>
@@ -706,13 +703,13 @@
             <div class="form-group">
                 <select id="songTag" style="width: 100%; padding: 12px; border: 1.5px solid var(--border-color); background: var(--paper-white); font-family: inherit; color: var(--ink-dark); outline: none; border-radius: 6px; font-size: 14px; cursor: pointer;">
                     <option value="Việt Nam">Việt Nam</option>
-                    <option value="Nhật Bản">Japan</option>
-                    <option value="Hàn Quốc">Korean</option>
-                    <option value="Trung Quốc">China</option>
+                    <option value="Japan">Japan</option>
+                    <option value="Korean">Korean</option>
+                    <option value="China">China</option>
                     <option value="US-UK">US-UK</option>
-                    <option value="Châu Âu">Europe</option>
-                    <option value="Thái Lan">Thailand</option>
-                    <option value="Khác">Others</option>
+                    <option value="Europe">Europe</option>
+                    <option value="Thailand">Thailand</option>
+                    <option value="others">Others</option>
                 </select>
             </div>
             <div class="form-group">
@@ -917,7 +914,7 @@
             } else {
                 const defaultSongs = [
                     { title: "Khúc hát của gió (Mẫu)", tag: "Việt Nam", bpm: 250, notes: "A1 A1 A5 A5 . / B1 B1 A5 . / A4 A4 A3 A3 . / A2 A2 A1" },
-                    { title: "Giấc mơ đêm hè", tag: "Nhật Bản", bpm: 250, notes: "1,5 3 - 8 / 6 4,8 - 5 / 10 8 - 1,5,10" }
+                    { title: "Giấc mơ đêm hè", tag: "Japan", bpm: 250, notes: "1,5 3 - 8 / 6 4,8 - 5 / 10 8 - 1,5,10" }
                 ];
                 defaultSongs.forEach(song => songsRef.push(song));
                 return;
@@ -1075,9 +1072,36 @@
             const tagFilter = document.getElementById('tagFilter');
             const selectedTag = tagFilter ? tagFilter.value : 'all';
 
+            // Bảng quy đổi: Mọi tag cũ/mới đều biến thành 1 biểu tượng lá cờ
+            const TAG_MAP = {
+                'Việt Nam': '🇻🇳',
+                'Nhật Bản': '🇯🇵',
+                'Japan': '🇯🇵',
+                'Hàn Quốc': '🇰🇷',
+                'Korean': '🇰🇷',
+                'Trung Quốc': '🇨🇳',
+                'China': '🇨🇳',
+                'US-UK': '🇺🇸',
+                'Châu Âu': '🇪🇺',
+                'Europe': '🇪🇺',
+                'Thái Lan': '🇹🇭',
+                'Thailand': '🇹🇭',
+                'Khác': '🌐',
+                'others': '🌐'
+            };
+
             let filteredSongs = songs.filter(song => {
                 const matchesQuery = song.title.toLowerCase().includes(query);
-                const matchesTag = (selectedTag === 'all') || ((song.tag || 'Khác') === selectedTag);
+                
+                const rawTag = song.tag || 'others';
+                const matchesTag = (selectedTag === 'all') || 
+                                   (rawTag === selectedTag) ||
+                                   (selectedTag === 'Japan' && rawTag === 'Nhật Bản') ||
+                                   (selectedTag === 'Korean' && rawTag === 'Hàn Quốc') ||
+                                   (selectedTag === 'China' && rawTag === 'Trung Quốc') ||
+                                   (selectedTag === 'Europe' && rawTag === 'Châu Âu') ||
+                                   (selectedTag === 'Thailand' && rawTag === 'Thái Lan');
+
                 return matchesQuery && matchesTag;
             });
 
@@ -1085,9 +1109,7 @@
                 filteredSongs.sort((a, b) => {
                     const scoreA = getSearchScore(a.title, query);
                     const scoreB = getSearchScore(b.title, query);
-                    if (scoreA !== scoreB) {
-                        return scoreA - scoreB;
-                    }
+                    if (scoreA !== scoreB) return scoreA - scoreB;
                     return a.title.localeCompare(b.title);
                 });
             } else {
@@ -1109,9 +1131,10 @@
                 titleSpan.textContent = song.title;
                 li.appendChild(titleSpan);
 
+                // Chỉ hiển thị lá cờ thay vì dòng chữ dài
                 const tagBadge = document.createElement('span');
                 tagBadge.className = 'song-tag-badge';
-                tagBadge.textContent = song.tag || 'Khác';
+                tagBadge.textContent = TAG_MAP[song.tag] || '🌐';
                 li.appendChild(tagBadge);
 
                 const isThisPlaying = playingPreviewId === song.id;

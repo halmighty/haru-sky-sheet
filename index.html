@@ -713,7 +713,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <input type="number" id="songBpm" placeholder="Tốc độ BPM (ví dụ: 250, mặc định là 250)" min="30" max="300">
+                <input type="number" id="songBpm" placeholder="Tốc độ BPM (ví dụ: 250, mặc định là 300)" min="30" max="1000">
             </div>
             <div class="form-group">
                 <textarea id="songNotes" placeholder="Nhập phím (vd: 1 3,5 - / A1B2 A3 .)..."></textarea>
@@ -864,7 +864,7 @@
             const normalizedNotes = song.notes.replace(/[\r\n]+/g, ' / ');
             const beats = normalizedNotes.trim().split(/\s+/);
 
-            const bpm = song.bpm || 250;
+            const bpm = song.bpm || 300;
             const tempo = 60000 / bpm; 
             let delay = 0;
             let beatIndex = 0;
@@ -1290,7 +1290,7 @@
                 if (song) {
                     modalTitle.textContent = "Hiệu chỉnh ký ức";
                     titleInput.value = song.title || '';
-                    bpmInput.value = song.bpm || 250;
+                    bpmInput.value = song.bpm || 300;
                     tagSelect.value = song.tag || 'Việt Nam';
                     notesInput.value = song.notes || '';
                 }
@@ -1311,7 +1311,7 @@
 
         function saveSong() {
             const title = document.getElementById('songTitle').value.trim();
-            const bpm = parseInt(document.getElementById('songBpm').value) || 250;
+            const bpm = parseInt(document.getElementById('songBpm').value) || 300;
             const tag = document.getElementById('songTag').value;
             const notes = document.getElementById('songNotes').value.trim();
 

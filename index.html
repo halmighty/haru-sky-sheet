@@ -1330,6 +1330,56 @@
 
             closeModal();
         }
+	// --- XỬ LÝ PHÍM TẮT (KEYBOARD SHORTCUTS) ---
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('addModal');
+            const isModalOpen = modal && modal.style.display === 'flex';
+
+            if (isModalOpen) {
+                // 1. KHI ĐANG MỞ KHUNG EDIT / THÊM MỚI
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeModal();
+                } else if (e.key === 'Enter') {
+                    // Nếu đang gõ ở ô nốt nhạc (textarea), giữ Shift+Enter để xuống dòng, Enter đơn để Lưu
+                    if (e.target.tagName === 'TEXTAREA' && e.shiftKey) {
+                        return;
+                    }
+                    e.preventDefault();
+                    saveSong();
+                }
+            } else {
+                // 2. KHI Ở MÀN HÌNH BÌNH THƯỜNG
+                // Nếu đang gõ trong ô tìm kiếm hoặc ô chọn tag thì không kích hoạt phím tắt
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                    return;
+                }
+
+                if (e.key === ' ') { 
+                    // Space: Bật / Tắt nghe thử bài đang chọn
+                    e.preventDefault();
+                    if (activeSongId) {
+                        togglePreview(e, activeSongId);
+                    }
+                } else if (e.key === 'Tab') { 
+                    // Tab: Đóng / Mở danh sách
+                    e.preventDefault();
+                    toggleSidebar();
+                } else if (e.key === 'Enter') { 
+                    // Enter: Bật / Tắt tự động cuộn (Scroll)
+                    e.preventDefault();
+                    toggleAutoScroll();
+                } else if (e.key === 'ArrowUp') { 
+                    // Mũi tên lên: Giảm tốc độ cuộn
+                    e.preventDefault();
+                    changeSpeed(-0.25);
+                } else if (e.key === 'ArrowDown') { 
+                    // Mũi tên xuống: Tăng tốc độ cuộn
+                    e.preventDefault();
+                    changeSpeed(0.25);
+                }
+            }
+        });
     </script>
 </body>
 </html>

@@ -186,6 +186,17 @@
             display: block;
         }
 
+        .song-tag-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: var(--dusty-blue);
+            color: var(--key-active);
+            border: 1px solid #b3cbe5;
+            margin-left: 6px;
+            flex-shrink: 0;
+        }
+
         .song-item:hover, .song-item.active {
             color: var(--ink-dark);
             background: var(--dusty-blue);
@@ -555,7 +566,7 @@
 
         .form-group { margin-bottom: 15px; }
 
-        .form-group input, .form-group textarea {
+        .form-group input, .form-group textarea, .form-group select {
             width: 100%;
             padding: 12px;
             border: 1.5px solid var(--border-color);
@@ -568,7 +579,7 @@
             font-size: 14px;
         }
 
-        .form-group input:focus, .form-group textarea:focus { border-color: var(--key-active); }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--key-active); }
 
         .form-group textarea {
             height: 120px;
@@ -662,6 +673,19 @@
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Tìm kiếm bài hát..." oninput="renderList()">
             </div>
+            <div class="filter-box" style="margin-bottom: 12px;">
+                <select id="tagFilter" onchange="renderList()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 13px; background: var(--paper-white); color: var(--ink-dark); outline: none; cursor: pointer;">
+                    <option value="all">🌍 All</option>
+                    <option value="Việt Nam">Việt Nam</option>
+                    <option value="Nhật Bản">Japan</option>
+                    <option value="Hàn Quốc">Korean</option>
+                    <option value="Trung Quốc">China</option>
+                    <option value="US-UK">US-UK</option>
+                    <option value="Châu Âu">Europe</option>
+                    <option value="Thái Lan">Thailand</option>
+                    <option value="Khác">Others</option>
+                </select>
+            </div>
             <ul class="song-list" id="songList"></ul>
             <div class="admin-toggle" id="adminToggleBtn" onclick="toggleAdmin()">Quyền quản trị</div>
         </div>
@@ -678,6 +702,18 @@
             <h2 id="modalTitle">Ghi chép ký ức mới</h2>
             <div class="form-group">
                 <input type="text" id="songTitle" placeholder="Tên bản nhạc...">
+            </div>
+            <div class="form-group">
+                <select id="songTag" style="width: 100%; padding: 12px; border: 1.5px solid var(--border-color); background: var(--paper-white); font-family: inherit; color: var(--ink-dark); outline: none; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                    <option value="Việt Nam">Việt Nam</option>
+                    <option value="Nhật Bản">Japan</option>
+                    <option value="Hàn Quốc">Korean</option>
+                    <option value="Trung Quốc">China</option>
+                    <option value="US-UK">US-UK</option>
+                    <option value="Châu Âu">Europe</option>
+                    <option value="Thái Lan">Thailand</option>
+                    <option value="Khác">Others</option>
+                </select>
             </div>
             <div class="form-group">
                 <input type="number" id="songBpm" placeholder="Tốc độ BPM (ví dụ: 250, mặc định là 250)" min="30" max="300">
@@ -821,7 +857,6 @@
             const song = songs.find(s => s.id === id);
             if (!song) return;
 
-            // Tự động mở bài hát đang Preview trên màn hình chính
             if (activeSongId !== id) {
                 selectSong(id);
             }
@@ -846,7 +881,6 @@
                 const currentBeatIndex = beatIndex;
                 const keys = parseBeatToKeys(beat);
 
-                // Lên lịch Highlight nốt nhạc & âm thanh tương ứng
                 const tHighlight = setTimeout(() => {
                     clearAllHighlights();
                     const targetBlock = document.querySelector(`.beat-item[data-beat-index="${currentBeatIndex}"]`);
@@ -882,8 +916,8 @@
                 });
             } else {
                 const defaultSongs = [
-                    { title: "Khúc hát của gió (Mẫu)", bpm: 250, notes: "A1 A1 A5 A5 . / B1 B1 A5 . / A4 A4 A3 A3 . / A2 A2 A1" },
-                    { title: "Giấc mơ đêm hè", bpm: 250, notes: "1,5 3 - 8 / 6 4,8 - 5 / 10 8 - 1,5,10" }
+                    { title: "Khúc hát của gió (Mẫu)", tag: "Việt Nam", bpm: 250, notes: "A1 A1 A5 A5 . / B1 B1 A5 . / A4 A4 A3 A3 . / A2 A2 A1" },
+                    { title: "Giấc mơ đêm hè", tag: "Nhật Bản", bpm: 250, notes: "1,5 3 - 8 / 6 4,8 - 5 / 10 8 - 1,5,10" }
                 ];
                 defaultSongs.forEach(song => songsRef.push(song));
                 return;
@@ -1038,9 +1072,14 @@
             const searchInput = document.getElementById('searchInput');
             const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
-            let filteredSongs = songs.filter(song => 
-                song.title.toLowerCase().includes(query)
-            );
+            const tagFilter = document.getElementById('tagFilter');
+            const selectedTag = tagFilter ? tagFilter.value : 'all';
+
+            let filteredSongs = songs.filter(song => {
+                const matchesQuery = song.title.toLowerCase().includes(query);
+                const matchesTag = (selectedTag === 'all') || ((song.tag || 'Khác') === selectedTag);
+                return matchesQuery && matchesTag;
+            });
 
             if (query) {
                 filteredSongs.sort((a, b) => {
@@ -1069,6 +1108,11 @@
                 titleSpan.className = 'song-title-text';
                 titleSpan.textContent = song.title;
                 li.appendChild(titleSpan);
+
+                const tagBadge = document.createElement('span');
+                tagBadge.className = 'song-tag-badge';
+                tagBadge.textContent = song.tag || 'Khác';
+                li.appendChild(tagBadge);
 
                 const isThisPlaying = playingPreviewId === song.id;
                 const playBtn = document.createElement('button');
@@ -1214,6 +1258,7 @@
             const modal = document.getElementById('addModal');
             const titleInput = document.getElementById('songTitle');
             const bpmInput = document.getElementById('songBpm');
+            const tagSelect = document.getElementById('songTag');
             const notesInput = document.getElementById('songNotes');
             const modalTitle = document.getElementById('modalTitle');
 
@@ -1223,12 +1268,14 @@
                     modalTitle.textContent = "Hiệu chỉnh ký ức";
                     titleInput.value = song.title || '';
                     bpmInput.value = song.bpm || 250;
+                    tagSelect.value = song.tag || 'Việt Nam';
                     notesInput.value = song.notes || '';
                 }
             } else {
                 modalTitle.textContent = "Ghi chép ký ức mới";
                 titleInput.value = '';
                 bpmInput.value = '';
+                tagSelect.value = 'Việt Nam';
                 notesInput.value = '';
             }
             modal.style.display = 'flex';
@@ -1242,6 +1289,7 @@
         function saveSong() {
             const title = document.getElementById('songTitle').value.trim();
             const bpm = parseInt(document.getElementById('songBpm').value) || 250;
+            const tag = document.getElementById('songTag').value;
             const notes = document.getElementById('songNotes').value.trim();
 
             if (!title || !notes) {
@@ -1249,7 +1297,7 @@
                 return;
             }
 
-            const songData = { title, bpm, notes };
+            const songData = { title, bpm, tag, notes };
 
             if (editingSongId) {
                 db.ref('songs/' + editingSongId).update(songData);

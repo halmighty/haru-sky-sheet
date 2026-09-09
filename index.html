@@ -689,7 +689,7 @@
 </head>
 <body>
 
-    <button class="menu-toggle-btn" onclick="toggleSidebar()">☰ <span>Danh sách</span></button>
+    <button class="menu-toggle-btn" onclick="toggleSidebar()">☰ <span>List</span></button>
 
     <div class="container">
         <div class="sidebar" id="sidebar">
@@ -955,15 +955,15 @@
             renderList();
 
             if (activeSongId && songs.some(s => s.id === activeSongId)) {
-             selectSong(activeSongId);
-            } else {
-            // Hiển thị màn hình chờ thay vì tự động mở bài hát
-            document.getElementById('mainContent').innerHTML = `
-                <div class="empty-state">
-                    ✦ Vui lòng chọn một bài hát từ danh sách để bắt đầu ✦
-                </div>
-            `;
-            }
+    selectSong(activeSongId);
+} else {
+    // Hiển thị màn hình chờ thay vì tự động mở bài hát
+    document.getElementById('mainContent').innerHTML = `
+        <div class="empty-state">
+            ✦ Vui lòng chọn một bài hát từ danh sách để bắt đầu ✦
+        </div>
+    `;
+}
         });
 
         function toggleSidebar() {
@@ -1248,7 +1248,7 @@
                     <button class="zoom-btn" onclick="resetZoom()" title="Về mặc định">↺</button>
                 </div>
                 <div class="sheet-title">${escapeHtml(song.title)}</div>
-                ${song.artist ? `<div class="sheet-artist">Tác giả / Ca sĩ: ${escapeHtml(song.artist)}</div>` : ''}
+                ${song.artist ? `<div class="sheet-artist">Tác giả / Ca sĩ / Nguồn Gốc : ${escapeHtml(song.artist)}</div>` : ''}
                 <div class="sheet-container">
             `;
 

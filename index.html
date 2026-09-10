@@ -977,7 +977,7 @@
         function startScrollTimer() {
             if (scrollTimer) clearInterval(scrollTimer);
             const container = document.getElementById('mainContent');
-            const interval = Math.max(10, Math.round(35 / scrollSpeed));
+            const interval = Math.max(1, Math.round(35 / scrollSpeed));
             
             scrollTimer = setInterval(() => {
                 if (!container) return;
@@ -1009,7 +1009,7 @@
         }
 
         function changeSpeed(delta) {
-            scrollSpeed = Math.max(0.25, Math.min(3.0, Math.round((scrollSpeed + delta) * 100) / 100));
+            scrollSpeed = Math.max(0.25, Math.min(30.0, Math.round((scrollSpeed + delta) * 100) / 100));
             const valEl = document.getElementById('speedVal');
             if (valEl) valEl.textContent = scrollSpeed.toFixed(1) + 'x';
 

@@ -351,6 +351,15 @@
             background: #00b894;
         }
 
+        .btn-top {
+            background: var(--dusty-blue);
+            color: var(--key-active);
+        }
+        .btn-top:hover {
+            background: var(--key-active);
+            color: #ffffff;
+        }
+
         .toolbar-divider {
             width: 14px;
             height: 1px;
@@ -955,15 +964,14 @@
             renderList();
 
             if (activeSongId && songs.some(s => s.id === activeSongId)) {
-    selectSong(activeSongId);
-} else {
-    // Hiển thị màn hình chờ thay vì tự động mở bài hát
-    document.getElementById('mainContent').innerHTML = `
-        <div class="empty-state">
-            ✦ Vui lòng chọn một bài hát từ danh sách để bắt đầu ✦
-        </div>
-    `;
-}
+                selectSong(activeSongId);
+            } else {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="empty-state">
+                        ✦ Vui lòng chọn một bài hát từ danh sách để bắt đầu ✦
+                    </div>
+                `;
+            }
         });
 
         function toggleSidebar() {
@@ -971,6 +979,14 @@
                 document.body.classList.toggle('sidebar-open');
             } else {
                 document.body.classList.toggle('sidebar-closed');
+            }
+        }
+
+        /* --- HÀM KÉO LÊN TRÊN CÙNG --- */
+        function scrollToTop() {
+            const mainContent = document.getElementById('mainContent');
+            if (mainContent) {
+                mainContent.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
@@ -1114,7 +1130,6 @@
                 'Khác': '🌐', 'others': '🌐'
             };
 
-            // Lọc danh sách theo ô Tìm kiếm và Tag
             let filteredSongs = songs.filter(song => {
                 const titleStr = song.title || '';
                 const artistStr = song.artist || '';
@@ -1132,7 +1147,6 @@
                 return matchesQuery && matchesTag;
             });
 
-            // LOGIC SẮP XẾP: ƯU TIÊN TÊN TÁC GIẢ TRƯỚC -> TÊN BÀI HÁT SAU
             filteredSongs.sort((a, b) => {
                 if (query) {
                     const scoreA = Math.min(getSearchScore(a.title, query), getSearchScore(a.artist, query));
@@ -1161,7 +1175,6 @@
                     }
                 };
                 
-                // Khung chứa Tên bài hát + Tên tác giả
                 const infoWrapper = document.createElement('div');
                 infoWrapper.className = 'song-info-wrapper';
 
@@ -1235,6 +1248,7 @@
 
             let html = `
                 <div class="zoom-toolbar">
+                    <button class="zoom-btn btn-top" onclick="scrollToTop()" title="Kéo lên trên cùng (Phím Home hoặc T)">▲ Top</button>
                     <button class="zoom-btn btn-scroll" id="scrollBtn" onclick="toggleAutoScroll()" title="Tự động cuộn trang">▶ Scroll</button>
                     <button class="zoom-btn" onclick="changeSpeed(-0.25)" title="Giảm tốc độ">-</button>
                     <span class="zoom-text" id="speedVal" title="Tốc độ cuộn">${scrollSpeed.toFixed(1)}x</span>
@@ -1402,7 +1416,11 @@
                     return;
                 }
 
-                if (e.key === ' ') { 
+                // Bấm phím Home hoặc 'T' / 't' để cuộn lên đầu
+                if (e.key === 'Home' || e.key.toLowerCase() === 't') {
+                    e.preventDefault();
+                    scrollToTop();
+                } else if (e.key === ' ') { 
                     e.preventDefault();
                     if (activeSongId) {
                         togglePreview(e, activeSongId);

@@ -788,6 +788,13 @@
         const db = firebase.database();
         const songsRef = db.ref('songs');
 
+	// Tự động tải lại trang nếu phát hiện trang được khôi phục từ Back-Forward Cache
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+
         let songs = [];
         let activeSongId = null;
         let editingSongId = null;

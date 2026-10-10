@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haru's Sky Music | Lời thì thầm của gió</title>
+    <title>Haru's Sky Music | Yass! </title>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<link rel="icon" type="image/png" href="https://github.com/halmighty/haru-sky-sheet/blob/main/harulogo.png?raw=true">
 
     <style>
         :root {
@@ -28,11 +29,7 @@
             --num-sheet-font: 16px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Lora', serif;
@@ -44,661 +41,343 @@
             overflow: hidden;
             line-height: 1.6;
         }
+	
 
         .menu-toggle-btn {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 200;
-            background: #ffffff;
-            border: 1.5px solid var(--border-color);
-            padding: 7px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--ink-dark);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            user-select: none;
-        }
+    position: fixed;
+    top: 15px; left: 15px; z-index: 200;
+    background: #ffffff; border: 1.5px solid var(--border-color);
+    width: 46px; height: 46px; /* Đổi kích thước thành hình vuông để bo tròn */
+    border-radius: 50%; /* Bo tròn thành hình tròn */
+    padding: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s ease; user-select: none;
+}
+.menu-toggle-btn img {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.menu-toggle-btn:hover { background: var(--dusty-blue); border-color: var(--key-active); }
 
-        .menu-toggle-btn:hover {
-            background: var(--dusty-blue);
-            color: var(--key-active);
-            border-color: var(--key-active);
-        }
-
-        .container {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            max-width: 100%;
-            margin: 0 auto;
-            position: relative;
-        }
+        .container { display: flex; width: 100%; height: 100%; max-width: 100%; margin: 0 auto; position: relative; }
 
         .sidebar {
-            width: 320px;
-            min-width: 320px;
+            width: 380px; min-width: 380px;
             background: rgba(255, 255, 255, 0.98);
             border-right: 1.5px solid var(--border-color);
             padding: 70px 20px 30px 20px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            z-index: 100;
+            display: flex; flex-direction: column;
+            position: relative; z-index: 100;
             transition: margin-left 0.3s ease, transform 0.3s ease;
         }
 
-        body.sidebar-closed .sidebar {
-            margin-left: -320px;
-        }
+        body.sidebar-closed .sidebar { margin-left: -380px; }
 
         .sidebar h1 {
-            font-size: 22px;
-            font-weight: 600;
-            color: var(--ink-dark);
-            margin-bottom: 20px;
-            text-align: center;
-            letter-spacing: 0.5px;
-            font-style: italic;
-            border-bottom: 1.5px solid var(--border-color);
-            padding-bottom: 15px;
-            white-space: nowrap;
+            font-size: 22px; font-weight: 600; color: var(--ink-dark);
+            margin-bottom: 20px; text-align: center; letter-spacing: 0.5px;
+            font-style: italic; border-bottom: 1.5px solid var(--border-color);
+            padding-bottom: 15px; white-space: nowrap;
         }
 
-        .search-box {
-            margin-bottom: 12px;
-        }
-
+        .search-box { margin-bottom: 12px; }
         .search-box input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1.5px solid var(--border-color);
-            background: var(--paper-white);
-            color: var(--ink-dark);
-            font-family: inherit;
-            font-size: 13px;
-            border-radius: 6px;
-            outline: none;
-            transition: border-color 0.2s;
+            width: 100%; padding: 8px 12px; border: 1.5px solid var(--border-color);
+            background: var(--paper-white); color: var(--ink-dark); font-family: inherit; font-size: 13px;
+            border-radius: 6px; outline: none; transition: border-color 0.2s;
         }
-
-        .search-box input:focus {
-            border-color: var(--key-active);
-        }
+        .search-box input:focus { border-color: var(--key-active); }
 
         .btn-add {
-            background: var(--paper-white);
-            color: var(--ink-dark);
-            border: 1.5px dashed var(--key-border);
-            padding: 10px;
-            font-family: inherit;
-            font-size: 14px;
-            font-style: italic;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 15px;
-            display: none; 
-            white-space: nowrap;
+            background: var(--paper-white); color: var(--ink-dark); border: 1.5px dashed var(--key-border);
+            padding: 10px; font-family: inherit; font-size: 14px; font-style: italic;
+            cursor: pointer; transition: all 0.3s ease; margin-bottom: 15px;
+            display: none; white-space: nowrap;
         }
+        .btn-add:hover { background: var(--dusty-blue); border-color: var(--key-active); }
 
-        .btn-add:hover {
-            background: var(--dusty-blue);
-            border-color: var(--key-active);
-        }
-
-        .song-list {
-            list-style: none;
-            overflow-y: auto;
-            flex-grow: 1;
-            padding-right: 5px;
-        }
-
+        .song-list { list-style: none; overflow-y: auto; flex-grow: 1; padding-right: 5px; }
         .song-list::-webkit-scrollbar, .main-content::-webkit-scrollbar { width: 5px; }
         .song-list::-webkit-scrollbar-thumb, .main-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 
         .song-item {
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 15px;
-            color: var(--ink-light);
-            border-left: 3px solid transparent;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            overflow: hidden;
-            border-radius: 4px;
+            padding: 10px 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s ease;
+            font-size: 15px; color: var(--ink-light); border-left: 3px solid transparent;
+            display: flex; justify-content: space-between; align-items: center; overflow: hidden; border-radius: 4px;
         }
+        .song-info-wrapper { display: flex; flex-direction: column; flex: 1; min-width: 0; padding-right: 6px; }
+        .song-title-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; font-size: 14px; font-weight: 500; }
+        .song-artist-text { font-size: 11px; color: var(--ink-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; opacity: 0.8; margin-top: -1px; font-style: italic; }
+        .song-tag-badge { font-size: 14px; background: transparent; border: none; margin-left: 4px; flex-shrink: 0; }
 
-        /* --- THÊM KHUNG THÔNG TIN BÀI HÁT & TÁC GIẢ --- */
-        .song-info-wrapper {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-width: 0;
-            padding-right: 6px;
-        }
+        .song-item:hover, .song-item.active { color: var(--ink-dark); background: var(--dusty-blue); border-left-color: var(--key-active); }
+        .song-item:hover .song-artist-text, .song-item.active .song-artist-text { color: var(--key-active); opacity: 0.9; }
 
-        .song-title-text {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .song-artist-text {
-            font-size: 11px;
-            color: var(--ink-light);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-            opacity: 0.8;
-            margin-top: -1px;
-            font-style: italic;
-        }
-
-        .song-tag-badge {
-            font-size: 14px;
-            background: transparent;
-            border: none;
-            margin-left: 4px;
-            flex-shrink: 0;
-        }
-
-        .song-item:hover, .song-item.active {
-            color: var(--ink-dark);
-            background: var(--dusty-blue);
-            border-left-color: var(--key-active);
-        }
-
-        .song-item:hover .song-artist-text, .song-item.active .song-artist-text {
-            color: var(--key-active);
-            opacity: 0.9;
-        }
-
-        .song-actions {
-            display: none;
-            gap: 8px;
-            margin-left: 8px;
-            flex-shrink: 0;
-        }
-
-        .btn-action {
-            background: none;
-            border: none;
-            color: #b0bec5;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-
-        .btn-action.play-preview {
-            color: #b0bec5;
-            opacity: 0.5;
-            margin-left: 6px;
-            font-size: 13px;
-            padding: 2px 4px;
-            border-radius: 4px;
-            flex-shrink: 0;
-        }
-
-        .btn-action.play-preview:hover, .btn-action.play-preview.is-playing {
-            opacity: 1;
-            color: var(--key-active);
-        }
-
+        .song-actions { display: none; gap: 8px; margin-left: 8px; flex-shrink: 0; }
+        .btn-action { background: none; border: none; color: #b0bec5; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+        .btn-action.play-preview { opacity: 0.5; margin-left: 6px; padding: 2px 4px; border-radius: 4px; flex-shrink: 0; }
+        .btn-action.play-preview:hover, .btn-action.play-preview.is-playing { opacity: 1; color: var(--key-active); }
         .btn-action.edit:hover { color: var(--key-active); }
         .btn-action.delete:hover { color: #e74c3c; }
 
         .admin-toggle {
-            font-size: 12px;
-            color: var(--ink-light);
-            opacity: 0.5;
-            text-align: center;
-            margin-top: 15px;
-            cursor: pointer;
-            transition: all 0.4s;
-            font-style: italic;
-            padding: 10px 0;
-            user-select: none;
+            font-size: 12px; color: var(--ink-light); opacity: 0.5; text-align: center;
+            margin-top: 15px; cursor: pointer; transition: all 0.4s; font-style: italic; padding: 10px 0; user-select: none;
         }
-        
-        .admin-toggle:hover { 
-            opacity: 1; 
-            color: var(--key-active); 
-        }
+        .admin-toggle:hover { opacity: 1; color: var(--key-active); }
 
         body.admin-mode .btn-add { display: block; }
         body.admin-mode .song-actions { display: flex; align-items: center; }
-        body.admin-mode .admin-toggle { 
-            opacity: 1;
-            color: var(--key-active); 
-            font-weight: 600;
-        }
+        body.admin-mode .admin-toggle { opacity: 1; color: var(--key-active); font-weight: 600; }
 
         .main-content {
-            flex-grow: 1;
-            padding: 80px 4vw 120px 4vw;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            background: radial-gradient(circle at center, #ffffff 0%, #f7fafc 100%);
-            position: relative;
-            transition: all 0.3s ease;
+            flex-grow: 1; padding: 80px 4vw 120px 4vw; overflow-y: auto;
+            display: flex; flex-direction: column; background: radial-gradient(circle at center, #ffffff 0%, #f7fafc 100%);
+            position: relative; transition: all 0.3s ease;
         }
 
         .zoom-toolbar {
-            position: fixed;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.95);
-            border: 1.5px solid var(--border-color);
-            padding: 12px 8px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            z-index: 90;
-            backdrop-filter: blur(5px);
+            position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            background: rgba(255, 255, 255, 0.95); border: 1.5px solid var(--border-color);
+            padding: 12px 8px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            z-index: 90; backdrop-filter: blur(5px);
         }
 
         .zoom-btn {
-            background: none;
-            border: none;
-            color: var(--ink-dark);
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 0 8px;
-            height: 28px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            user-select: none;
-            white-space: nowrap;
+            background: none; border: none; color: var(--ink-dark); font-size: 13px; font-weight: bold;
+            cursor: pointer; padding: 0 8px; height: 28px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s; user-select: none; white-space: nowrap;
         }
+        .zoom-btn:hover { background: var(--dusty-blue); color: var(--key-active); }
+        .zoom-btn.active-mode { background: var(--key-active); color: #ffffff !important; }
+        .btn-scroll { background: #e17055; color: #fff; }
+        .btn-scroll.scrolling { background: #00b894; }
+        .btn-top { background: var(--dusty-blue); color: var(--key-active); }
+        .btn-top:hover { background: var(--key-active); color: #ffffff; }
 
-        .zoom-btn:hover {
-            background: var(--dusty-blue);
-            color: var(--key-active);
-        }
+        .toolbar-divider { width: 14px; height: 1px; background: var(--border-color); margin: 2px 0; }
+        .zoom-text { font-size: 11px; color: var(--ink-light); min-width: 35px; text-align: center; user-select: none; font-family: sans-serif; }
 
-        .zoom-btn.active-mode {
-            background: var(--key-active);
-            color: #ffffff !important;
-        }
-
-        .btn-scroll {
-            background: #e17055;
-            color: #fff;
-        }
-        .btn-scroll.scrolling {
-            background: #00b894;
-        }
-
-        .btn-top {
-            background: var(--dusty-blue);
-            color: var(--key-active);
-        }
-        .btn-top:hover {
-            background: var(--key-active);
-            color: #ffffff;
-        }
-
-        .toolbar-divider {
-            width: 14px;
-            height: 1px;
-            background: var(--border-color);
-            margin: 2px 0;
-        }
-
-        .zoom-text {
-            font-size: 11px;
-            color: var(--ink-light);
-            min-width: 35px;
-            text-align: center;
-            user-select: none;
-            font-family: sans-serif;
-        }
-
-        .sheet-title {
-            font-size: clamp(20px, 2vw, 26px);
-            font-weight: 500;
-            color: var(--ink-dark);
-            margin-bottom: 4px;
-            text-align: center;
-            letter-spacing: 0.5px;
-            padding: 0 20px;
-        }
-
-        .sheet-artist {
-            font-size: clamp(13px, 1.2vw, 15px);
-            color: var(--ink-light);
-            text-align: center;
-            margin-bottom: 25px;
-            font-style: italic;
-            opacity: 0.9;
-        }
+        .sheet-title { font-size: clamp(20px, 2vw, 26px); font-weight: 500; color: var(--ink-dark); margin-bottom: 4px; text-align: center; letter-spacing: 0.5px; padding: 0 20px; }
+        .sheet-artist { font-size: clamp(13px, 1.2vw, 15px); color: var(--ink-light); text-align: center; margin-bottom: 25px; font-style: italic; opacity: 0.9; }
 
         .sheet-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: clamp(8px, 1.2vw, 18px);
-            justify-content: flex-start;
-            align-content: flex-start;
-            padding-bottom: 60px;
-            padding-right: 60px;
+            display: flex; flex-wrap: wrap; gap: clamp(8px, 1.2vw, 18px); justify-content: flex-start;
+            align-content: flex-start; padding-bottom: 60px; padding-right: 60px;
         }
 
-        .line-break {
-            flex-basis: 100%;
-            width: 100%;
-            height: 0;
-            margin: 12px 0;
-            border-top: 1.5px dashed var(--border-color);
-            opacity: 0.6;
-        }
+        .line-break { flex-basis: 100%; width: 100%; height: 0; margin: 12px 0; border-top: 1.5px dashed var(--border-color); opacity: 0.6; }
 
         .beat-block {
-            background: #ffffff;
-            padding: var(--beat-padding);
-            display: grid;
-            grid-template-columns: repeat(5, var(--key-size));
-            grid-template-rows: repeat(3, var(--key-size));
-            gap: var(--beat-gap);
-            border: 1.5px solid var(--key-border);
-            border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.04);
-            position: relative;
-            transition: all 0.15s ease-out;
+            background: #ffffff; padding: var(--beat-padding); display: grid;
+            grid-template-columns: repeat(5, var(--key-size)); grid-template-rows: repeat(3, var(--key-size));
+            gap: var(--beat-gap); border: 1.5px solid var(--key-border); border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.04); position: relative; transition: all 0.15s ease-out;
         }
-
         .beat-block:hover { border-color: var(--key-active); }
-
-        .beat-block.rest-beat {
-            border-style: dashed;
-            border-color: #b0bec5;
-            background: rgba(248, 249, 250, 0.6);
-        }
+        .beat-block.rest-beat { border-style: dashed; border-color: #b0bec5; background: rgba(248, 249, 250, 0.6); }
 
         .rest-mark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: var(--rest-font);
-            color: var(--ink-light);
-            pointer-events: none;
-            font-weight: bold;
-            opacity: 0.8;
-            line-height: 1;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: var(--rest-font); color: var(--ink-light); pointer-events: none; font-weight: bold; opacity: 0.8; line-height: 1;
         }
 
-        .key {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
+        .key { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; position: relative; overflow: hidden; }
 
-        /* --- PHÂN MÀU THEO 3 HÀNG NỐT TRONG SHEET --- */
-        .key:nth-child(-n+5) {
-            background: #ebf5fb;
-            border: 1.5px solid #a9cce3;
-        }
-        .key:nth-child(-n+5).active {
-            background: #2980b9;
-            border-color: #1a5276;
-            box-shadow: 0 0 10px rgba(41, 128, 185, 0.7);
-        }
-
-        .key:nth-child(n+6):nth-child(-n+10) {
-            background: #f4ecf7;
-            border: 1.5px solid #d2b4de;
-        }
-        .key:nth-child(n+6):nth-child(-n+10).active {
-            background: #8e44ad;
-            border-color: #512e5f;
-            box-shadow: 0 0 10px rgba(142, 68, 173, 0.7);
-        }
-
-        .key:nth-child(n+11) {
-            background: #fdf2e9;
-            border: 1.5px solid #f5cba7;
-        }
-        .key:nth-child(n+11).active {
-            background: #e67e22;
-            border-color: #a04000;
-            box-shadow: 0 0 10px rgba(230, 126, 34, 0.7);
-        }
+        /* MÀU NỐT TRONG SHEET CHÍNH */
+        .key:nth-child(-n+5) { background: #ebf5fb; border: 1.5px solid #a9cce3; }
+        .key:nth-child(-n+5).active { background: #2980b9; border-color: #1a5276; box-shadow: 0 0 10px rgba(41, 128, 185, 0.7); }
+        .key:nth-child(n+6):nth-child(-n+10) { background: #f4ecf7; border: 1.5px solid #d2b4de; }
+        .key:nth-child(n+6):nth-child(-n+10).active { background: #8e44ad; border-color: #512e5f; box-shadow: 0 0 10px rgba(142, 68, 173, 0.7); }
+        .key:nth-child(n+11) { background: #fdf2e9; border: 1.5px solid #f5cba7; }
+        .key:nth-child(n+11).active { background: #e67e22; border-color: #a04000; box-shadow: 0 0 10px rgba(230, 126, 34, 0.7); }
 
         .key.active::after {
-            content: '✦';
-            color: #ffffff;
-            font-size: calc(var(--key-size) * 0.55);
-            font-weight: bold;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+            content: '✦'; color: #ffffff; font-size: calc(var(--key-size) * 0.55); font-weight: bold;
+            line-height: 1; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
         }
 
-        .beat-block.rest-beat .key {
-            border-color: #cfd8dc !important;
-            background: transparent !important;
-            opacity: 0.3;
-        }
+        .beat-block.rest-beat .key { border-color: #cfd8dc !important; background: transparent !important; opacity: 0.3; }
 
         .num-block {
-            background: #ffffff;
-            border: 1.5px solid var(--key-border);
-            border-radius: 8px;
-            padding: 6px 10px;
-            min-width: 44px;
-            min-height: 44px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.04);
-            transition: all 0.15s ease-out;
+            background: #ffffff; border: 1.5px solid var(--key-border); border-radius: 8px; padding: 6px 10px;
+            min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
+            gap: 5px; box-shadow: 0 3px 8px rgba(0,0,0,0.04); transition: all 0.15s ease-out;
         }
-
-        .num-block:hover {
-            border-color: var(--key-active);
-        }
+        .num-block:hover { border-color: var(--key-active); }
 
         .num-badge {
-            background: var(--dusty-blue);
-            color: var(--key-active);
-            font-weight: 700;
-            font-size: var(--num-sheet-font, 16px);
-            font-family: system-ui, -apple-system, sans-serif;
-            padding: 4px 8px;
-            border-radius: 6px;
-            border: 1px solid #b3cbe5;
-            min-width: 28px;
-            text-align: center;
-            line-height: 1.2;
+            background: var(--dusty-blue); color: var(--key-active); font-weight: 700;
+            font-size: var(--num-sheet-font, 16px); font-family: system-ui, -apple-system, sans-serif;
+            padding: 4px 8px; border-radius: 6px; border: 1px solid #b3cbe5; min-width: 28px; text-align: center; line-height: 1.2;
         }
-
         .num-block.rest-block {
-            border-style: dashed;
-            border-color: #b0bec5;
-            background: rgba(248, 249, 250, 0.6);
-            color: var(--ink-light);
-            font-size: var(--num-sheet-font, 18px);
-            font-weight: bold;
+            border-style: dashed; border-color: #b0bec5; background: rgba(248, 249, 250, 0.6);
+            color: var(--ink-light); font-size: var(--num-sheet-font, 18px); font-weight: bold;
         }
 
-        .beat-block.playing-now, 
-        .num-block.playing-now {
+        .beat-block.playing-now, .num-block.playing-now {
             border-color: var(--key-active) !important;
             box-shadow: 0 0 15px rgba(75, 123, 236, 0.8), 0 0 25px rgba(75, 123, 236, 0.4) !important;
-            transform: scale(1.08);
-            z-index: 10;
+            transform: scale(1.08); z-index: 10;
         }
 
-        .empty-state {
-            text-align: center;
-            color: var(--ink-light);
-            font-size: 16px;
-            font-style: italic;
-            margin-top: 20%;
-            opacity: 0.8;
-        }
+        .empty-state { text-align: center; color: var(--ink-light); font-size: 16px; font-style: italic; margin-top: 20%; opacity: 0.8; }
 
+        /* MODAL STYLE */
         .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(44, 62, 80, 0.3);
-            backdrop-filter: blur(4px);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(44, 62, 80, 0.3); backdrop-filter: blur(4px);
+            justify-content: center; align-items: center; z-index: 1000;
         }
+        /* MODAL STYLE UPDATE */
+.modal {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(44, 62, 80, 0.3); backdrop-filter: blur(4px);
+    justify-content: center; align-items: center; z-index: 1000;
+}
+.modal-content {
+    background: #fff; padding: 30px; width: 95%; max-width: 900px; /* Tăng từ 480px lên 900px */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 1.5px solid var(--border-color); border-radius: 12px;
+}
+.modal h2 { font-size: 18px; font-weight: 500; color: var(--ink-dark); margin-bottom: 20px; font-style: italic; }
 
-        .modal-content {
-            background: #fff;
-            padding: 30px;
-            width: 90%;
-            max-width: 480px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px;
+/* Bố cục chia 2 cột cho form */
+.modal-body-flex {
+    display: flex;
+    gap: 25px;
+}
+.modal-body-left {
+    flex: 0 0 300px; /* Cố định cột trái nhập thông tin */
+}
+.modal-body-right {
+    flex: 1; min-width: 0; /* Cột phải bung rộng hết cỡ cho Editor */
+}
         }
-
-        .modal h2 {
-            font-size: 18px;
-            font-weight: 500;
-            color: var(--ink-dark);
-            margin-bottom: 20px;
-            font-style: italic;
-        }
-
+        .modal h2 { font-size: 18px; font-weight: 500; color: var(--ink-dark); margin-bottom: 20px; font-style: italic; }
+        
         .form-group { margin-bottom: 15px; }
-
         .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1.5px solid var(--border-color);
-            background: var(--paper-white);
-            font-family: inherit;
-            color: var(--ink-dark);
-            outline: none;
-            border-radius: 6px;
-            transition: border 0.3s;
-            font-size: 14px;
+            width: 100%; padding: 12px; border: 1.5px solid var(--border-color); background: var(--paper-white);
+            font-family: inherit; color: var(--ink-dark); outline: none; border-radius: 6px; transition: border 0.3s; font-size: 14px;
         }
-
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--key-active); }
+        .form-group textarea { 
+    height: 280px; /* Fix cứng chiều cao để khung béo béo nằm ngang */
+    resize: none; 
+    line-height: 1.6; 
+}
 
-        .form-group textarea {
-            height: 120px;
-            resize: none;
-            line-height: 1.6;
-        }
-
-        .note-guide {
-            font-size: 12px;
-            color: var(--ink-light);
-            margin-top: 6px;
-            font-style: italic;
-            line-height: 1.4;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .btn-cancel {
-            background: transparent;
-            color: var(--ink-light);
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
-        }
-
-        .btn-save {
-            background: var(--key-active);
-            color: white;
-            border: none;
-            padding: 8px 22px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-
+        .note-guide { font-size: 12px; color: var(--ink-light); margin-top: 6px; font-style: italic; line-height: 1.4; }
+        
+        .modal-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
+        .btn-cancel { background: transparent; color: var(--ink-light); border: none; cursor: pointer; font-family: inherit; font-size: 14px; }
+        .btn-save { background: var(--key-active); color: white; border: none; padding: 8px 22px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 14px; transition: background 0.2s; }
         .btn-save:hover { background: #1e3799; }
 
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                height: 100%;
-                margin-left: 0 !important;
-                transform: translateX(-100%);
-            }
-
-            body.sidebar-open .sidebar {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                padding: 65px 12px 100px 12px;
-            }
-
-            .zoom-toolbar {
-                right: 8px;
-                top: 70px;
-                transform: none;
-                padding: 8px 4px;
-                gap: 5px;
-            }
-
-            .sheet-title {
-                font-size: 18px;
-                padding: 0;
-            }
-
-            .sheet-container {
-                padding-right: 45px;
-            }
+        /* --- STYLES CHO CHẾ ĐỘ VISUAL EDITOR TRONG MODAL --- */
+        .editor-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .editor-tab {
+            flex: 1; padding: 10px; border: 1.5px solid var(--border-color); background: var(--paper-white);
+            color: var(--ink-light); border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 14px;
+            font-weight: 500; transition: all 0.2s; text-align: center; user-select: none;
         }
+        .editor-tab:hover { background: var(--dusty-blue); }
+        .editor-tab.active { background: var(--dusty-blue); border-color: var(--key-active); color: var(--key-active); font-weight: 600; }
+        
+        .grid-editor-container {
+    display: flex; flex-wrap: wrap; gap: 12px; padding: 15px; 
+    height: 280px; /* Đổi max-height thành height cứng để đồng bộ với textarea */
+    overflow-y: auto;
+    background: rgba(248, 249, 250, 0.8); border: 1.5px solid var(--border-color); border-radius: 6px;
+    margin-bottom: 12px; align-content: flex-start;
+}
+        
+        .editor-beat-block {
+            background: #ffffff; padding: 8px; display: grid;
+            grid-template-columns: repeat(5, 20px); grid-template-rows: repeat(3, 20px);
+            gap: 4px; border: 1.5px solid var(--key-border); border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04); transition: all 0.15s ease-out;
+        }
+        .editor-beat-block:hover { border-color: var(--key-active); }
+        .editor-beat-block .key { width: 100%; height: 100%; border-radius: 50%; cursor: pointer; transition: all 0.15s; }
+        .editor-beat-block .key:hover { transform: scale(1.1); box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+        
+        /* MÀU NỐT BÊN TRONG EDITOR (MODAL) */
+        .editor-beat-block .key:nth-child(-n+5) { background: #ebf5fb; border: 1.5px solid #a9cce3; }
+        .editor-beat-block .key:nth-child(-n+5).active { background: #2980b9; border-color: #1a5276; box-shadow: 0 0 8px rgba(41,128,185,0.6); }
+        .editor-beat-block .key:nth-child(n+6):nth-child(-n+10) { background: #f4ecf7; border: 1.5px solid #d2b4de; }
+        .editor-beat-block .key:nth-child(n+6):nth-child(-n+10).active { background: #8e44ad; border-color: #512e5f; box-shadow: 0 0 8px rgba(142,68,173,0.6); }
+        .editor-beat-block .key:nth-child(n+11) { background: #fdf2e9; border: 1.5px solid #f5cba7; }
+        .editor-beat-block .key:nth-child(n+11).active { background: #e67e22; border-color: #a04000; box-shadow: 0 0 8px rgba(230,126,34,0.6); }
+        
+        .editor-beat-block .key.active::after {
+            content: '✦'; color: #ffffff; font-size: 11px; font-weight: bold; line-height: 1;
+            display: flex; align-items: center; justify-content: center; text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .editor-rest-block {
+            border: 1.5px dashed #b0bec5; background: rgba(248, 249, 250, 0.6);
+            display: flex; align-items: center; justify-content: center;
+            width: 132px; height: 84px; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+        }
+        .editor-rest-block:hover { border-color: #ff7675; background: #ffeaa7; }
+        
+        .editor-line-break {
+            flex-basis: 100%; width: 100%; height: 10px; margin: 2px 0;
+            border-top: 2px dashed #b2bec3; cursor: pointer; transition: all 0.2s;
+        }
+        .editor-line-break:hover { border-color: #ff7675; }
+        
+        .grid-editor-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .grid-editor-actions .btn-action {
+            background: var(--paper-white); border: 1.5px solid var(--border-color); padding: 8px 14px;
+            border-radius: 6px; font-size: 13px; cursor: pointer; transition: all 0.2s;
+            font-family: inherit; color: var(--ink-dark); font-weight: 500;
+        }
+        .grid-editor-actions .btn-action:hover { border-color: var(--key-active); color: var(--key-active); background: var(--dusty-blue); }
+        .grid-editor-actions .btn-action.btn-delete { border-color: #ff7675; color: #d63031; margin-left: auto; }
+        .grid-editor-actions .btn-action.btn-delete:hover { background: #ff7675; color: white; }
+
+	/* ... các đoạn CSS cũ ở trên ... */
+
+        .logo-container {
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 0 10px;
+}
+.site-logo {
+    width: 100%; /* Bung rộng bằng sidebar */
+    max-width: 260px; /* Giới hạn độ to tối đa để không bị quá thô */
+    height: auto; /* Tự động đổi chiều cao theo tỉ lệ gốc của ảnh */
+    object-fit: contain;
+    border-radius: 12px; /* Bo góc nhẹ thay vì hình tròn nếu ảnh ngang */
+    border: 2px solid var(--border-color);
+}
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; top: 0; left: 0; height: 100%; margin-left: 0 !important; transform: translateX(-100%); }
+            body.sidebar-open .sidebar { transform: translateX(0); }
+            .main-content { padding: 65px 12px 100px 12px; }
+            .zoom-toolbar { right: 8px; top: 70px; transform: none; padding: 8px 4px; gap: 5px; }
+            .sheet-title { font-size: 18px; padding: 0; }
+            .sheet-container { padding-right: 45px; }
+        }
+	@media (max-width: 768px) {
+    .modal-body-flex { flex-direction: column; gap: 0; }
+    .modal-body-left { flex: 1; }
+}
     </style>
 </head>
 <body>
 
-    <button class="menu-toggle-btn" onclick="toggleSidebar()">☰ <span>List</span></button>
+    <button class="menu-toggle-btn" onclick="toggleSidebar()">
+    <img src="https://github.com/halmighty/haru-sky-sheet/blob/main/harulogo.png?raw=true" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; border-radius: 50%;">
+</button>
 
     <div class="container">
         <div class="sidebar" id="sidebar">
@@ -732,45 +411,82 @@
     </div>
 
     <!-- MODAL EDIT / THÊM MỚI -->
-    <div class="modal" id="addModal">
-        <div class="modal-content">
-            <h2 id="modalTitle">Ghi chép ký ức mới</h2>
-            <div class="form-group">
-                <input type="text" id="songTitle" placeholder="Tên bản nhạc...">
-            </div>
-            <div class="form-group">
-                <input type="text" id="songArtist" placeholder="Tác giả / Ca sĩ / Nguồn gốc">
-            </div>
-            <div class="form-group">
-                <select id="songTag" style="width: 100%; padding: 12px; border: 1.5px solid var(--border-color); background: var(--paper-white); font-family: inherit; color: var(--ink-dark); outline: none; border-radius: 6px; font-size: 14px; cursor: pointer;">
-                    <option value="Việt Nam">Việt Nam</option>
-                    <option value="Japan">Japan</option>
-                    <option value="Korean">Korean</option>
-                    <option value="China">China</option>
-                    <option value="US-UK">US-UK</option>
-                    <option value="Europe">Europe</option>
-                    <option value="Thailand">Thailand</option>
-                    <option value="others">Others</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <input type="number" id="songBpm" placeholder="Tốc độ BPM (ví dụ: 250, mặc định là 300)" min="30" max="1000">
-            </div>
-            <div class="form-group">
-                <textarea id="songNotes" placeholder="Nhập phím (vd: 1 3,5 - / A1B2 A3 .)..."></textarea>
-                <div class="note-guide">
-                    * Nốt dạng Số: <code>1 2 3</code> | Hợp âm: <code>1,3,5</code><br>
-                    * Nốt dạng Chữ: <code>A1 B2 C3</code> | Hợp âm: <code>A1B2</code><br>
-                    * Khoảng lặng: Nhập <code>.</code>, <code>-</code> hoặc <code>0</code><br>
-                    * Ngắt đoạn/Xuống dòng: Nhập <code>/</code>, <code>|</code> hoặc <code>Gõ xuống dòng</code>
+<div class="modal" id="addModal">
+    <div class="modal-content">
+        <h2 id="modalTitle">Ghi chép ký ức mới</h2>
+        
+        <div class="modal-body-flex">
+            <!-- CỘT TRÁI: Nhập thông tin cơ bản -->
+            <div class="modal-body-left">
+                <div class="form-group">
+                    <input type="text" id="songTitle" placeholder="Tên bản nhạc...">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="songArtist" placeholder="Tác giả / Ca sĩ / Nguồn gốc">
+                </div>
+                <div class="form-group">
+                    <select id="songTag" style="width: 100%; padding: 12px; border: 1.5px solid var(--border-color); background: var(--paper-white); font-family: inherit; color: var(--ink-dark); outline: none; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                        <option value="Việt Nam">Việt Nam</option>
+                        <option value="Japan">Japan</option>
+                        <option value="Korean">Korean</option>
+                        <option value="China">China</option>
+                        <option value="US-UK">US-UK</option>
+                        <option value="Europe">Europe</option>
+                        <option value="Thailand">Thailand</option>
+                        <option value="others">Others</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="number" id="songBpm" placeholder="Tốc độ BPM (ví dụ: 250, mặc định là 300)" min="30" max="1000">
                 </div>
             </div>
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeModal()">Gấp lại</button>
-                <button class="btn-save" id="saveBtn" onclick="saveSong()">Lưu giữ</button>
+            
+            <!-- CỘT PHẢI: Giao diện Editor -->
+            <div class="modal-body-right">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <!-- KHU VỰC THÊM TÍNH NĂNG NHẬP LƯỚI / SỐ -->
+                    <div class="editor-tabs">
+                        <div class="editor-tab active" id="tabText" onclick="switchEditorMode('text')">Số/Chữ</div>
+                        <div class="editor-tab" id="tabGrid" onclick="switchEditorMode('grid')">Lưới</div>
+                    </div>
+
+                    <!-- Chế độ 1: Nhập Chữ/Số (Mặc định) -->
+                    <div id="textEditor">
+                        <textarea id="songNotes" placeholder="Nhập phím (vd: 1 3,5 - / A1B2 A3 .)..."></textarea>
+                        <div class="note-guide">
+                            * Nốt dạng Số: <code>1 2 3</code> | Hợp âm: <code>1,3,5</code><br>
+                            * Nốt dạng Chữ: <code>A1 B2 C3</code> | Hợp âm: <code>A1B2</code><br>
+                            * Khoảng lặng: Nhập <code>.</code>, <code>-</code> hoặc <code>0</code><br>
+                            * Ngắt đoạn/Xuống dòng: Nhập <code>/</code>, <code>|</code> hoặc <code>Gõ xuống dòng</code>
+                        </div>
+                    </div>
+
+                    <!-- Chế độ 2: Nhập Lưới (Mới Thêm) -->
+                    <div id="gridEditor" style="display: none;">
+                        <div id="gridEditorContainer" class="grid-editor-container">
+                            <!-- Lưới sẽ được js tự động vẽ ra đây -->
+                        </div>
+                        <div class="grid-editor-actions">
+                            <button type="button" class="btn-action" onclick="addGridBeat('grid')">+ Thêm Lưới</button>
+                            <button type="button" class="btn-action" onclick="addGridBeat('.')">+ Lặng (.)</button>
+                            <button type="button" class="btn-action" onclick="addGridBeat('/')">+ Xuống Dòng</button>
+                            <button type="button" class="btn-action btn-delete" onclick="removeLastGridBeat()">⌫ Xóa nhịp cuối</button>
+                        </div>
+                        <div class="note-guide" style="margin-top: 10px;">
+                            * Bấm trực tiếp vào Nốt để bật/tắt (nhấn để xóa các khối lặng/xuống dòng).<br>
+                            * Mọi nhịp bạn bấm sẽ tự động đồng bộ sang chữ/số và ra bảng nhạc gốc khi lưu.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">Gấp lại</button>
+            <button class="btn-save" id="saveBtn" onclick="saveSong()">Lưu giữ</button>
+        </div>
     </div>
+</div>
 
     <script>
         const firebaseConfig = {
@@ -788,12 +504,11 @@
         const db = firebase.database();
         const songsRef = db.ref('songs');
 
-	// Tự động tải lại trang nếu phát hiện trang được khôi phục từ Back-Forward Cache
-window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-        window.location.reload();
-    }
-});
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
 
         let songs = [];
         let activeSongId = null;
@@ -803,11 +518,13 @@ window.addEventListener('pageshow', (event) => {
         let scrollTimer = null;
         let isScrolling = false;
         let scrollSpeed = 1.0;
-        let displayMode = 'grid'; // 'grid' | 'number' | 'letter'
+        let displayMode = 'grid'; 
 
         let audioCtx = null;
         let previewTimeouts = [];
         let playingPreviewId = null;
+        
+        let editorBeats = []; // Lưu trữ mảng lưới trong Editor Modal
 
         const SKY_PITCHES = {
             1: 261.63, 2: 293.66, 3: 329.63, 4: 349.23, 5: 392.00,
@@ -830,10 +547,7 @@ window.addEventListener('pageshow', (event) => {
         function parseBeatToKeys(beat) {
             if (!beat) return [];
             const cleanBeat = beat.trim().toUpperCase();
-
-            if (cleanBeat === '.' || cleanBeat === '-' || cleanBeat === '0') {
-                return [];
-            }
+            if (cleanBeat === '.' || cleanBeat === '-' || cleanBeat === '0') return [];
 
             const letterMatches = cleanBeat.match(/[ABC][1-5]/g);
             if (letterMatches && letterMatches.length > 0) {
@@ -847,15 +561,10 @@ window.addEventListener('pageshow', (event) => {
 
         function playSkyNote(freq, duration = 0.5, chordSize = 1) {
             if (!freq) return;
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
 
             const now = audioCtx.currentTime;
-
             const osc = audioCtx.createOscillator();
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, now);
@@ -870,7 +579,6 @@ window.addEventListener('pageshow', (event) => {
 
             osc.connect(gainNode);
             gainNode.connect(audioCtx.destination);
-
             osc.start(now);
             osc.stop(now + duration);
         }
@@ -883,46 +591,30 @@ window.addEventListener('pageshow', (event) => {
 
         function stopPreview() {
             previewTimeouts.forEach(t => clearTimeout(t));
-            previewTimeouts = [];
-            playingPreviewId = null;
-            clearAllHighlights();
+            previewTimeouts = []; playingPreviewId = null; clearAllHighlights();
         }
 
         function togglePreview(event, id) {
             event.stopPropagation();
-
-            if (playingPreviewId === id) {
-                stopPreview();
-                renderList();
-                return;
-            }
-
+            if (playingPreviewId === id) { stopPreview(); renderList(); return; }
             stopPreview();
 
             const song = songs.find(s => s.id === id);
             if (!song) return;
 
-            if (activeSongId !== id) {
-                selectSong(id);
-            }
+            if (activeSongId !== id) selectSong(id);
 
             playingPreviewId = id;
             renderList();
 
             const normalizedNotes = song.notes.replace(/[\r\n]+/g, ' / ');
             const beats = normalizedNotes.trim().split(/\s+/);
-
             const bpm = song.bpm || 300;
             const tempo = 60000 / bpm; 
-            let delay = 0;
-            let beatIndex = 0;
+            let delay = 0; let beatIndex = 0;
 
             beats.forEach(beat => {
-                if (beat === '/' || beat === '|') {
-                    delay += tempo * 0.8;
-                    return;
-                }
-
+                if (beat === '/' || beat === '|') { delay += tempo * 0.8; return; }
                 const currentBeatIndex = beatIndex;
                 const keys = parseBeatToKeys(beat);
 
@@ -933,22 +625,14 @@ window.addEventListener('pageshow', (event) => {
                         targetBlock.classList.add('playing-now');
                         targetBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
                     }
-
-                    if (keys.length > 0) {
-                        keys.forEach(key => playSkyNote(SKY_PITCHES[key], 0.45, keys.length));
-                    }
+                    if (keys.length > 0) { keys.forEach(key => playSkyNote(SKY_PITCHES[key], 0.45, keys.length)); }
                 }, delay);
 
                 previewTimeouts.push(tHighlight);
-
-                beatIndex++;
-                delay += tempo;
+                beatIndex++; delay += tempo;
             });
 
-            const endT = setTimeout(() => {
-                stopPreview();
-                renderList();
-            }, delay + 300);
+            const endT = setTimeout(() => { stopPreview(); renderList(); }, delay + 300);
             previewTimeouts.push(endT);
         }
 
@@ -956,9 +640,7 @@ window.addEventListener('pageshow', (event) => {
             const data = snapshot.val();
             songs = [];
             if (data) {
-                Object.keys(data).forEach(key => {
-                    songs.push({ id: key, ...data[key] });
-                });
+                Object.keys(data).forEach(key => { songs.push({ id: key, ...data[key] }); });
             } else {
                 const defaultSongs = [
                     { title: "Khúc hát của gió (Mẫu)", artist: "Trịnh Công Sơn", tag: "Việt Nam", bpm: 250, notes: "A1 A1 A5 A5 . / B1 B1 A5 . / A4 A4 A3 A3 . / A2 A2 A1" },
@@ -974,27 +656,19 @@ window.addEventListener('pageshow', (event) => {
                 selectSong(activeSongId);
             } else {
                 document.getElementById('mainContent').innerHTML = `
-                    <div class="empty-state">
-                        ✦ Vui lòng chọn một bài hát từ danh sách để bắt đầu ✦
-                    </div>
+                    <div class="empty-state">✦ Vui lòng chọn một bài hát từ danh sách để bắt đầu ✦</div>
                 `;
             }
         });
 
         function toggleSidebar() {
-            if (window.innerWidth <= 768) {
-                document.body.classList.toggle('sidebar-open');
-            } else {
-                document.body.classList.toggle('sidebar-closed');
-            }
+            if (window.innerWidth <= 768) document.body.classList.toggle('sidebar-open');
+            else document.body.classList.toggle('sidebar-closed');
         }
 
-        /* --- HÀM KÉO LÊN TRÊN CÙNG --- */
         function scrollToTop() {
             const mainContent = document.getElementById('mainContent');
-            if (mainContent) {
-                mainContent.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            if (mainContent) mainContent.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function startScrollTimer() {
@@ -1005,28 +679,18 @@ window.addEventListener('pageshow', (event) => {
             scrollTimer = setInterval(() => {
                 if (!container) return;
                 container.scrollTop += 1;
-                if (container.scrollTop + container.clientHeight >= container.scrollHeight - 2) {
-                    toggleAutoScroll();
-                }
+                if (container.scrollTop + container.clientHeight >= container.scrollHeight - 2) toggleAutoScroll();
             }, interval);
         }
 
         function toggleAutoScroll() {
             const btn = document.getElementById('scrollBtn');
-
             if (isScrolling) {
-                clearInterval(scrollTimer);
-                isScrolling = false;
-                if (btn) {
-                    btn.classList.remove('scrolling');
-                    btn.textContent = '▶ Scroll';
-                }
+                clearInterval(scrollTimer); isScrolling = false;
+                if (btn) { btn.classList.remove('scrolling'); btn.textContent = '▶ Scroll'; }
             } else {
                 isScrolling = true;
-                if (btn) {
-                    btn.classList.add('scrolling');
-                    btn.textContent = '⏸ Stop';
-                }
+                if (btn) { btn.classList.add('scrolling'); btn.textContent = '⏸ Stop'; }
                 startScrollTimer();
             }
         }
@@ -1035,17 +699,13 @@ window.addEventListener('pageshow', (event) => {
             scrollSpeed = Math.max(0.25, Math.min(30.0, Math.round((scrollSpeed + delta) * 100) / 100));
             const valEl = document.getElementById('speedVal');
             if (valEl) valEl.textContent = scrollSpeed.toFixed(1) + 'x';
-
-            if (isScrolling) {
-                startScrollTimer();
-            }
+            if (isScrolling) startScrollTimer();
         }
 
         function cycleDisplayMode() {
             if (displayMode === 'grid') displayMode = 'number';
             else if (displayMode === 'number') displayMode = 'letter';
             else displayMode = 'grid';
-
             if (activeSongId) selectSong(activeSongId);
         }
 
@@ -1056,15 +716,8 @@ window.addEventListener('pageshow', (event) => {
             return 'Lưới';
         }
 
-        function changeZoom(delta) {
-            zoomPercent = Math.max(50, Math.min(160, zoomPercent + delta));
-            applyZoom();
-        }
-
-        function resetZoom() {
-            zoomPercent = 100;
-            applyZoom();
-        }
+        function changeZoom(delta) { zoomPercent = Math.max(50, Math.min(160, zoomPercent + delta)); applyZoom(); }
+        function resetZoom() { zoomPercent = 100; applyZoom(); }
 
         function applyZoom() {
             const scale = zoomPercent / 100;
@@ -1088,15 +741,11 @@ window.addEventListener('pageshow', (event) => {
             if (!isAdmin) {
                 const password = prompt("Nhập mật khẩu quản trị:");
                 if (password === "Harudz123") {
-                    isAdmin = true;
-                    document.body.classList.add('admin-mode');
+                    isAdmin = true; document.body.classList.add('admin-mode');
                     document.getElementById('adminToggleBtn').innerHTML = "✦ Đang mở quyền quản trị ✦";
-                } else if (password !== null) {
-                    alert("Mật khẩu không chính xác.");
-                }
+                } else if (password !== null) alert("Mật khẩu không chính xác.");
             } else {
-                isAdmin = false;
-                document.body.classList.remove('admin-mode');
+                isAdmin = false; document.body.classList.remove('admin-mode');
                 document.getElementById('adminToggleBtn').innerHTML = "Quyền quản trị";
             }
         }
@@ -1105,17 +754,10 @@ window.addEventListener('pageshow', (event) => {
             if (!str) return 999;
             const t = str.toLowerCase();
             if (t.startsWith(query)) return 0;
-
             const words = t.split(/\s+/);
-            for (let i = 0; i < words.length; i++) {
-                if (words[i].startsWith(query)) {
-                    return i + 1;
-                }
-            }
-
+            for (let i = 0; i < words.length; i++) { if (words[i].startsWith(query)) return i + 1; }
             const pos = t.indexOf(query);
             if (pos !== -1) return 100 + pos;
-
             return 999;
         }
 
@@ -1125,7 +767,6 @@ window.addEventListener('pageshow', (event) => {
             
             const searchInput = document.getElementById('searchInput');
             const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
-
             const tagFilter = document.getElementById('tagFilter');
             const selectedTag = tagFilter ? tagFilter.value : 'all';
 
@@ -1138,19 +779,15 @@ window.addEventListener('pageshow', (event) => {
             };
 
             let filteredSongs = songs.filter(song => {
-                const titleStr = song.title || '';
-                const artistStr = song.artist || '';
+                const titleStr = song.title || ''; const artistStr = song.artist || '';
                 const matchesQuery = titleStr.toLowerCase().includes(query) || artistStr.toLowerCase().includes(query);
-                
                 const rawTag = song.tag || 'others';
-                const matchesTag = (selectedTag === 'all') || 
-                                   (rawTag === selectedTag) ||
+                const matchesTag = (selectedTag === 'all') || (rawTag === selectedTag) ||
                                    (selectedTag === 'Japan' && rawTag === 'Nhật Bản') ||
                                    (selectedTag === 'Korean' && rawTag === 'Hàn Quốc') ||
                                    (selectedTag === 'China' && rawTag === 'Trung Quốc') ||
                                    (selectedTag === 'Europe' && rawTag === 'Châu Âu') ||
                                    (selectedTag === 'Thailand' && rawTag === 'Thái Lan');
-
                 return matchesQuery && matchesTag;
             });
 
@@ -1160,13 +797,10 @@ window.addEventListener('pageshow', (event) => {
                     const scoreB = Math.min(getSearchScore(b.title, query), getSearchScore(b.artist, query));
                     if (scoreA !== scoreB) return scoreA - scoreB;
                 }
-
                 const artistA = (a.artist || 'ZZZ_NO_ARTIST').trim();
                 const artistB = (b.artist || 'ZZZ_NO_ARTIST').trim();
-                
                 const artistCompare = artistA.localeCompare(artistB, 'vi', { sensitivity: 'base' });
                 if (artistCompare !== 0) return artistCompare;
-
                 const titleA = (a.title || '').trim();
                 const titleB = (b.title || '').trim();
                 return titleA.localeCompare(titleB, 'vi', { sensitivity: 'base' });
@@ -1175,59 +809,26 @@ window.addEventListener('pageshow', (event) => {
             filteredSongs.forEach(song => {
                 const li = document.createElement('li');
                 li.className = `song-item ${song.id === activeSongId ? 'active' : ''}`;
-                li.onclick = () => {
-                    selectSong(song.id);
-                    if (window.innerWidth <= 768) {
-                        document.body.classList.remove('sidebar-open');
-                    }
-                };
+                li.onclick = () => { selectSong(song.id); if (window.innerWidth <= 768) document.body.classList.remove('sidebar-open'); };
                 
                 const infoWrapper = document.createElement('div');
                 infoWrapper.className = 'song-info-wrapper';
-
-                const titleSpan = document.createElement('span');
-                titleSpan.className = 'song-title-text';
-                titleSpan.textContent = song.title;
-                infoWrapper.appendChild(titleSpan);
-
-                const artistSpan = document.createElement('span');
-                artistSpan.className = 'song-artist-text';
-                artistSpan.textContent = song.artist ? song.artist : 'Unknown';
-                infoWrapper.appendChild(artistSpan);
-
+                const titleSpan = document.createElement('span'); titleSpan.className = 'song-title-text'; titleSpan.textContent = song.title; infoWrapper.appendChild(titleSpan);
+                const artistSpan = document.createElement('span'); artistSpan.className = 'song-artist-text'; artistSpan.textContent = song.artist ? song.artist : 'Unknown'; infoWrapper.appendChild(artistSpan);
                 li.appendChild(infoWrapper);
 
-                const tagBadge = document.createElement('span');
-                tagBadge.className = 'song-tag-badge';
-                tagBadge.textContent = TAG_MAP[song.tag] || '🌐';
-                li.appendChild(tagBadge);
+                const tagBadge = document.createElement('span'); tagBadge.className = 'song-tag-badge'; tagBadge.textContent = TAG_MAP[song.tag] || '🌐'; li.appendChild(tagBadge);
 
                 const isThisPlaying = playingPreviewId === song.id;
                 const playBtn = document.createElement('button');
                 playBtn.className = `btn-action play-preview ${isThisPlaying ? 'is-playing' : ''}`;
-                playBtn.innerHTML = isThisPlaying ? '⏹' : '▶';
-                playBtn.title = isThisPlaying ? 'Dừng nghe' : 'Nghe giai điệu (Harp Sky)';
-                playBtn.onclick = (e) => togglePreview(e, song.id);
-                li.appendChild(playBtn);
+                playBtn.innerHTML = isThisPlaying ? '⏹' : '▶'; playBtn.title = isThisPlaying ? 'Dừng nghe' : 'Nghe giai điệu (Harp Sky)';
+                playBtn.onclick = (e) => togglePreview(e, song.id); li.appendChild(playBtn);
 
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'song-actions';
-
-                const editBtn = document.createElement('button');
-                editBtn.className = 'btn-action edit';
-                editBtn.innerHTML = '✎';
-                editBtn.title = 'Hiệu chỉnh';
-                editBtn.onclick = (e) => openModal(e, song.id);
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn-action delete';
-                deleteBtn.innerHTML = '✖';
-                deleteBtn.title = 'Xóa';
-                deleteBtn.onclick = (e) => deleteSong(e, song.id);
-
-                actionsDiv.appendChild(editBtn);
-                actionsDiv.appendChild(deleteBtn);
-                li.appendChild(actionsDiv);
+                const actionsDiv = document.createElement('div'); actionsDiv.className = 'song-actions';
+                const editBtn = document.createElement('button'); editBtn.className = 'btn-action edit'; editBtn.innerHTML = '✎'; editBtn.title = 'Hiệu chỉnh'; editBtn.onclick = (e) => openModal(e, song.id);
+                const deleteBtn = document.createElement('button'); deleteBtn.className = 'btn-action delete'; deleteBtn.innerHTML = '✖'; deleteBtn.title = 'Xóa'; deleteBtn.onclick = (e) => deleteSong(e, song.id);
+                actionsDiv.appendChild(editBtn); actionsDiv.appendChild(deleteBtn); li.appendChild(actionsDiv);
 
                 listEl.appendChild(li);
             });
@@ -1235,17 +836,12 @@ window.addEventListener('pageshow', (event) => {
 
         function deleteSong(event, id) {
             event.stopPropagation();
-            if(confirm("Bạn có chắc chắn muốn xóa đi đoạn ký ức này không?")) {
-                db.ref('songs/' + id).remove();
-            }
+            if(confirm("Bạn có chắc chắn muốn xóa đi đoạn ký ức này không?")) db.ref('songs/' + id).remove();
         }
 
         function selectSong(id) {
             if (isScrolling) toggleAutoScroll();
-            
-            activeSongId = id;
-            renderList();
-            
+            activeSongId = id; renderList();
             const song = songs.find(s => s.id === id);
             if (!song) return;
 
@@ -1274,45 +870,30 @@ window.addEventListener('pageshow', (event) => {
             `;
 
             let beatIndex = 0;
-
             beats.forEach(beat => {
-                if (beat === '/' || beat === '|') {
-                    html += `<div class="line-break"></div>`;
-                    return;
-                }
+                if (beat === '/' || beat === '|') { html += `<div class="line-break"></div>`; return; }
 
                 const isRest = (beat === '-' || beat === '0' || beat === '.');
                 const activeKeys = parseBeatToKeys(beat);
                 const currentBeatIndex = beatIndex++;
 
                 if (displayMode === 'number') {
-                    if (isRest || activeKeys.length === 0) {
-                        html += `<div class="num-block rest-block beat-item" data-beat-index="${currentBeatIndex}">•</div>`;
-                    } else {
+                    if (isRest || activeKeys.length === 0) html += `<div class="num-block rest-block beat-item" data-beat-index="${currentBeatIndex}">•</div>`;
+                    else {
                         html += `<div class="num-block beat-item" data-beat-index="${currentBeatIndex}">`;
-                        activeKeys.forEach(k => {
-                            html += `<span class="num-badge">${k}</span>`;
-                        });
+                        activeKeys.forEach(k => { html += `<span class="num-badge">${k}</span>`; });
                         html += `</div>`;
                     }
                 } else if (displayMode === 'letter') {
-                    if (isRest || activeKeys.length === 0) {
-                        html += `<div class="num-block rest-block beat-item" data-beat-index="${currentBeatIndex}">•</div>`;
-                    } else {
+                    if (isRest || activeKeys.length === 0) html += `<div class="num-block rest-block beat-item" data-beat-index="${currentBeatIndex}">•</div>`;
+                    else {
                         html += `<div class="num-block beat-item" data-beat-index="${currentBeatIndex}">`;
-                        activeKeys.forEach(k => {
-                            html += `<span class="num-badge">${KEY_TO_LETTER[k]}</span>`;
-                        });
+                        activeKeys.forEach(k => { html += `<span class="num-badge">${KEY_TO_LETTER[k]}</span>`; });
                         html += `</div>`;
                     }
-                } else { // Grid mode
-                    if (isRest || activeKeys.length === 0) {
-                        html += `
-                            <div class="beat-block rest-beat beat-item" data-beat-index="${currentBeatIndex}">
-                                <span class="rest-mark">•</span>
-                            </div>
-                        `;
-                    } else {
+                } else {
+                    if (isRest || activeKeys.length === 0) html += `<div class="beat-block rest-beat beat-item" data-beat-index="${currentBeatIndex}"><span class="rest-mark">•</span></div>`;
+                    else {
                         html += `<div class="beat-block beat-item" data-beat-index="${currentBeatIndex}">`;
                         for (let k = 1; k <= 15; k++) {
                             const isActive = activeKeys.includes(k);
@@ -1331,16 +912,124 @@ window.addEventListener('pageshow', (event) => {
 
         function escapeHtml(text) {
             const div = document.createElement('div');
-            div.innerText = text;
-            return div.innerHTML;
+            div.innerText = text; return div.innerHTML;
         }
 
         window.onclick = function(event) {
             const modal = document.getElementById('addModal');
-            if (event.target === modal) {
-                closeModal();
-            }
+            if (event.target === modal) closeModal();
         };
+
+        // --- CÁC HÀM XỬ LÝ EDITOR BẰNG LƯỚI / SỐ --- 
+
+        function switchEditorMode(mode) {
+            const textTab = document.getElementById('tabText');
+            const gridTab = document.getElementById('tabGrid');
+            const textEditor = document.getElementById('textEditor');
+            const gridEditor = document.getElementById('gridEditor');
+
+            if (mode === 'text') {
+                textTab.classList.add('active');
+                gridTab.classList.remove('active');
+                textEditor.style.display = 'block';
+                gridEditor.style.display = 'none';
+            } else {
+                gridTab.classList.add('active');
+                textTab.classList.remove('active');
+                textEditor.style.display = 'none';
+                gridEditor.style.display = 'block';
+                syncTextToGridEditor();
+            }
+        }
+
+        function syncTextToGridEditor() {
+            const notes = document.getElementById('songNotes').value.trim();
+            const normalized = notes.replace(/[\r\n]+/g, ' / ');
+            editorBeats = normalized ? normalized.split(/\s+/) : [];
+            // Nếu mới tạo trống thì thêm 1 ô lưới mặc định
+            if (editorBeats.length === 0) {
+                editorBeats.push('');
+            }
+            renderGridEditor();
+        }
+
+        function renderGridEditor() {
+            const container = document.getElementById('gridEditorContainer');
+            let html = '';
+            
+            editorBeats.forEach((beat, index) => {
+                if (beat === '/' || beat === '|') {
+                    html += `<div class="editor-line-break" onclick="removeSpecificBeat(${index})" title="Nhấn để xóa ngắt dòng"></div>`;
+                } else {
+                    const isRest = (beat === '-' || beat === '0' || beat === '.');
+                    const activeKeys = parseBeatToKeys(beat);
+                    
+                    if (isRest) {
+                        html += `
+                            <div class="editor-rest-block" onclick="removeSpecificBeat(${index})" title="Nhấn để xóa khoảng lặng">
+                                <span style="font-size: 26px; color: var(--ink-light); font-weight: bold;">•</span>
+                            </div>
+                        `;
+                    } else {
+                        html += `<div class="editor-beat-block">`;
+                        for (let k = 1; k <= 15; k++) {
+                            const isActive = activeKeys.includes(k);
+                            html += `<div class="key ${isActive ? 'active' : ''}" onclick="toggleEditorKey(${index}, ${k})"></div>`;
+                        }
+                        html += `</div>`;
+                    }
+                }
+            });
+            
+            container.innerHTML = html;
+            syncGridToText();
+        }
+
+        function toggleEditorKey(beatIndex, keyNumber) {
+            let beat = editorBeats[beatIndex];
+            let keys = parseBeatToKeys(beat);
+            
+            if (keys.includes(keyNumber)) {
+                keys = keys.filter(k => k !== keyNumber); // Đang xanh click vào về trắng
+            } else {
+                keys.push(keyNumber); // Đang trắng click vào lên xanh
+                playSkyNote(SKY_PITCHES[keyNumber], 0.3, 1); // Play tiếng khi bật lên xanh
+            }
+            
+            keys.sort((a, b) => a - b);
+            editorBeats[beatIndex] = keys.join(',');
+            renderGridEditor();
+        }
+
+        function addGridBeat(type) {
+            if (type === 'grid') editorBeats.push('');
+            else if (type === '.') editorBeats.push('.');
+            else if (type === '/') editorBeats.push('/');
+            
+            renderGridEditor();
+            // Tự cuộn xuống dưới cùng khung
+            const container = document.getElementById('gridEditorContainer');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeLastGridBeat() {
+            if (editorBeats.length > 0) {
+                editorBeats.pop();
+                renderGridEditor();
+            }
+        }
+        
+        function removeSpecificBeat(index) {
+            editorBeats.splice(index, 1);
+            renderGridEditor();
+        }
+
+        function syncGridToText() {
+            const textarea = document.getElementById('songNotes');
+            // Cập nhật giá trị vào textarea tự động (bỏ qua những ô lưới thực sự rỗng không có nốt nào)
+            const text = editorBeats.filter(b => b.trim() !== '').join(' ');
+            textarea.value = text;
+        }
 
         function openModal(e, id = null) {
             if (e) e.stopPropagation();
@@ -1365,13 +1054,14 @@ window.addEventListener('pageshow', (event) => {
                 }
             } else {
                 modalTitle.textContent = "Ghi chép ký ức mới";
-                titleInput.value = '';
-                artistInput.value = '';
-                bpmInput.value = '';
-                tagSelect.value = 'Việt Nam';
-                notesInput.value = '';
+                titleInput.value = ''; artistInput.value = '';
+                bpmInput.value = ''; tagSelect.value = 'Việt Nam'; notesInput.value = '';
             }
+            
             modal.style.display = 'flex';
+            
+            // Luôn mặc định mở tab Nhập Số/Chữ để đỡ ngợp
+            switchEditorMode('text');
         }
 
         function closeModal() {
@@ -1393,58 +1083,31 @@ window.addEventListener('pageshow', (event) => {
 
             const songData = { title, artist, bpm, tag, notes };
 
-            if (editingSongId) {
-                db.ref('songs/' + editingSongId).update(songData);
-            } else {
-                db.ref('songs').push(songData);
-            }
+            if (editingSongId) db.ref('songs/' + editingSongId).update(songData);
+            else db.ref('songs').push(songData);
 
             closeModal();
         }
 
-        // --- XỬ LÝ PHÍM TẮT (KEYBOARD SHORTCUTS) ---
+        // --- BÀN PHÍM TẮT ---
         document.addEventListener('keydown', function(e) {
             const modal = document.getElementById('addModal');
             const isModalOpen = modal && modal.style.display === 'flex';
 
             if (isModalOpen) {
-                if (e.key === 'Escape') {
-                    e.preventDefault();
-                    closeModal();
-                } else if (e.key === 'Enter') {
-                    if (e.target.tagName === 'TEXTAREA' && e.shiftKey) {
-                        return;
-                    }
-                    e.preventDefault();
-                    saveSong();
+                if (e.key === 'Escape') { e.preventDefault(); closeModal(); } 
+                else if (e.key === 'Enter') {
+                    if (e.target.tagName === 'TEXTAREA' && e.shiftKey) return;
+                    e.preventDefault(); saveSong();
                 }
             } else {
-                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
-                    return;
-                }
-
-                // Bấm phím Home hoặc 'T' / 't' để cuộn lên đầu
-                if (e.key === 'Home' || e.key.toLowerCase() === 't') {
-                    e.preventDefault();
-                    scrollToTop();
-                } else if (e.key === ' ') { 
-                    e.preventDefault();
-                    if (activeSongId) {
-                        togglePreview(e, activeSongId);
-                    }
-                } else if (e.key === 'Tab') { 
-                    e.preventDefault();
-                    toggleSidebar();
-                } else if (e.key === 'Enter') { 
-                    e.preventDefault();
-                    toggleAutoScroll();
-                } else if (e.key === 'ArrowUp') { 
-                    e.preventDefault();
-                    changeSpeed(-0.25);
-                } else if (e.key === 'ArrowDown') { 
-                    e.preventDefault();
-                    changeSpeed(0.25);
-                }
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+                if (e.key === 'Home' || e.key.toLowerCase() === 't') { e.preventDefault(); scrollToTop(); } 
+                else if (e.key === ' ') { e.preventDefault(); if (activeSongId) togglePreview(e, activeSongId); } 
+                else if (e.key === 'Tab') { e.preventDefault(); toggleSidebar(); } 
+                else if (e.key === 'Enter') { e.preventDefault(); toggleAutoScroll(); } 
+                else if (e.key === 'ArrowUp') { e.preventDefault(); changeSpeed(-0.25); } 
+                else if (e.key === 'ArrowDown') { e.preventDefault(); changeSpeed(0.25); }
             }
         });
     </script>

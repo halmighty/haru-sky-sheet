@@ -41,25 +41,24 @@
             overflow: hidden;
             line-height: 1.6;
         }
-	
 
         .menu-toggle-btn {
-    position: fixed;
-    top: 15px; left: 15px; z-index: 200;
-    background: #ffffff; border: 1.5px solid var(--border-color);
-    width: 46px; height: 46px; /* Đổi kích thước thành hình vuông để bo tròn */
-    border-radius: 50%; /* Bo tròn thành hình tròn */
-    padding: 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s ease; user-select: none;
-}
-.menu-toggle-btn img {
-    width: 100%; height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-}
-.menu-toggle-btn:hover { background: var(--dusty-blue); border-color: var(--key-active); }
+            position: fixed;
+            top: 15px; left: 15px; z-index: 200;
+            background: #ffffff; border: 1.5px solid var(--border-color);
+            width: 46px; height: 46px;
+            border-radius: 50%;
+            padding: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease; user-select: none;
+        }
+        .menu-toggle-btn img {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .menu-toggle-btn:hover { background: var(--dusty-blue); border-color: var(--key-active); }
 
         .container { display: flex; width: 100%; height: 100%; max-width: 100%; margin: 0 auto; position: relative; }
 
@@ -187,7 +186,6 @@
 
         .key { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; position: relative; overflow: hidden; }
 
-        /* MÀU NỐT TRONG SHEET CHÍNH */
         .key:nth-child(-n+5) { background: #ebf5fb; border: 1.5px solid #a9cce3; }
         .key:nth-child(-n+5).active { background: #2980b9; border-color: #1a5276; box-shadow: 0 0 10px rgba(41, 128, 185, 0.7); }
         .key:nth-child(n+6):nth-child(-n+10) { background: #f4ecf7; border: 1.5px solid #d2b4de; }
@@ -227,37 +225,20 @@
 
         .empty-state { text-align: center; color: var(--ink-light); font-size: 16px; font-style: italic; margin-top: 20%; opacity: 0.8; }
 
-        /* MODAL STYLE */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(44, 62, 80, 0.3); backdrop-filter: blur(4px);
             justify-content: center; align-items: center; z-index: 1000;
         }
-        /* MODAL STYLE UPDATE */
-.modal {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(44, 62, 80, 0.3); backdrop-filter: blur(4px);
-    justify-content: center; align-items: center; z-index: 1000;
-}
-.modal-content {
-    background: #fff; padding: 30px; width: 95%; max-width: 900px; /* Tăng từ 480px lên 900px */
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 1.5px solid var(--border-color); border-radius: 12px;
-}
-.modal h2 { font-size: 18px; font-weight: 500; color: var(--ink-dark); margin-bottom: 20px; font-style: italic; }
-
-/* Bố cục chia 2 cột cho form */
-.modal-body-flex {
-    display: flex;
-    gap: 25px;
-}
-.modal-body-left {
-    flex: 0 0 300px; /* Cố định cột trái nhập thông tin */
-}
-.modal-body-right {
-    flex: 1; min-width: 0; /* Cột phải bung rộng hết cỡ cho Editor */
-}
+        .modal-content {
+            background: #fff; padding: 30px; width: 95%; max-width: 900px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 1.5px solid var(--border-color); border-radius: 12px;
         }
         .modal h2 { font-size: 18px; font-weight: 500; color: var(--ink-dark); margin-bottom: 20px; font-style: italic; }
+
+        .modal-body-flex { display: flex; gap: 25px; }
+        .modal-body-left { flex: 0 0 300px; }
+        .modal-body-right { flex: 1; min-width: 0; }
         
         .form-group { margin-bottom: 15px; }
         .form-group input, .form-group textarea, .form-group select {
@@ -265,11 +246,7 @@
             font-family: inherit; color: var(--ink-dark); outline: none; border-radius: 6px; transition: border 0.3s; font-size: 14px;
         }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--key-active); }
-        .form-group textarea { 
-    height: 280px; /* Fix cứng chiều cao để khung béo béo nằm ngang */
-    resize: none; 
-    line-height: 1.6; 
-}
+        .form-group textarea { height: 280px; resize: none; line-height: 1.6; }
 
         .note-guide { font-size: 12px; color: var(--ink-light); margin-top: 6px; font-style: italic; line-height: 1.4; }
         
@@ -278,7 +255,6 @@
         .btn-save { background: var(--key-active); color: white; border: none; padding: 8px 22px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 14px; transition: background 0.2s; }
         .btn-save:hover { background: #1e3799; }
 
-        /* --- STYLES CHO CHẾ ĐỘ VISUAL EDITOR TRONG MODAL --- */
         .editor-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
         .editor-tab {
             flex: 1; padding: 10px; border: 1.5px solid var(--border-color); background: var(--paper-white);
@@ -289,24 +265,23 @@
         .editor-tab.active { background: var(--dusty-blue); border-color: var(--key-active); color: var(--key-active); font-weight: 600; }
         
         .grid-editor-container {
-    display: flex; flex-wrap: wrap; gap: 12px; padding: 15px; 
-    height: 280px; /* Đổi max-height thành height cứng để đồng bộ với textarea */
-    overflow-y: auto;
-    background: rgba(248, 249, 250, 0.8); border: 1.5px solid var(--border-color); border-radius: 6px;
-    margin-bottom: 12px; align-content: flex-start;
-}
+            display: flex; flex-wrap: wrap; gap: 12px; padding: 15px; 
+            height: 280px; overflow-y: auto;
+            background: rgba(248, 249, 250, 0.8); border: 1.5px solid var(--border-color); border-radius: 6px;
+            margin-bottom: 12px; align-content: flex-start;
+        }
         
         .editor-beat-block {
             background: #ffffff; padding: 8px; display: grid;
             grid-template-columns: repeat(5, 20px); grid-template-rows: repeat(3, 20px);
             gap: 4px; border: 1.5px solid var(--key-border); border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.04); transition: all 0.15s ease-out;
+            cursor: pointer;
         }
         .editor-beat-block:hover { border-color: var(--key-active); }
-        .editor-beat-block .key { width: 100%; height: 100%; border-radius: 50%; cursor: pointer; transition: all 0.15s; }
-        .editor-beat-block .key:hover { transform: scale(1.1); box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+        .editor-beat-block.selected-beat { border-color: var(--key-active); box-shadow: 0 0 10px rgba(56, 103, 214, 0.5); }
+        .editor-beat-block .key { width: 100%; height: 100%; border-radius: 50%; pointer-events: none; }
         
-        /* MÀU NỐT BÊN TRONG EDITOR (MODAL) */
         .editor-beat-block .key:nth-child(-n+5) { background: #ebf5fb; border: 1.5px solid #a9cce3; }
         .editor-beat-block .key:nth-child(-n+5).active { background: #2980b9; border-color: #1a5276; box-shadow: 0 0 8px rgba(41,128,185,0.6); }
         .editor-beat-block .key:nth-child(n+6):nth-child(-n+10) { background: #f4ecf7; border: 1.5px solid #d2b4de; }
@@ -325,6 +300,7 @@
             width: 132px; height: 84px; border-radius: 8px; cursor: pointer; transition: all 0.2s;
         }
         .editor-rest-block:hover { border-color: #ff7675; background: #ffeaa7; }
+        .editor-rest-block.selected-beat { border-color: var(--key-active); box-shadow: 0 0 10px rgba(56, 103, 214, 0.5); }
         
         .editor-line-break {
             flex-basis: 100%; width: 100%; height: 10px; margin: 2px 0;
@@ -342,23 +318,6 @@
         .grid-editor-actions .btn-action.btn-delete { border-color: #ff7675; color: #d63031; margin-left: auto; }
         .grid-editor-actions .btn-action.btn-delete:hover { background: #ff7675; color: white; }
 
-	/* ... các đoạn CSS cũ ở trên ... */
-
-        .logo-container {
-    text-align: center;
-    margin-bottom: 15px;
-    padding: 0 10px;
-}
-.site-logo {
-    width: 100%; /* Bung rộng bằng sidebar */
-    max-width: 260px; /* Giới hạn độ to tối đa để không bị quá thô */
-    height: auto; /* Tự động đổi chiều cao theo tỉ lệ gốc của ảnh */
-    object-fit: contain;
-    border-radius: 12px; /* Bo góc nhẹ thay vì hình tròn nếu ảnh ngang */
-    border: 2px solid var(--border-color);
-}
-        }
-
         @media (max-width: 768px) {
             .sidebar { position: fixed; top: 0; left: 0; height: 100%; margin-left: 0 !important; transform: translateX(-100%); }
             body.sidebar-open .sidebar { transform: translateX(0); }
@@ -366,18 +325,16 @@
             .zoom-toolbar { right: 8px; top: 70px; transform: none; padding: 8px 4px; gap: 5px; }
             .sheet-title { font-size: 18px; padding: 0; }
             .sheet-container { padding-right: 45px; }
+            .modal-body-flex { flex-direction: column; gap: 0; }
+            .modal-body-left { flex: 1; }
         }
-	@media (max-width: 768px) {
-    .modal-body-flex { flex-direction: column; gap: 0; }
-    .modal-body-left { flex: 1; }
-}
     </style>
 </head>
 <body>
 
     <button class="menu-toggle-btn" onclick="toggleSidebar()">
-    <img src="https://github.com/halmighty/haru-sky-sheet/blob/main/harulogo.png?raw=true" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; border-radius: 50%;">
-</button>
+        <img src="https://github.com/halmighty/haru-sky-sheet/blob/main/harulogo.png?raw=true" alt="Logo">
+    </button>
 
     <div class="container">
         <div class="sidebar" id="sidebar">
@@ -411,82 +368,75 @@
     </div>
 
     <!-- MODAL EDIT / THÊM MỚI -->
-<div class="modal" id="addModal">
-    <div class="modal-content">
-        <h2 id="modalTitle">Ghi chép ký ức mới</h2>
-        
-        <div class="modal-body-flex">
-            <!-- CỘT TRÁI: Nhập thông tin cơ bản -->
-            <div class="modal-body-left">
-                <div class="form-group">
-                    <input type="text" id="songTitle" placeholder="Tên bản nhạc...">
-                </div>
-                <div class="form-group">
-                    <input type="text" id="songArtist" placeholder="Tác giả / Ca sĩ / Nguồn gốc">
-                </div>
-                <div class="form-group">
-                    <select id="songTag" style="width: 100%; padding: 12px; border: 1.5px solid var(--border-color); background: var(--paper-white); font-family: inherit; color: var(--ink-dark); outline: none; border-radius: 6px; font-size: 14px; cursor: pointer;">
-                        <option value="Việt Nam">Việt Nam</option>
-                        <option value="Japan">Japan</option>
-                        <option value="Korean">Korean</option>
-                        <option value="China">China</option>
-                        <option value="US-UK">US-UK</option>
-                        <option value="Europe">Europe</option>
-                        <option value="Thailand">Thailand</option>
-                        <option value="others">Others</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <input type="number" id="songBpm" placeholder="Tốc độ BPM (ví dụ: 250, mặc định là 300)" min="30" max="1000">
-                </div>
-            </div>
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Ghi chép ký ức mới</h2>
             
-            <!-- CỘT PHẢI: Giao diện Editor -->
-            <div class="modal-body-right">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <!-- KHU VỰC THÊM TÍNH NĂNG NHẬP LƯỚI / SỐ -->
-                    <div class="editor-tabs">
-                        <div class="editor-tab active" id="tabText" onclick="switchEditorMode('text')">Số/Chữ</div>
-                        <div class="editor-tab" id="tabGrid" onclick="switchEditorMode('grid')">Lưới</div>
+            <div class="modal-body-flex">
+                <div class="modal-body-left">
+                    <div class="form-group">
+                        <input type="text" id="songTitle" placeholder="Tên bản nhạc...">
                     </div>
-
-                    <!-- Chế độ 1: Nhập Chữ/Số (Mặc định) -->
-                    <div id="textEditor">
-                        <textarea id="songNotes" placeholder="Nhập phím (vd: 1 3,5 - / A1B2 A3 .)..."></textarea>
-                        <div class="note-guide">
-                            * Nốt dạng Số: <code>1 2 3</code> | Hợp âm: <code>1,3,5</code><br>
-                            * Nốt dạng Chữ: <code>A1 B2 C3</code> | Hợp âm: <code>A1B2</code><br>
-                            * Khoảng lặng: Nhập <code>.</code>, <code>-</code> hoặc <code>0</code><br>
-                            * Ngắt đoạn/Xuống dòng: Nhập <code>/</code>, <code>|</code> hoặc <code>Gõ xuống dòng</code>
-                        </div>
+                    <div class="form-group">
+                        <input type="text" id="songArtist" placeholder="Tác giả / Ca sĩ / Nguồn gốc">
                     </div>
+                    <div class="form-group">
+                        <select id="songTag" style="width: 100%; padding: 12px; border: 1.5px solid var(--border-color); background: var(--paper-white); font-family: inherit; color: var(--ink-dark); outline: none; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                            <option value="Việt Nam">Việt Nam</option>
+                            <option value="Japan">Japan</option>
+                            <option value="Korean">Korean</option>
+                            <option value="China">China</option>
+                            <option value="US-UK">US-UK</option>
+                            <option value="Europe">Europe</option>
+                            <option value="Thailand">Thailand</option>
+                            <option value="others">Others</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="songBpm" placeholder="Tốc độ BPM (ví dụ: 250, mặc định là 300)" min="30" max="1000">
+                    </div>
+                </div>
+                
+                <div class="modal-body-right">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <div class="editor-tabs">
+                            <div class="editor-tab active" id="tabText" onclick="switchEditorMode('text')">Số/Chữ</div>
+                            <div class="editor-tab" id="tabGrid" onclick="switchEditorMode('grid')">Lưới</div>
+                        </div>
 
-                    <!-- Chế độ 2: Nhập Lưới (Mới Thêm) -->
-                    <div id="gridEditor" style="display: none;">
-                        <div id="gridEditorContainer" class="grid-editor-container">
-                            <!-- Lưới sẽ được js tự động vẽ ra đây -->
+                        <div id="textEditor">
+                            <textarea id="songNotes" placeholder="Nhập phím (vd: 1 3,5 - / A1B2 A3 .)..."></textarea>
+                            <div class="note-guide">
+                                * Nốt dạng Số: <code>1 2 3</code> | Hợp âm: <code>1,3,5</code><br>
+                                * Nốt dạng Chữ: <code>A1 B2 C3</code> | Hợp âm: <code>A1B2</code><br>
+                                * Khoảng lặng: Nhập <code>.</code>, <code>-</code> hoặc <code>0</code><br>
+                                * Ngắt đoạn/Xuống dòng: Nhập <code>/</code>, <code>|</code> hoặc <code>Gõ xuống dòng</code>
+                            </div>
                         </div>
-                        <div class="grid-editor-actions">
-                            <button type="button" class="btn-action" onclick="addGridBeat('grid')">+ Thêm Lưới</button>
-                            <button type="button" class="btn-action" onclick="addGridBeat('.')">+ Lặng (.)</button>
-                            <button type="button" class="btn-action" onclick="addGridBeat('/')">+ Xuống Dòng</button>
-                            <button type="button" class="btn-action btn-delete" onclick="removeLastGridBeat()">⌫ Xóa nhịp cuối</button>
-                        </div>
-                        <div class="note-guide" style="margin-top: 10px;">
-                            * Bấm trực tiếp vào Nốt để bật/tắt (nhấn để xóa các khối lặng/xuống dòng).<br>
-                            * Mọi nhịp bạn bấm sẽ tự động đồng bộ sang chữ/số và ra bảng nhạc gốc khi lưu.
+
+                        <div id="gridEditor" style="display: none;">
+                            <div id="gridEditorContainer" class="grid-editor-container"></div>
+                            <div class="grid-editor-actions">
+                                <button type="button" class="btn-action" onclick="addGridBeat('grid')">+ Thêm Lưới</button>
+                                <button type="button" class="btn-action" onclick="addGridBeat('.')">+ Lặng (.)</button>
+                                <button type="button" class="btn-action" onclick="addGridBeat('/')">+ Xuống Dòng</button>
+                                <button type="button" class="btn-action btn-delete" onclick="removeLastGridBeat()">⌫ Xóa nhịp cuối</button>
+                            </div>
+                            <div class="note-guide" style="margin-top: 10px;">
+                                * Dùng phím: <code>y u i o p h j k l ; n m , . /</code> (tương ứng 1-15).<br>
+                                * Bấm nhiều phím cùng lúc để tạo hợp âm. Nhấp vào khối lưới để chọn chỉnh sửa.
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal()">Gấp lại</button>
-            <button class="btn-save" id="saveBtn" onclick="saveSong()">Lưu giữ</button>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Gấp lại</button>
+                <button class="btn-save" id="saveBtn" onclick="saveSong()">Lưu giữ</button>
+            </div>
         </div>
     </div>
-</div>
 
     <script>
         const firebaseConfig = {
@@ -505,9 +455,7 @@
         const songsRef = db.ref('songs');
 
         window.addEventListener('pageshow', (event) => {
-            if (event.persisted) {
-                window.location.reload();
-            }
+            if (event.persisted) window.location.reload();
         });
 
         let songs = [];
@@ -524,12 +472,19 @@
         let previewTimeouts = [];
         let playingPreviewId = null;
         
-        let editorBeats = []; // Lưu trữ mảng lưới trong Editor Modal
+        let editorBeats = [];
+        let selectedEditorBeatIndex = 0; // Lưu vị trí ô lưới đang được chọn để nhập phím
 
         const SKY_PITCHES = {
             1: 261.63, 2: 293.66, 3: 329.63, 4: 349.23, 5: 392.00,
             6: 440.00, 7: 493.88, 8: 523.25, 9: 587.33, 10: 659.25,
             11: 698.46, 12: 783.99, 13: 880.00, 14: 987.77, 15: 1046.50
+        };
+
+        const KEYBOARD_MAP = {
+            'y': 1, 'u': 2, 'i': 3, 'o': 4, 'p': 5,
+            'h': 6, 'j': 7, 'k': 8, 'l': 9, ';': 10,
+            'n': 11, 'm': 12, ',': 13, '.': 14, '/': 15
         };
 
         const LETTER_TO_KEY = {
@@ -584,9 +539,7 @@
         }
 
         function clearAllHighlights() {
-            document.querySelectorAll('.beat-item.playing-now').forEach(el => {
-                el.classList.remove('playing-now');
-            });
+            document.querySelectorAll('.beat-item.playing-now').forEach(el => el.classList.remove('playing-now'));
         }
 
         function stopPreview() {
@@ -651,13 +604,10 @@
             }
 
             renderList();
-
             if (activeSongId && songs.some(s => s.id === activeSongId)) {
                 selectSong(activeSongId);
             } else {
-                document.getElementById('mainContent').innerHTML = `
-                    <div class="empty-state">✦ Vui lòng chọn một bài hát từ danh sách để bắt đầu ✦</div>
-                `;
+                document.getElementById('mainContent').innerHTML = `<div class="empty-state">✦ Vui lòng chọn một bài hát từ danh sách để bắt đầu ✦</div>`;
             }
         });
 
@@ -865,7 +815,7 @@
                     <button class="zoom-btn" onclick="resetZoom()" title="Về mặc định">↺</button>
                 </div>
                 <div class="sheet-title">${escapeHtml(song.title)}</div>
-                ${song.artist ? `<div class="sheet-artist">Tác giả / Ca sĩ / Nguồn Gốc : ${escapeHtml(song.artist)}</div>` : ''}
+                ${song.artist ? `<div class="sheet-artist"> ${escapeHtml(song.artist)}</div>` : ''}
                 <div class="sheet-container">
             `;
 
@@ -920,7 +870,9 @@
             if (event.target === modal) closeModal();
         };
 
-        // --- CÁC HÀM XỬ LÝ EDITOR BẰNG LƯỚI / SỐ --- 
+        // --- CHẾ ĐỘ LƯỚI VÀ NHẬP PHÍM BÀN PHÍM TRONG MODAL ---
+
+        // --- CHẾ ĐỘ LƯỚI VÀ NHẬP PHÍM BÀN PHÍM TRONG MODAL --- 
 
         function switchEditorMode(mode) {
             const textTab = document.getElementById('tabText');
@@ -946,10 +898,8 @@
             const notes = document.getElementById('songNotes').value.trim();
             const normalized = notes.replace(/[\r\n]+/g, ' / ');
             editorBeats = normalized ? normalized.split(/\s+/) : [];
-            // Nếu mới tạo trống thì thêm 1 ô lưới mặc định
-            if (editorBeats.length === 0) {
-                editorBeats.push('');
-            }
+            if (editorBeats.length === 0) editorBeats.push('');
+            if (selectedEditorBeatIndex >= editorBeats.length) selectedEditorBeatIndex = editorBeats.length - 1;
             renderGridEditor();
         }
 
@@ -959,22 +909,23 @@
             
             editorBeats.forEach((beat, index) => {
                 if (beat === '/' || beat === '|') {
-                    html += `<div class="editor-line-break" onclick="removeSpecificBeat(${index})" title="Nhấn để xóa ngắt dòng"></div>`;
+                    html += `<div class="editor-line-break" onclick="selectEditorBeat(${index})" title="Chọn vị trí này"></div>`;
                 } else {
                     const isRest = (beat === '-' || beat === '0' || beat === '.');
                     const activeKeys = parseBeatToKeys(beat);
+                    const isSelected = (index === selectedEditorBeatIndex);
                     
                     if (isRest) {
                         html += `
-                            <div class="editor-rest-block" onclick="removeSpecificBeat(${index})" title="Nhấn để xóa khoảng lặng">
+                            <div class="editor-rest-block ${isSelected ? 'selected-beat' : ''}" onclick="selectEditorBeat(${index})" title="Khoảng lặng">
                                 <span style="font-size: 26px; color: var(--ink-light); font-weight: bold;">•</span>
                             </div>
                         `;
                     } else {
-                        html += `<div class="editor-beat-block">`;
+                        html += `<div class="editor-beat-block ${isSelected ? 'selected-beat' : ''}" onclick="selectEditorBeat(${index})">`;
                         for (let k = 1; k <= 15; k++) {
                             const isActive = activeKeys.includes(k);
-                            html += `<div class="key ${isActive ? 'active' : ''}" onclick="toggleEditorKey(${index}, ${k})"></div>`;
+                            html += `<div class="key ${isActive ? 'active' : ''}"></div>`;
                         }
                         html += `</div>`;
                     }
@@ -985,19 +936,8 @@
             syncGridToText();
         }
 
-        function toggleEditorKey(beatIndex, keyNumber) {
-            let beat = editorBeats[beatIndex];
-            let keys = parseBeatToKeys(beat);
-            
-            if (keys.includes(keyNumber)) {
-                keys = keys.filter(k => k !== keyNumber); // Đang xanh click vào về trắng
-            } else {
-                keys.push(keyNumber); // Đang trắng click vào lên xanh
-                playSkyNote(SKY_PITCHES[keyNumber], 0.3, 1); // Play tiếng khi bật lên xanh
-            }
-            
-            keys.sort((a, b) => a - b);
-            editorBeats[beatIndex] = keys.join(',');
+        function selectEditorBeat(index) {
+            selectedEditorBeatIndex = index;
             renderGridEditor();
         }
 
@@ -1006,8 +946,8 @@
             else if (type === '.') editorBeats.push('.');
             else if (type === '/') editorBeats.push('/');
             
+            selectedEditorBeatIndex = editorBeats.length - 1;
             renderGridEditor();
-            // Tự cuộn xuống dưới cùng khung
             const container = document.getElementById('gridEditorContainer');
             container.scrollTop = container.scrollHeight;
         }
@@ -1015,20 +955,14 @@
         function removeLastGridBeat() {
             if (editorBeats.length > 0) {
                 editorBeats.pop();
+                selectedEditorBeatIndex = Math.max(0, editorBeats.length - 1);
                 renderGridEditor();
             }
-        }
-        
-        function removeSpecificBeat(index) {
-            editorBeats.splice(index, 1);
-            renderGridEditor();
         }
 
         function syncGridToText() {
             const textarea = document.getElementById('songNotes');
-            // Cập nhật giá trị vào textarea tự động (bỏ qua những ô lưới thực sự rỗng không có nốt nào)
-            const text = editorBeats.filter(b => b.trim() !== '').join(' ');
-            textarea.value = text;
+            textarea.value = editorBeats.filter(b => b.trim() !== '').join(' ');
         }
 
         function openModal(e, id = null) {
@@ -1059,8 +993,6 @@
             }
             
             modal.style.display = 'flex';
-            
-            // Luôn mặc định mở tab Nhập Số/Chữ để đỡ ngợp
             switchEditorMode('text');
         }
 
@@ -1089,10 +1021,33 @@
             closeModal();
         }
 
-        // --- BÀN PHÍM TẮT ---
+        // --- XỬ LÝ PHÍM BÀN PHÍM MƯỢT MÀ KHÔNG BỊ TRỄ/NHÂN BẢN ---
+        const activeKeysDown = new Set();
+        let chordTimeout = null;
+
         document.addEventListener('keydown', function(e) {
             const modal = document.getElementById('addModal');
             const isModalOpen = modal && modal.style.display === 'flex';
+            const gridEditorVisible = document.getElementById('gridEditor').style.display !== 'none';
+
+            if (isModalOpen && gridEditorVisible) {
+                const keyChar = e.key.toLowerCase();
+                if (KEYBOARD_MAP[keyChar] !== undefined) {
+                    e.preventDefault();
+                    if (e.repeat) return;
+
+                    if (!activeKeysDown.has(keyChar)) {
+                        activeKeysDown.add(keyChar);
+                        playSkyNote(SKY_PITCHES[KEYBOARD_MAP[keyChar]], 0.3, 1);
+                    }
+
+                    clearTimeout(chordTimeout);
+                    chordTimeout = setTimeout(() => {
+                        commitChordToGrid();
+                    }, 50);
+                    return;
+                }
+            }
 
             if (isModalOpen) {
                 if (e.key === 'Escape') { e.preventDefault(); closeModal(); } 
@@ -1110,6 +1065,40 @@
                 else if (e.key === 'ArrowDown') { e.preventDefault(); changeSpeed(0.25); }
             }
         });
+
+        document.addEventListener('keyup', function(e) {
+            const keyChar = e.key.toLowerCase();
+            activeKeysDown.delete(keyChar);
+        });
+
+        function commitChordToGrid() {
+            if (activeKeysDown.size === 0) return;
+
+            if (editorBeats.length === 0) editorBeats.push('');
+            if (selectedEditorBeatIndex >= editorBeats.length) selectedEditorBeatIndex = editorBeats.length - 1;
+
+            let keys = [];
+            activeKeysDown.forEach(char => {
+                const noteNum = KEYBOARD_MAP[char];
+                if (noteNum) keys.push(noteNum);
+            });
+
+            keys.sort((a, b) => a - b);
+            editorBeats[selectedEditorBeatIndex] = keys.join(',');
+
+            if (selectedEditorBeatIndex < editorBeats.length - 1) {
+                selectedEditorBeatIndex++;
+            } else {
+                editorBeats.push('');
+                selectedEditorBeatIndex = editorBeats.length - 1;
+            }
+
+            renderGridEditor();
+
+            const container = document.getElementById('gridEditorContainer');
+            const selectedEl = container.querySelector('.selected-beat');
+            if (selectedEl) selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
     </script>
 </body>
 </html>

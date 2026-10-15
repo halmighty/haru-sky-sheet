@@ -8,7 +8,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<link rel="icon" type="image/png" href="https://github.com/halmighty/haru-sky-sheet/blob/main/harulogo.png?raw=true">
+    <link rel="icon" type="image/png" href="https://github.com/halmighty/haru-sky-sheet/blob/main/harulogo.png?raw=true">
 
     <style>
         :root {
@@ -424,7 +424,7 @@
                             </div>
                             <div class="note-guide" style="margin-top: 10px;">
                                 * Dùng phím: <code>y u i o p h j k l ; n m , . /</code> (tương ứng 1-15).<br>
-                                * Bấm nhiều phím cùng lúc để tạo hợp âm. Nhấp vào khối lưới để chọn chỉnh sửa.
+                                * <b>← / →</b>: Di chuyển ô nhịp | <b>Backspace/Delete</b>: Xóa | <b>- / Space</b>: Nốt lặng | <b>Enter</b>: Xuống dòng.
                             </div>
                         </div>
                     </div>
@@ -473,7 +473,7 @@
         let playingPreviewId = null;
         
         let editorBeats = [];
-        let selectedEditorBeatIndex = 0; // Lưu vị trí ô lưới đang được chọn để nhập phím
+        let selectedEditorBeatIndex = 0;
 
         const SKY_PITCHES = {
             1: 261.63, 2: 293.66, 3: 329.63, 4: 349.23, 5: 392.00,
@@ -872,8 +872,6 @@
 
         // --- CHẾ ĐỘ LƯỚI VÀ NHẬP PHÍM BÀN PHÍM TRONG MODAL ---
 
-        // --- CHẾ ĐỘ LƯỚI VÀ NHẬP PHÍM BÀN PHÍM TRONG MODAL --- 
-
         function switchEditorMode(mode) {
             const textTab = document.getElementById('tabText');
             const gridTab = document.getElementById('tabGrid');
@@ -909,7 +907,7 @@
             
             editorBeats.forEach((beat, index) => {
                 if (beat === '/' || beat === '|') {
-                    html += `<div class="editor-line-break" onclick="selectEditorBeat(${index})" title="Chọn vị trí này"></div>`;
+                    html += `<div class="editor-line-break ${index === selectedEditorBeatIndex ? 'selected-beat' : ''}" onclick="selectEditorBeat(${index})" title="Chọn vị trí này"></div>`;
                 } else {
                     const isRest = (beat === '-' || beat === '0' || beat === '.');
                     const activeKeys = parseBeatToKeys(beat);
@@ -1021,7 +1019,7 @@
             closeModal();
         }
 
-        // --- XỬ LÝ PHÍM BÀN PHÍM MƯỢT MÀ KHÔNG BỊ TRỄ/NHÂN BẢN ---
+        // --- XỬ LÝ PHÍM BÀN PHÍM VÀ CHẾ ĐỘ CHÈN KHÔNG GHI ĐÈ ---
         const activeKeysDown = new Set();
         let chordTimeout = null;
 
@@ -1032,6 +1030,69 @@
 
             if (isModalOpen && gridEditorVisible) {
                 const keyChar = e.key.toLowerCase();
+
+                // 1. Phím mũi tên Trái / Phải để di chuyển
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    if (selectedEditorBeatIndex > 0) {
+                        selectedEditorBeatIndex--;
+                        renderGridEditor();
+                    }
+                    return;
+                }
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    if (selectedEditorBeatIndex < editorBeats.length - 1) {
+                        selectedEditorBeatIndex++;
+                        renderGridEditor();
+                    }
+                    return;
+                }
+
+                // 2. Phím tắt xóa (Backspace / Delete)
+                if (e.key === 'Backspace' || e.key === 'Delete') {
+                    e.preventDefault();
+                    if (editorBeats.length > 0) {
+                        editorBeats.splice(selectedEditorBeatIndex, 1);
+                        if (editorBeats.length === 0) editorBeats.push('');
+                        selectedEditorBeatIndex = Math.max(0, Math.min(selectedEditorBeatIndex, editorBeats.length - 1));
+                        renderGridEditor();
+                    }
+                    return;
+                }
+
+                // 3. Phím tắt thêm nốt lặng (dùng dấu trừ '-' hoặc phím cách 'Space')
+                if (e.key === ' ' || e.key === '-') {
+                    e.preventDefault();
+                    if (editorBeats.length === 0) {
+                        editorBeats.push('.');
+                        selectedEditorBeatIndex = 0;
+                    } else if (editorBeats[selectedEditorBeatIndex] === '') {
+                        editorBeats[selectedEditorBeatIndex] = '.';
+                    } else {
+                        // Chèn nốt lặng mới ngay sau vị trí hiện tại thay vì ghi đè
+                        editorBeats.splice(selectedEditorBeatIndex + 1, 0, '.');
+                        selectedEditorBeatIndex++;
+                    }
+                    renderGridEditor();
+                    return;
+                }
+
+                // 4. Phím tắt xuống dòng (Enter)
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (editorBeats.length === 0) {
+                        editorBeats.push('/');
+                        selectedEditorBeatIndex = 0;
+                    } else {
+                        editorBeats.splice(selectedEditorBeatIndex + 1, 0, '/');
+                        selectedEditorBeatIndex++;
+                    }
+                    renderGridEditor();
+                    return;
+                }
+
+                // 5. Nhập nốt đàn bằng phím y, u, i, o, p...
                 if (KEYBOARD_MAP[keyChar] !== undefined) {
                     e.preventDefault();
                     if (e.repeat) return;
@@ -1084,13 +1145,15 @@
             });
 
             keys.sort((a, b) => a - b);
-            editorBeats[selectedEditorBeatIndex] = keys.join(',');
+            const newBeatStr = keys.join(',');
 
-            if (selectedEditorBeatIndex < editorBeats.length - 1) {
-                selectedEditorBeatIndex++;
+            // Chế độ không ghi đè: Nếu ô hiện tại đang trống hoặc là nốt lặng thì điền vào đó, 
+            // ngược lại (đã có nốt muốn giữ) thì tạo ô mới chèn ngay sau ô đó.
+            if (editorBeats[selectedEditorBeatIndex] === '' || editorBeats[selectedEditorBeatIndex] === '.') {
+                editorBeats[selectedEditorBeatIndex] = newBeatStr;
             } else {
-                editorBeats.push('');
-                selectedEditorBeatIndex = editorBeats.length - 1;
+                editorBeats.splice(selectedEditorBeatIndex + 1, 0, newBeatStr);
+                selectedEditorBeatIndex++;
             }
 
             renderGridEditor();

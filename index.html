@@ -1019,7 +1019,7 @@
             closeModal();
         }
 
-        // --- XỬ LÝ PHÍM BÀN PHÍM VÀ CHẾ ĐỘ CHÈN KHÔNG GHI ĐÈ ---
+        // --- XỬ LÝ PHÍM BÀN PHÍM VÀ CHẾ ĐỘ CHÈN KHÔNG GHI ĐÈ (GIỮ NGUYÊN NỐT LẶNG) ---
         const activeKeysDown = new Set();
         let chordTimeout = null;
 
@@ -1070,7 +1070,6 @@
                     } else if (editorBeats[selectedEditorBeatIndex] === '') {
                         editorBeats[selectedEditorBeatIndex] = '.';
                     } else {
-                        // Chèn nốt lặng mới ngay sau vị trí hiện tại thay vì ghi đè
                         editorBeats.splice(selectedEditorBeatIndex + 1, 0, '.');
                         selectedEditorBeatIndex++;
                     }
@@ -1147,9 +1146,9 @@
             keys.sort((a, b) => a - b);
             const newBeatStr = keys.join(',');
 
-            // Chế độ không ghi đè: Nếu ô hiện tại đang trống hoặc là nốt lặng thì điền vào đó, 
-            // ngược lại (đã có nốt muốn giữ) thì tạo ô mới chèn ngay sau ô đó.
-            if (editorBeats[selectedEditorBeatIndex] === '' || editorBeats[selectedEditorBeatIndex] === '.') {
+            // Chỉ điền vào ô hiện tại nếu ô đó thực sự trống (''). 
+            // Nếu ô hiện tại là nốt hoặc đã có dấu lặng ('.'), sẽ tạo ô mới và chèn ngay sau đó, không ghi đè!
+            if (editorBeats[selectedEditorBeatIndex] === '') {
                 editorBeats[selectedEditorBeatIndex] = newBeatStr;
             } else {
                 editorBeats.splice(selectedEditorBeatIndex + 1, 0, newBeatStr);

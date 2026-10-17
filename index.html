@@ -81,19 +81,42 @@
             padding-bottom: 15px; white-space: nowrap;
         }
 
-        .search-box { margin-bottom: 12px; }
+        .search-box { margin-bottom: 8px; position: relative; }
         .search-box input {
-            width: 100%; padding: 8px 12px; border: 1.5px solid var(--border-color);
+            width: 100%; padding: 8px 32px 8px 12px; border: 1.5px solid var(--border-color);
             background: var(--paper-white); color: var(--ink-dark); font-family: inherit; font-size: 13px;
             border-radius: 6px; outline: none; transition: border-color 0.2s;
         }
         .search-box input:focus { border-color: var(--key-active); }
+        .search-clear-btn {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: var(--ink-light); cursor: pointer;
+            font-size: 14px; display: none; padding: 2px;
+        }
+        .search-clear-btn:hover { color: #e74c3c; }
+
+        .filter-controls {
+            display: flex; gap: 8px; margin-bottom: 10px;
+        }
+        .filter-controls select {
+            flex: 1; padding: 7px 10px; border: 1.5px solid var(--border-color); border-radius: 6px;
+            font-family: inherit; font-size: 12px; background: var(--paper-white); color: var(--ink-dark);
+            outline: none; cursor: pointer;
+        }
+        .filter-controls select:focus { border-color: var(--key-active); }
+
+        .btn-random {
+            background: var(--dusty-blue); color: var(--key-active); border: 1.5px solid var(--border-color);
+            padding: 7px 12px; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s ease; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 4px;
+        }
+        .btn-random:hover { background: var(--key-active); color: #ffffff; border-color: var(--key-active); }
 
         .btn-add {
             background: var(--paper-white); color: var(--ink-dark); border: 1.5px dashed var(--key-border);
-            padding: 10px; font-family: inherit; font-size: 14px; font-style: italic;
-            cursor: pointer; transition: all 0.3s ease; margin-bottom: 15px;
-            display: none; white-space: nowrap;
+            padding: 9px; font-family: inherit; font-size: 13px; font-style: italic;
+            cursor: pointer; transition: all 0.3s ease; margin-bottom: 8px;
+            display: none; white-space: nowrap; border-radius: 6px; text-align: center;
         }
         .btn-add:hover { background: var(--dusty-blue); border-color: var(--key-active); }
 
@@ -109,21 +132,29 @@
         .song-info-wrapper { display: flex; flex-direction: column; flex: 1; min-width: 0; padding-right: 6px; }
         .song-title-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; font-size: 14px; font-weight: 500; }
         .song-artist-text { font-size: 11px; color: var(--ink-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; opacity: 0.8; margin-top: -1px; font-style: italic; }
-        .song-tag-badge { font-size: 14px; background: transparent; border: none; margin-left: 4px; flex-shrink: 0; }
+        
+        .song-item-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .fav-btn {
+            background: none; border: none; font-size: 14px; cursor: pointer; color: #b0bec5; transition: all 0.2s; padding: 2px;
+        }
+        .fav-btn.is-fav { color: #f1c40f; }
+        .fav-btn:hover { transform: scale(1.2); }
+
+        .song-tag-badge { font-size: 13px; background: transparent; border: none; margin-left: 2px; }
 
         .song-item:hover, .song-item.active { color: var(--ink-dark); background: var(--dusty-blue); border-left-color: var(--key-active); }
         .song-item:hover .song-artist-text, .song-item.active .song-artist-text { color: var(--key-active); opacity: 0.9; }
 
-        .song-actions { display: none; gap: 8px; margin-left: 8px; flex-shrink: 0; }
+        .song-actions { display: none; gap: 6px; margin-left: 4px; flex-shrink: 0; }
         .btn-action { background: none; border: none; color: #b0bec5; cursor: pointer; font-size: 13px; transition: all 0.2s; }
-        .btn-action.play-preview { opacity: 0.5; margin-left: 6px; padding: 2px 4px; border-radius: 4px; flex-shrink: 0; }
+        .btn-action.play-preview { opacity: 0.5; padding: 2px 4px; border-radius: 4px; flex-shrink: 0; }
         .btn-action.play-preview:hover, .btn-action.play-preview.is-playing { opacity: 1; color: var(--key-active); }
         .btn-action.edit:hover { color: var(--key-active); }
         .btn-action.delete:hover { color: #e74c3c; }
 
         .admin-toggle {
             font-size: 12px; color: var(--ink-light); opacity: 0.5; text-align: center;
-            margin-top: 15px; cursor: pointer; transition: all 0.4s; font-style: italic; padding: 10px 0; user-select: none;
+            margin-top: 10px; cursor: pointer; transition: all 0.4s; font-style: italic; padding: 8px 0; user-select: none;
         }
         .admin-toggle:hover { opacity: 1; color: var(--key-active); }
 
@@ -340,12 +371,17 @@
         <div class="sidebar" id="sidebar">
             <h1>Tập Tản Nhạc</h1>
             <button class="btn-add" id="addBtn" onclick="openModal()">+ Ghi chép bản nhạc mới</button>
+            <button class="btn-add" id="checkAllBtn" onclick="checkAllSongsSyntax()" style="background: var(--dusty-blue); border-color: var(--key-active);">🔍 Kiểm tra lỗi toàn bộ kho nhạc</button>
+            
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Tìm tên bài hát, tác giả..." oninput="renderList()">
+                <input type="text" id="searchInput" placeholder="Tìm tên bài hát, tác giả... (Nhấn /)" oninput="handleSearchInput()">
+                <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" title="Xóa tìm kiếm">✕</button>
             </div>
-            <div class="filter-box" style="margin-bottom: 12px;">
-                <select id="tagFilter" onchange="renderList()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 13px; background: var(--paper-white); color: var(--ink-dark); outline: none; cursor: pointer;">
-                    <option value="all">🌍 All</option>
+
+            <div class="filter-controls">
+                <select id="tagFilter" onchange="renderList()">
+                    <option value="all">🌍 All danh mục</option>
+                    <option value="favorites">⭐ Yêu thích</option>
                     <option value="Việt Nam">Việt Nam</option>
                     <option value="Japan">Japan</option>
                     <option value="Korean">Korean</option>
@@ -355,7 +391,10 @@
                     <option value="Thailand">Thailand</option>
                     <option value="others">Others</option>
                 </select>
+                <button class="btn-random" onclick="selectRandomSong()" title="Chọn ngẫu nhiên một bài hát">🎲 Random</button>
             </div>
+
+		    <div id="songCount" style="font-size: 12px; color: var(--ink-light); margin-bottom: 10px; font-style: italic; padding: 0 4px;"></div>
             <ul class="song-list" id="songList"></ul>
             <div class="admin-toggle" id="adminToggleBtn" onclick="toggleAdmin()">Quyền quản trị</div>
         </div>
@@ -405,7 +444,8 @@
                         </div>
 
                         <div id="textEditor">
-                            <textarea id="songNotes" placeholder="Nhập phím (vd: 1 3,5 - / A1B2 A3 .)..."></textarea>
+                            <textarea id="songNotes" placeholder="Nhập phím (vd: 1 3,5 - / A1B2 A3 .)..." oninput="validateTextNotes()"></textarea>
+                            <div id="textValidationMsg" style="font-size: 12px; margin-top: 4px; margin-bottom: 6px; font-style: italic; min-height: 18px;"></div>
                             <div class="note-guide">
                                 * Nốt dạng Số: <code>1 2 3</code> | Hợp âm: <code>1,3,5</code><br>
                                 * Nốt dạng Chữ: <code>A1 B2 C3</code> | Hợp âm: <code>A1B2</code><br>
@@ -459,6 +499,7 @@
         });
 
         let songs = [];
+        let currentFilteredSongs = [];
         let activeSongId = null;
         let editingSongId = null;
         let isAdmin = false;
@@ -467,6 +508,37 @@
         let isScrolling = false;
         let scrollSpeed = 1.0;
         let displayMode = 'grid'; 
+
+        // --- QUẢN LÝ YÊU THÍCH (FAVORITES) ---
+        let favorites = JSON.parse(localStorage.getItem('sky_music_favorites') || '[]');
+
+        function toggleFavorite(event, id) {
+            event.stopPropagation();
+            const index = favorites.indexOf(id);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(id);
+            }
+            localStorage.setItem('sky_music_favorites', JSON.stringify(favorites));
+            renderList();
+        }
+
+        // --- CHỌN BÀI HÁT NGẪU NHIÊN ---
+        function selectRandomSong() {
+            if (!currentFilteredSongs || currentFilteredSongs.length === 0) {
+                alert("Không có bài hát nào trong danh sách để chọn!");
+                return;
+            }
+            const randomIndex = Math.floor(Math.random() * currentFilteredSongs.length);
+            const randomSong = currentFilteredSongs[randomIndex];
+            selectSong(randomSong.id);
+            
+            // Tự đóng sidebar nếu đang trên màn hình di động
+            if (window.innerWidth <= 768) {
+                document.body.classList.remove('sidebar-open');
+            }
+        }
 
         let audioCtx = null;
         let previewTimeouts = [];
@@ -700,15 +772,22 @@
             }
         }
 
-        function getSearchScore(str, query) {
-            if (!str) return 999;
-            const t = str.toLowerCase();
-            if (t.startsWith(query)) return 0;
-            const words = t.split(/\s+/);
-            for (let i = 0; i < words.length; i++) { if (words[i].startsWith(query)) return i + 1; }
-            const pos = t.indexOf(query);
-            if (pos !== -1) return 100 + pos;
-            return 999;
+        function handleSearchInput() {
+            const input = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('searchClearBtn');
+            if (input && clearBtn) {
+                clearBtn.style.display = input.value ? 'block' : 'none';
+            }
+            renderList();
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('searchInput');
+            if (input) {
+                input.value = '';
+                handleSearchInput();
+                input.focus();
+            }
         }
 
         function renderList() {
@@ -728,35 +807,35 @@
                 'Khác': '🌐', 'others': '🌐'
             };
 
-            let filteredSongs = songs.filter(song => {
+            currentFilteredSongs = songs.filter(song => {
                 const titleStr = song.title || ''; const artistStr = song.artist || '';
                 const matchesQuery = titleStr.toLowerCase().includes(query) || artistStr.toLowerCase().includes(query);
-                const rawTag = song.tag || 'others';
-                const matchesTag = (selectedTag === 'all') || (rawTag === selectedTag) ||
-                                   (selectedTag === 'Japan' && rawTag === 'Nhật Bản') ||
-                                   (selectedTag === 'Korean' && rawTag === 'Hàn Quốc') ||
-                                   (selectedTag === 'China' && rawTag === 'Trung Quốc') ||
-                                   (selectedTag === 'Europe' && rawTag === 'Châu Âu') ||
-                                   (selectedTag === 'Thailand' && rawTag === 'Thái Lan');
+                
+                let matchesTag = true;
+                if (selectedTag === 'favorites') {
+                    matchesTag = favorites.includes(song.id);
+                } else if (selectedTag !== 'all') {
+                    const rawTag = song.tag || 'others';
+                    matchesTag = (rawTag === selectedTag) ||
+                                 (selectedTag === 'Japan' && rawTag === 'Nhật Bản') ||
+                                 (selectedTag === 'Korean' && rawTag === 'Hàn Quốc') ||
+                                 (selectedTag === 'China' && rawTag === 'Trung Quốc') ||
+                                 (selectedTag === 'Europe' && rawTag === 'Châu Âu') ||
+                                 (selectedTag === 'Thailand' && rawTag === 'Thái Lan');
+                }
                 return matchesQuery && matchesTag;
             });
 
-            filteredSongs.sort((a, b) => {
-                if (query) {
-                    const scoreA = Math.min(getSearchScore(a.title, query), getSearchScore(a.artist, query));
-                    const scoreB = Math.min(getSearchScore(b.title, query), getSearchScore(b.artist, query));
-                    if (scoreA !== scoreB) return scoreA - scoreB;
+            const countEl = document.getElementById('songCount');
+            if (countEl) {
+                if (query || selectedTag !== 'all') {
+                    countEl.textContent = `Tìm thấy: ${currentFilteredSongs.length} / ${songs.length} bài hát`;
+                } else {
+                    countEl.textContent = `Tổng số: ${songs.length} bài hát`;
                 }
-                const artistA = (a.artist || 'ZZZ_NO_ARTIST').trim();
-                const artistB = (b.artist || 'ZZZ_NO_ARTIST').trim();
-                const artistCompare = artistA.localeCompare(artistB, 'vi', { sensitivity: 'base' });
-                if (artistCompare !== 0) return artistCompare;
-                const titleA = (a.title || '').trim();
-                const titleB = (b.title || '').trim();
-                return titleA.localeCompare(titleB, 'vi', { sensitivity: 'base' });
-            });
+            }
 
-            filteredSongs.forEach(song => {
+            currentFilteredSongs.forEach((song) => {
                 const li = document.createElement('li');
                 li.className = `song-item ${song.id === activeSongId ? 'active' : ''}`;
                 li.onclick = () => { selectSong(song.id); if (window.innerWidth <= 768) document.body.classList.remove('sidebar-open'); };
@@ -767,19 +846,31 @@
                 const artistSpan = document.createElement('span'); artistSpan.className = 'song-artist-text'; artistSpan.textContent = song.artist ? song.artist : 'Unknown'; infoWrapper.appendChild(artistSpan);
                 li.appendChild(infoWrapper);
 
-                const tagBadge = document.createElement('span'); tagBadge.className = 'song-tag-badge'; tagBadge.textContent = TAG_MAP[song.tag] || '🌐'; li.appendChild(tagBadge);
+                const rightContainer = document.createElement('div');
+                rightContainer.className = 'song-item-right';
+
+                const isFav = favorites.includes(song.id);
+                const favBtn = document.createElement('button');
+                favBtn.className = `fav-btn ${isFav ? 'is-fav' : ''}`;
+                favBtn.innerHTML = isFav ? '★' : '☆';
+                favBtn.title = isFav ? 'Bỏ yêu thích' : 'Thêm vào yêu thích';
+                favBtn.onclick = (e) => toggleFavorite(e, song.id);
+                rightContainer.appendChild(favBtn);
+
+                const tagBadge = document.createElement('span'); tagBadge.className = 'song-tag-badge'; tagBadge.textContent = TAG_MAP[song.tag] || '🌐'; rightContainer.appendChild(tagBadge);
 
                 const isThisPlaying = playingPreviewId === song.id;
                 const playBtn = document.createElement('button');
                 playBtn.className = `btn-action play-preview ${isThisPlaying ? 'is-playing' : ''}`;
                 playBtn.innerHTML = isThisPlaying ? '⏹' : '▶'; playBtn.title = isThisPlaying ? 'Dừng nghe' : 'Nghe giai điệu (Harp Sky)';
-                playBtn.onclick = (e) => togglePreview(e, song.id); li.appendChild(playBtn);
+                playBtn.onclick = (e) => togglePreview(e, song.id); rightContainer.appendChild(playBtn);
 
                 const actionsDiv = document.createElement('div'); actionsDiv.className = 'song-actions';
                 const editBtn = document.createElement('button'); editBtn.className = 'btn-action edit'; editBtn.innerHTML = '✎'; editBtn.title = 'Hiệu chỉnh'; editBtn.onclick = (e) => openModal(e, song.id);
                 const deleteBtn = document.createElement('button'); deleteBtn.className = 'btn-action delete'; deleteBtn.innerHTML = '✖'; deleteBtn.title = 'Xóa'; deleteBtn.onclick = (e) => deleteSong(e, song.id);
-                actionsDiv.appendChild(editBtn); actionsDiv.appendChild(deleteBtn); li.appendChild(actionsDiv);
+                actionsDiv.appendChild(editBtn); actionsDiv.appendChild(deleteBtn); rightContainer.appendChild(actionsDiv);
 
+                li.appendChild(rightContainer);
                 listEl.appendChild(li);
             });
         }
@@ -870,8 +961,6 @@
             if (event.target === modal) closeModal();
         };
 
-        // --- CHẾ ĐỘ LƯỚI VÀ NHẬP PHÍM BÀN PHÍM TRONG MODAL ---
-
         function switchEditorMode(mode) {
             const textTab = document.getElementById('tabText');
             const gridTab = document.getElementById('tabGrid');
@@ -883,12 +972,95 @@
                 gridTab.classList.remove('active');
                 textEditor.style.display = 'block';
                 gridEditor.style.display = 'none';
+                validateTextNotes();
             } else {
                 gridTab.classList.add('active');
                 textTab.classList.remove('active');
                 textEditor.style.display = 'none';
                 gridEditor.style.display = 'block';
                 syncTextToGridEditor();
+            }
+        }
+
+        function validateTextNotes() {
+            const textarea = document.getElementById('songNotes');
+            const msgEl = document.getElementById('textValidationMsg');
+            if (!textarea || !msgEl) return;
+
+            const text = textarea.value.trim();
+            if (!text) { msgEl.textContent = ""; return; }
+
+            const tokens = text.split(/\s+/);
+            let invalidTokens = [];
+
+            tokens.forEach(token => {
+                if (!token) return;
+                if (token === '/' || token === '|') return;
+                if (token === '.' || token === '-' || token === '0') return;
+
+                if (/[A-C]/i.test(token)) {
+                    const letterMatches = token.toUpperCase().match(/[ABC][1-5]/g);
+                    const cleaned = token.toUpperCase();
+                    const joinedLetters = letterMatches ? letterMatches.join('') : '';
+                    if (!letterMatches || joinedLetters.length !== cleaned.length) invalidTokens.push(token);
+                    return;
+                }
+
+                const parts = token.split(',');
+                let isNumberValid = true;
+                for (let p of parts) {
+                    const num = parseInt(p.trim(), 10);
+                    if (isNaN(num) || num < 1 || num > 15) { isNumberValid = false; break; }
+                }
+                if (!isNumberValid) invalidTokens.push(token);
+            });
+
+            if (invalidTokens.length > 0) {
+                msgEl.textContent = `⚠ Phát hiện ký tự/cú pháp chưa đúng: "${invalidTokens.join(', ')}"`;
+                msgEl.style.color = "#e74c3c";
+            } else {
+                msgEl.textContent = "✔ Cú pháp nốt nhạc hợp lệ!";
+                msgEl.style.color = "#27ae60";
+            }
+        }
+
+        function checkAllSongsSyntax() {
+            if (!songs || songs.length === 0) { alert("Kho nhạc hiện đang trống."); return; }
+            let invalidSongs = [];
+
+            songs.forEach((song) => {
+                const notes = song.notes || '';
+                const tokens = notes.trim().split(/\s+/);
+                let hasError = false;
+
+                tokens.forEach(token => {
+                    if (!token || hasError) return;
+                    if (token === '/' || token === '|' || token === '.' || token === '-' || token === '0') return;
+
+                    if (/[A-C]/i.test(token)) {
+                        const letterMatches = token.toUpperCase().match(/[ABC][1-5]/g);
+                        const cleaned = token.toUpperCase();
+                        const joinedLetters = letterMatches ? letterMatches.join('') : '';
+                        if (!letterMatches || joinedLetters.length !== cleaned.length) hasError = true;
+                        return;
+                    }
+
+                    const parts = token.split(',');
+                    for (let p of parts) {
+                        const num = parseInt(p.trim(), 10);
+                        if (isNaN(num) || num < 1 || num > 15) { hasError = true; break; }
+                    }
+                });
+
+                if (hasError) invalidSongs.push(`${song.title} (${song.artist || 'Unknown'})`);
+            });
+
+            if (invalidSongs.length === 0) {
+                alert(`Cả ${songs.length} bài hát trong kho đều có cú pháp nốt nhạc hoàn toàn hợp lệ.`);
+            } else {
+                let reportText = `⚠️ Quét xong ${songs.length} bài và phát hiện ${invalidSongs.length} bài có cú pháp lỗi:\n\n`;
+                invalidSongs.forEach((item, idx) => { reportText += `${idx + 1}. ${item}\n`; });
+                alert(reportText);
             }
         }
 
@@ -961,6 +1133,7 @@
         function syncGridToText() {
             const textarea = document.getElementById('songNotes');
             textarea.value = editorBeats.filter(b => b.trim() !== '').join(' ');
+            validateTextNotes();
         }
 
         function openModal(e, id = null) {
@@ -992,6 +1165,7 @@
             
             modal.style.display = 'flex';
             switchEditorMode('text');
+            validateTextNotes();
         }
 
         function closeModal() {
@@ -1006,10 +1180,7 @@
             const tag = document.getElementById('songTag').value;
             const notes = document.getElementById('songNotes').value.trim();
 
-            if (!title || !notes) {
-                alert("Vui lòng nhập đầy đủ Tên bản nhạc và Nốt nhạc!");
-                return;
-            }
+            if (!title || !notes) { alert("Vui lòng nhập đầy đủ Tên bản nhạc và Nốt nhạc!"); return; }
 
             const songData = { title, artist, bpm, tag, notes };
 
@@ -1019,7 +1190,6 @@
             closeModal();
         }
 
-        // --- XỬ LÝ PHÍM BÀN PHÍM VÀ CHẾ ĐỘ CHÈN KHÔNG GHI ĐÈ (GIỮ NGUYÊN NỐT LẶNG) ---
         const activeKeysDown = new Set();
         let chordTimeout = null;
 
@@ -1030,26 +1200,16 @@
 
             if (isModalOpen && gridEditorVisible) {
                 const keyChar = e.key.toLowerCase();
-
-                // 1. Phím mũi tên Trái / Phải để di chuyển
                 if (e.key === 'ArrowLeft') {
                     e.preventDefault();
-                    if (selectedEditorBeatIndex > 0) {
-                        selectedEditorBeatIndex--;
-                        renderGridEditor();
-                    }
+                    if (selectedEditorBeatIndex > 0) { selectedEditorBeatIndex--; renderGridEditor(); }
                     return;
                 }
                 if (e.key === 'ArrowRight') {
                     e.preventDefault();
-                    if (selectedEditorBeatIndex < editorBeats.length - 1) {
-                        selectedEditorBeatIndex++;
-                        renderGridEditor();
-                    }
+                    if (selectedEditorBeatIndex < editorBeats.length - 1) { selectedEditorBeatIndex++; renderGridEditor(); }
                     return;
                 }
-
-                // 2. Phím tắt xóa (Backspace / Delete)
                 if (e.key === 'Backspace' || e.key === 'Delete') {
                     e.preventDefault();
                     if (editorBeats.length > 0) {
@@ -1060,51 +1220,30 @@
                     }
                     return;
                 }
-
-                // 3. Phím tắt thêm nốt lặng (dùng dấu trừ '-' hoặc phím cách 'Space')
                 if (e.key === ' ' || e.key === '-') {
                     e.preventDefault();
-                    if (editorBeats.length === 0) {
-                        editorBeats.push('.');
-                        selectedEditorBeatIndex = 0;
-                    } else if (editorBeats[selectedEditorBeatIndex] === '') {
-                        editorBeats[selectedEditorBeatIndex] = '.';
-                    } else {
-                        editorBeats.splice(selectedEditorBeatIndex + 1, 0, '.');
-                        selectedEditorBeatIndex++;
-                    }
+                    if (editorBeats.length === 0) { editorBeats.push('.'); selectedEditorBeatIndex = 0; }
+                    else if (editorBeats[selectedEditorBeatIndex] === '') { editorBeats[selectedEditorBeatIndex] = '.'; }
+                    else { editorBeats.splice(selectedEditorBeatIndex + 1, 0, '.'); selectedEditorBeatIndex++; }
                     renderGridEditor();
                     return;
                 }
-
-                // 4. Phím tắt xuống dòng (Enter)
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    if (editorBeats.length === 0) {
-                        editorBeats.push('/');
-                        selectedEditorBeatIndex = 0;
-                    } else {
-                        editorBeats.splice(selectedEditorBeatIndex + 1, 0, '/');
-                        selectedEditorBeatIndex++;
-                    }
+                    if (editorBeats.length === 0) { editorBeats.push('/'); selectedEditorBeatIndex = 0; }
+                    else { editorBeats.splice(selectedEditorBeatIndex + 1, 0, '/'); selectedEditorBeatIndex++; }
                     renderGridEditor();
                     return;
                 }
-
-                // 5. Nhập nốt đàn bằng phím y, u, i, o, p...
                 if (KEYBOARD_MAP[keyChar] !== undefined) {
                     e.preventDefault();
                     if (e.repeat) return;
-
                     if (!activeKeysDown.has(keyChar)) {
                         activeKeysDown.add(keyChar);
                         playSkyNote(SKY_PITCHES[KEYBOARD_MAP[keyChar]], 0.3, 1);
                     }
-
                     clearTimeout(chordTimeout);
-                    chordTimeout = setTimeout(() => {
-                        commitChordToGrid();
-                    }, 50);
+                    chordTimeout = setTimeout(() => { commitChordToGrid(); }, 50);
                     return;
                 }
             }
@@ -1116,8 +1255,18 @@
                     e.preventDefault(); saveSong();
                 }
             } else {
-                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
-                if (e.key === 'Home' || e.key.toLowerCase() === 't') { e.preventDefault(); scrollToTop(); } 
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                    if (e.key === 'Escape' && e.target.id === 'searchInput') {
+                        clearSearch();
+                    }
+                    return;
+                }
+                if (e.key === '/') {
+                    e.preventDefault();
+                    const searchInput = document.getElementById('searchInput');
+                    if (searchInput) { searchInput.focus(); searchInput.select(); }
+                }
+                else if (e.key === 'Home' || e.key.toLowerCase() === 't') { e.preventDefault(); scrollToTop(); } 
                 else if (e.key === ' ') { e.preventDefault(); if (activeSongId) togglePreview(e, activeSongId); } 
                 else if (e.key === 'Tab') { e.preventDefault(); toggleSidebar(); } 
                 else if (e.key === 'Enter') { e.preventDefault(); toggleAutoScroll(); } 
@@ -1133,7 +1282,6 @@
 
         function commitChordToGrid() {
             if (activeKeysDown.size === 0) return;
-
             if (editorBeats.length === 0) editorBeats.push('');
             if (selectedEditorBeatIndex >= editorBeats.length) selectedEditorBeatIndex = editorBeats.length - 1;
 
@@ -1146,8 +1294,6 @@
             keys.sort((a, b) => a - b);
             const newBeatStr = keys.join(',');
 
-            // Chỉ điền vào ô hiện tại nếu ô đó thực sự trống (''). 
-            // Nếu ô hiện tại là nốt hoặc đã có dấu lặng ('.'), sẽ tạo ô mới và chèn ngay sau đó, không ghi đè!
             if (editorBeats[selectedEditorBeatIndex] === '') {
                 editorBeats[selectedEditorBeatIndex] = newBeatStr;
             } else {
@@ -1156,7 +1302,6 @@
             }
 
             renderGridEditor();
-
             const container = document.getElementById('gridEditorContainer');
             const selectedEl = container.querySelector('.selected-beat');
             if (selectedEl) selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

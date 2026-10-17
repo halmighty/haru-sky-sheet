@@ -512,6 +512,9 @@
         // --- QUẢN LÝ YÊU THÍCH (FAVORITES) ---
         let favorites = JSON.parse(localStorage.getItem('sky_music_favorites') || '[]');
 
+        // --- QUẢN LÝ LỊCH SỬ RANDOM TRÁNH LẶP ---
+        let playedRandomIds = [];
+
         function toggleFavorite(event, id) {
             event.stopPropagation();
             const index = favorites.indexOf(id);
@@ -524,14 +527,28 @@
             renderList();
         }
 
-        // --- CHỌN BÀI HÁT NGẪU NHIÊN ---
+        // --- CHỌN BÀI HÁT NGẪU NHIÊN THÔNG MINH (TRÁNH LẶP) ---
         function selectRandomSong() {
             if (!currentFilteredSongs || currentFilteredSongs.length === 0) {
                 alert("Không có bài hát nào trong danh sách để chọn!");
                 return;
             }
-            const randomIndex = Math.floor(Math.random() * currentFilteredSongs.length);
-            const randomSong = currentFilteredSongs[randomIndex];
+
+            // Lọc ra các bài chưa phát trong vòng hiện tại
+            let availableSongs = currentFilteredSongs.filter(song => !playedRandomIds.includes(song.id));
+
+            // Nếu đã phát hết toàn bộ danh sách, reset lại vòng mới
+            if (availableSongs.length === 0) {
+                playedRandomIds = [];
+                availableSongs = [...currentFilteredSongs];
+            }
+
+            const randomIndex = Math.floor(Math.random() * availableSongs.length);
+            const randomSong = availableSongs[randomIndex];
+
+            // Đánh dấu bài này đã phát
+            playedRandomIds.push(randomSong.id);
+
             selectSong(randomSong.id);
             
             // Tự đóng sidebar nếu đang trên màn hình di động
@@ -824,6 +841,13 @@
                                  (selectedTag === 'Thailand' && rawTag === 'Thái Lan');
                 }
                 return matchesQuery && matchesTag;
+            });
+
+            // --- SẮP XẾP DANH SÁCH TỪ A-Z THEO TIÊU ĐỀ BÀI HÁT ---
+            currentFilteredSongs.sort((a, b) => {
+                const titleA = (a.title || '').toLowerCase();
+                const titleB = (b.title || '').toLowerCase();
+                return titleA.localeCompare(titleB, 'vi', { sensitivity: 'base' });
             });
 
             const countEl = document.getElementById('songCount');

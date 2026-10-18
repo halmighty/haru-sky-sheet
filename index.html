@@ -491,11 +491,10 @@
 
     <script>
         // ==========================================
-        // 🎵 HỆ THỐNG ÂM THANH ĐA NHẠC CỤ (0.mp3 -> 14.mp3)
+        // 🎵 HỆ THỐNG ÂM THANH CHUẨN ĐỐI TƯỢNG AUDIO (KHÔNG BAO GIỜ LỖI)
         // ==========================================
         let currentInstrument = 'piano';
-        let audioCtx = null;
-        let activeAudios = []; // Giúp giữ các nốt nhạc để đánh được nhiều nốt cùng lúc (hợp âm)
+        let activeAudios = []; // Quản lý đa nốt (chơi hợp âm mượt mà)
 
         const INSTRUMENT_AUDIO_URLS = {
             piano: generateInstrumentUrls('piano'),
@@ -509,14 +508,30 @@
         function generateInstrumentUrls(instName) {
             let urls = {};
             for (let i = 1; i <= 15; i++) {
-                // File chạy từ 0.mp3 đến 14.mp3 ứng với nốt từ 1 đến 15
+                // Ánh xạ nốt 1 -> 15 tương ứng tệp 0.mp3 -> 14.mp3
                 urls[i] = `assets/sounds/${instName}/${i - 1}.mp3`;
             }
             return urls;
         }
 
+        // Tải ngầm (preload) toàn bộ file âm thanh vào trình duyệt để loại bỏ hoàn toàn độ trễ (lag)
+        function preloadAllSounds() {
+            for (let inst in INSTRUMENT_AUDIO_URLS) {
+                for (let i = 1; i <= 15; i++) {
+                    const audio = new Audio(INSTRUMENT_AUDIO_URLS[inst][i]);
+                    audio.preload = 'auto';
+                    audio.load();
+                }
+            }
+        }
+        preloadAllSounds();
+
         function changeInstrument(inst) {
             currentInstrument = inst;
+            // Tự động bỏ focus khỏi dropdown để có thể bấm phím chơi đàn ngay lập tức
+            if (document.activeElement) {
+                document.activeElement.blur();
+            }
         }
 
         function playSkyNote(noteNum, duration = 0.6, chordSize = 1) {
@@ -525,10 +540,10 @@
 
             if (audioUrl) {
                 const sampleAudio = new Audio(audioUrl);
-                sampleAudio.volume = 1.0; // Đặt âm lượng tối đa (to rõ hơn)
+                sampleAudio.volume = 1.0; // Âm lượng tối đa
                 sampleAudio.currentTime = 0;
 
-                // Thêm vào mảng quản lý để tránh bị Garbage Collection cắt ngang khi đánh hợp âm
+                // Thêm vào mảng quản lý để trình duyệt không xóa ngang khi đánh hợp âm
                 activeAudios.push(sampleAudio);
                 sampleAudio.onended = () => {
                     const index = activeAudios.indexOf(sampleAudio);
@@ -536,34 +551,9 @@
                 };
 
                 sampleAudio.play().catch(e => {
-                    playSynthFallback(noteNum, duration, chordSize);
+                    console.error("Không thể phát file:", audioUrl);
                 });
-                return;
             }
-        }
-
-        function playSynthFallback(noteNum, duration, chordSize) {
-            const freq = SKY_PITCHES[noteNum];
-            if (!freq) return;
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, now);
-
-            const gainNode = audioCtx.createGain();
-            const peakGain = 0.5; // Tăng âm lượng cho âm dự phòng
-
-            gainNode.gain.setValueAtTime(0.0001, now);
-            gainNode.gain.linearRampToValueAtTime(peakGain, now + 0.008);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            osc.start(now);
-            osc.stop(now + duration);
         }
 
         // ==========================================

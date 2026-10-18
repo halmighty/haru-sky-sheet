@@ -8,6 +8,18 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script type="module">
+    import { playSkyNote, changeInstrument } from './audio.js';
+    window.changeInstrument = changeInstrument;
+
+    // Lắng nghe phím bấm (y, u, i, o, p...)
+    const KEY_MAP = { 'y':1, 'u':2, 'i':3, 'o':4, 'p':5, 'h':6, 'j':7, 'k':8, 'l':9, ';':10, 'n':11, 'm':12, ',':13, '.':14, '/':15 };
+    document.addEventListener('keydown', e => {
+        if (KEY_MAP[e.key.toLowerCase()] && !e.repeat) {
+            playSkyNote(KEY_MAP[e.key.toLowerCase()]);
+        }
+    });
+</script>
     <link rel="icon" type="image/png" href="https://github.com/halmighty/haru-sky-sheet/blob/main/harulogo.png?raw=true">
 
     <style>
@@ -295,46 +307,47 @@
         .editor-tab:hover { background: var(--dusty-blue); }
         .editor-tab.active { background: var(--dusty-blue); border-color: var(--key-active); color: var(--key-active); font-weight: 600; }
         
+        /* --- ĐÃ THU NHỎ LƯỚI SOẠN THẢO (GRID EDITOR) ĐỂ HIỂN THỊ NHIỀU HƠN --- */
         .grid-editor-container {
-            display: flex; flex-wrap: wrap; gap: 12px; padding: 15px; 
-            height: 280px; overflow-y: auto;
+            display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; 
+            height: 320px; overflow-y: auto;
             background: rgba(248, 249, 250, 0.8); border: 1.5px solid var(--border-color); border-radius: 6px;
             margin-bottom: 12px; align-content: flex-start;
         }
         
         .editor-beat-block {
-            background: #ffffff; padding: 8px; display: grid;
-            grid-template-columns: repeat(5, 20px); grid-template-rows: repeat(3, 20px);
-            gap: 4px; border: 1.5px solid var(--key-border); border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.04); transition: all 0.15s ease-out;
+            background: #ffffff; padding: 4px; display: grid;
+            grid-template-columns: repeat(5, 14px); grid-template-rows: repeat(3, 14px);
+            gap: 2px; border: 1.5px solid var(--key-border); border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: all 0.15s ease-out;
             cursor: pointer;
         }
         .editor-beat-block:hover { border-color: var(--key-active); }
-        .editor-beat-block.selected-beat { border-color: var(--key-active); box-shadow: 0 0 10px rgba(56, 103, 214, 0.5); }
+        .editor-beat-block.selected-beat { border-color: var(--key-active); box-shadow: 0 0 8px rgba(56, 103, 214, 0.5); }
         .editor-beat-block .key { width: 100%; height: 100%; border-radius: 50%; pointer-events: none; }
         
-        .editor-beat-block .key:nth-child(-n+5) { background: #ebf5fb; border: 1.5px solid #a9cce3; }
-        .editor-beat-block .key:nth-child(-n+5).active { background: #2980b9; border-color: #1a5276; box-shadow: 0 0 8px rgba(41,128,185,0.6); }
-        .editor-beat-block .key:nth-child(n+6):nth-child(-n+10) { background: #f4ecf7; border: 1.5px solid #d2b4de; }
-        .editor-beat-block .key:nth-child(n+6):nth-child(-n+10).active { background: #8e44ad; border-color: #512e5f; box-shadow: 0 0 8px rgba(142,68,173,0.6); }
-        .editor-beat-block .key:nth-child(n+11) { background: #fdf2e9; border: 1.5px solid #f5cba7; }
-        .editor-beat-block .key:nth-child(n+11).active { background: #e67e22; border-color: #a04000; box-shadow: 0 0 8px rgba(230,126,34,0.6); }
+        .editor-beat-block .key:nth-child(-n+5) { background: #ebf5fb; border: 1px solid #a9cce3; }
+        .editor-beat-block .key:nth-child(-n+5).active { background: #2980b9; border-color: #1a5276; box-shadow: 0 0 5px rgba(41,128,185,0.6); }
+        .editor-beat-block .key:nth-child(n+6):nth-child(-n+10) { background: #f4ecf7; border: 1px solid #d2b4de; }
+        .editor-beat-block .key:nth-child(n+6):nth-child(-n+10).active { background: #8e44ad; border-color: #512e5f; box-shadow: 0 0 5px rgba(142,68,173,0.6); }
+        .editor-beat-block .key:nth-child(n+11) { background: #fdf2e9; border: 1px solid #f5cba7; }
+        .editor-beat-block .key:nth-child(n+11).active { background: #e67e22; border-color: #a04000; box-shadow: 0 0 5px rgba(230,126,34,0.6); }
         
         .editor-beat-block .key.active::after {
-            content: '✦'; color: #ffffff; font-size: 11px; font-weight: bold; line-height: 1;
+            content: '✦'; color: #ffffff; font-size: 8px; font-weight: bold; line-height: 1;
             display: flex; align-items: center; justify-content: center; text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
         }
 
         .editor-rest-block {
             border: 1.5px dashed #b0bec5; background: rgba(248, 249, 250, 0.6);
             display: flex; align-items: center; justify-content: center;
-            width: 132px; height: 84px; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+            width: 78px; height: 50px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
         }
         .editor-rest-block:hover { border-color: #ff7675; background: #ffeaa7; }
-        .editor-rest-block.selected-beat { border-color: var(--key-active); box-shadow: 0 0 10px rgba(56, 103, 214, 0.5); }
+        .editor-rest-block.selected-beat { border-color: var(--key-active); box-shadow: 0 0 8px rgba(56, 103, 214, 0.5); }
         
         .editor-line-break {
-            flex-basis: 100%; width: 100%; height: 10px; margin: 2px 0;
+            flex-basis: 100%; width: 100%; height: 8px; margin: 2px 0;
             border-top: 2px dashed #b2bec3; cursor: pointer; transition: all 0.2s;
         }
         .editor-line-break:hover { border-color: #ff7675; }
@@ -391,7 +404,7 @@
                     <option value="Thailand">Thailand</option>
                     <option value="others">Others</option>
                 </select>
-                <button class="btn-random" onclick="selectRandomSong()" title="Chọn ngẫu nhiên một bài hát">🎲 Random</button>
+                <button class="btn-random" onclick="selectRandomSong()" title="Chọn ngẫu nhiên một bài hát (Phím R)">🎲 Random (R)</button>
             </div>
 
 		    <div id="songCount" style="font-size: 12px; color: var(--ink-light); margin-bottom: 10px; font-style: italic; padding: 0 4px;"></div>
@@ -479,6 +492,9 @@
     </div>
 
     <script>
+	<script type="module">
+    import { playSkyNote, changeInstrument } from './audio.js';
+    window.changeInstrument = changeInstrument;
         const firebaseConfig = {
             apiKey: "AIzaSyB5rVXz8quhqatJwYJysLl5IBc_wZUJ8cQ",
             authDomain: "sky-sheet-bfc38.firebaseapp.com",
@@ -603,29 +619,7 @@
                 .filter(n => !isNaN(n) && n >= 1 && n <= 15);
         }
 
-        function playSkyNote(freq, duration = 0.5, chordSize = 1) {
-            if (!freq) return;
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now);
-
-            const gainNode = audioCtx.createGain();
-            const baseVolume = 0.25; 
-            const peakGain = baseVolume / Math.max(1, chordSize * 0.85);
-
-            gainNode.gain.setValueAtTime(0.0001, now);
-            gainNode.gain.linearRampToValueAtTime(peakGain, now + 0.004);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            osc.start(now);
-            osc.stop(now + duration);
-        }
+   
 
         function clearAllHighlights() {
             document.querySelectorAll('.beat-item.playing-now').forEach(el => el.classList.remove('playing-now'));
@@ -667,7 +661,7 @@
                         targetBlock.classList.add('playing-now');
                         targetBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
                     }
-                    if (keys.length > 0) { keys.forEach(key => playSkyNote(SKY_PITCHES[key], 0.45, keys.length)); }
+                    if (keys.length > 0) { keys.forEach(key => playSkyNote(key, 0.45, keys.length)); }
                 }, delay);
 
                 previewTimeouts.push(tHighlight);
@@ -924,9 +918,9 @@
                     <div class="toolbar-divider"></div>
                     <button class="zoom-btn ${displayMode !== 'grid' ? 'active-mode' : ''}" id="modeToggleBtn" onclick="cycleDisplayMode()" title="Đổi dạng hiển thị: Lưới / Số / Chữ">${getModeButtonText()}</button>
                     <div class="toolbar-divider"></div>
-                    <button class="zoom-btn" onclick="changeZoom(10)" title="Phóng to">+</button>
+                    <button class="zoom-btn" onclick="changeZoom(10)" title="Phóng to (Phím ])">+</button>
                     <span class="zoom-text" id="zoomVal">${zoomPercent}%</span>
-                    <button class="zoom-btn" onclick="changeZoom(-10)" title="Thu nhỏ">-</button>
+                    <button class="zoom-btn" onclick="changeZoom(-10)" title="Thu nhỏ (Phím [)">-</button>
                     <button class="zoom-btn" onclick="resetZoom()" title="Về mặc định">↺</button>
                 </div>
                 <div class="sheet-title">${escapeHtml(song.title)}</div>
@@ -1112,7 +1106,7 @@
                     if (isRest) {
                         html += `
                             <div class="editor-rest-block ${isSelected ? 'selected-beat' : ''}" onclick="selectEditorBeat(${index})" title="Khoảng lặng">
-                                <span style="font-size: 26px; color: var(--ink-light); font-weight: bold;">•</span>
+                                <span style="font-size: 20px; color: var(--ink-light); font-weight: bold;">•</span>
                             </div>
                         `;
                     } else {
@@ -1218,86 +1212,131 @@
         let chordTimeout = null;
 
         document.addEventListener('keydown', function(e) {
-            const modal = document.getElementById('addModal');
-            const isModalOpen = modal && modal.style.display === 'flex';
-            const gridEditorVisible = document.getElementById('gridEditor').style.display !== 'none';
+    const modal = document.getElementById('addModal');
+    const isModalOpen = modal && modal.style.display === 'flex';
+    const gridEditorVisible = document.getElementById('gridEditor').style.display !== 'none';
+    const keyChar = e.key.toLowerCase();
 
-            if (isModalOpen && gridEditorVisible) {
-                const keyChar = e.key.toLowerCase();
-                if (e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                    if (selectedEditorBeatIndex > 0) { selectedEditorBeatIndex--; renderGridEditor(); }
-                    return;
-                }
-                if (e.key === 'ArrowRight') {
-                    e.preventDefault();
-                    if (selectedEditorBeatIndex < editorBeats.length - 1) { selectedEditorBeatIndex++; renderGridEditor(); }
-                    return;
-                }
-                if (e.key === 'Backspace' || e.key === 'Delete') {
-                    e.preventDefault();
-                    if (editorBeats.length > 0) {
-                        editorBeats.splice(selectedEditorBeatIndex, 1);
-                        if (editorBeats.length === 0) editorBeats.push('');
-                        selectedEditorBeatIndex = Math.max(0, Math.min(selectedEditorBeatIndex, editorBeats.length - 1));
-                        renderGridEditor();
-                    }
-                    return;
-                }
-                if (e.key === ' ' || e.key === '-') {
-                    e.preventDefault();
-                    if (editorBeats.length === 0) { editorBeats.push('.'); selectedEditorBeatIndex = 0; }
-                    else if (editorBeats[selectedEditorBeatIndex] === '') { editorBeats[selectedEditorBeatIndex] = '.'; }
-                    else { editorBeats.splice(selectedEditorBeatIndex + 1, 0, '.'); selectedEditorBeatIndex++; }
-                    renderGridEditor();
-                    return;
-                }
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    if (editorBeats.length === 0) { editorBeats.push('/'); selectedEditorBeatIndex = 0; }
-                    else { editorBeats.splice(selectedEditorBeatIndex + 1, 0, '/'); selectedEditorBeatIndex++; }
-                    renderGridEditor();
-                    return;
-                }
-                if (KEYBOARD_MAP[keyChar] !== undefined) {
-                    e.preventDefault();
-                    if (e.repeat) return;
-                    if (!activeKeysDown.has(keyChar)) {
-                        activeKeysDown.add(keyChar);
-                        playSkyNote(SKY_PITCHES[KEYBOARD_MAP[keyChar]], 0.3, 1);
-                    }
-                    clearTimeout(chordTimeout);
-                    chordTimeout = setTimeout(() => { commitChordToGrid(); }, 50);
-                    return;
-                }
+    // 1. Xử lý khi đang mở Modal và ở chế độ Lưới (Grid Editor)
+    if (isModalOpen && gridEditorVisible) {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            if (selectedEditorBeatIndex > 0) { selectedEditorBeatIndex--; renderGridEditor(); }
+            return;
+        }
+        if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            if (selectedEditorBeatIndex < editorBeats.length - 1) { selectedEditorBeatIndex++; renderGridEditor(); }
+            return;
+        }
+        if (e.key === 'Backspace' || e.key === 'Delete') {
+            e.preventDefault();
+            if (editorBeats.length > 0) {
+                editorBeats.splice(selectedEditorBeatIndex, 1);
+                if (editorBeats.length === 0) editorBeats.push('');
+                selectedEditorBeatIndex = Math.max(0, Math.min(selectedEditorBeatIndex, editorBeats.length - 1));
+                renderGridEditor();
             }
+            return;
+        }
+        if (e.key === ' ' || e.key === '-') {
+            e.preventDefault();
+            if (editorBeats.length === 0) { editorBeats.push('.'); selectedEditorBeatIndex = 0; }
+            else if (editorBeats[selectedEditorBeatIndex] === '') { editorBeats[selectedEditorBeatIndex] = '.'; }
+            else { editorBeats.splice(selectedEditorBeatIndex + 1, 0, '.'); selectedEditorBeatIndex++; }
+            renderGridEditor();
+            return;
+        }
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (editorBeats.length === 0) { editorBeats.push('/'); selectedEditorBeatIndex = 0; }
+            else { editorBeats.splice(selectedEditorBeatIndex + 1, 0, '/'); selectedEditorBeatIndex++; }
+            renderGridEditor();
+            return;
+        }
+        if (KEYBOARD_MAP[keyChar] !== undefined) {
+            e.preventDefault();
+            if (e.repeat) return;
+            if (!activeKeysDown.has(keyChar)) {
+                activeKeysDown.add(keyChar);
+                playSkyNote(KEYBOARD_MAP[keyChar], 0.3, 1);
+            }
+            clearTimeout(chordTimeout);
+            chordTimeout = setTimeout(() => { commitChordToGrid(); }, 50);
+            return;
+        }
+    }
 
-            if (isModalOpen) {
-                if (e.key === 'Escape') { e.preventDefault(); closeModal(); } 
-                else if (e.key === 'Enter') {
-                    if (e.target.tagName === 'TEXTAREA' && e.shiftKey) return;
-                    e.preventDefault(); saveSong();
-                }
-            } else {
-                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
-                    if (e.key === 'Escape' && e.target.id === 'searchInput') {
-                        clearSearch();
-                    }
-                    return;
-                }
-                if (e.key === '/') {
-                    e.preventDefault();
-                    const searchInput = document.getElementById('searchInput');
-                    if (searchInput) { searchInput.focus(); searchInput.select(); }
-                }
-                else if (e.key === 'Home' || e.key.toLowerCase() === 't') { e.preventDefault(); scrollToTop(); } 
-                else if (e.key === ' ') { e.preventDefault(); if (activeSongId) togglePreview(e, activeSongId); } 
-                else if (e.key === 'Tab') { e.preventDefault(); toggleSidebar(); } 
-                else if (e.key === 'Enter') { e.preventDefault(); toggleAutoScroll(); } 
-                else if (e.key === 'ArrowUp') { e.preventDefault(); changeSpeed(-0.25); } 
-                else if (e.key === 'ArrowDown') { e.preventDefault(); changeSpeed(0.25); }
+    // 2. Xử lý khi đang mở Modal chung
+    if (isModalOpen) {
+        if (e.key === 'Escape') { e.preventDefault(); closeModal(); } 
+        else if (e.key === 'Enter') {
+            if (e.target.tagName === 'TEXTAREA' && e.shiftKey) return;
+            e.preventDefault(); saveSong();
+        }
+    } 
+    // 3. Xử lý ở MÀN HÌNH CHÍNH (Khi không edit / không gõ ô nhập liệu)
+    else {
+        // Nếu đang đứng ở ô tìm kiếm hoặc input khác thì không bắt phím đàn
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+            if (e.key === 'Escape' && e.target.id === 'searchInput') {
+                clearSearch();
             }
-        });
+            return;
+        }
+
+        // Bắt sự kiện bấm phím đàn trực tiếp y,u,i,o,p,h,j,k,l,;,n,m,,,.,/
+        if (KEYBOARD_MAP[keyChar] !== undefined) {
+            e.preventDefault();
+            if (e.repeat) return; // Tránh lặp âm khi giữ phím quá lâu
+            playSkyNote(KEYBOARD_MAP[keyChar], 0.4, 1);
+            return;
+        }
+
+        // Các phím tắt chức năng khác ở màn hình chính
+        if (e.key === '/') {
+            e.preventDefault();
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) { searchInput.focus(); searchInput.select(); }
+        }
+        else if (e.key.toLowerCase() === 'r') {
+            e.preventDefault();
+            selectRandomSong();
+        }
+        else if (e.key === '[') {
+            e.preventDefault();
+            changeZoom(-10);
+        }
+        else if (e.key === ']') {
+            e.preventDefault();
+            changeZoom(10);
+        }
+        else if (e.key === 'Home' || e.key.toLowerCase() === 't') { 
+            e.preventDefault(); 
+            scrollToTop(); 
+        } 
+        else if (e.key === ' ') { 
+            e.preventDefault(); 
+            if (activeSongId) togglePreview(e, activeSongId); 
+        } 
+        else if (e.key === 'Tab') { 
+            e.preventDefault(); 
+            toggleSidebar(); 
+        } 
+        else if (e.key === 'Enter') { 
+            e.preventDefault(); 
+            toggleAutoScroll(); 
+        } 
+        else if (e.key === 'ArrowUp') { 
+            e.preventDefault(); 
+            changeSpeed(-0.25); 
+        } 
+        else if (e.key === 'ArrowDown') { 
+            e.preventDefault(); 
+            changeSpeed(0.25); 
+        }
+    }
+});
 
         document.addEventListener('keyup', function(e) {
             const keyChar = e.key.toLowerCase();

@@ -8,18 +8,6 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script type="module">
-    import { playSkyNote, changeInstrument } from './audio.js';
-    window.changeInstrument = changeInstrument;
-
-    // Lắng nghe phím bấm (y, u, i, o, p...)
-    const KEY_MAP = { 'y':1, 'u':2, 'i':3, 'o':4, 'p':5, 'h':6, 'j':7, 'k':8, 'l':9, ';':10, 'n':11, 'm':12, ',':13, '.':14, '/':15 };
-    document.addEventListener('keydown', e => {
-        if (KEY_MAP[e.key.toLowerCase()] && !e.repeat) {
-            playSkyNote(KEY_MAP[e.key.toLowerCase()]);
-        }
-    });
-</script>
     <link rel="icon" type="image/png" href="https://github.com/halmighty/haru-sky-sheet/blob/main/harulogo.png?raw=true">
 
     <style>
@@ -307,7 +295,6 @@
         .editor-tab:hover { background: var(--dusty-blue); }
         .editor-tab.active { background: var(--dusty-blue); border-color: var(--key-active); color: var(--key-active); font-weight: 600; }
         
-        /* --- ĐÃ THU NHỎ LƯỚI SOẠN THẢO (GRID EDITOR) ĐỂ HIỂN THỊ NHIỀU HƠN --- */
         .grid-editor-container {
             display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; 
             height: 320px; overflow-y: auto;
@@ -407,6 +394,17 @@
                 <button class="btn-random" onclick="selectRandomSong()" title="Chọn ngẫu nhiên một bài hát (Phím R)">🎲 Random (R)</button>
             </div>
 
+            <div class="filter-controls">
+                <select id="instrumentFilter" onchange="changeInstrument(this.value)">
+                    <option value="piano">🎹 Piano</option>
+                    <option value="winterpiano">❄️ Winter Piano</option>
+                    <option value="kalimba">🪵 Kalimba</option>
+                    <option value="ocarina">🏺 Ocarina</option>
+                    <option value="guitar">🎸 Guitar</option>
+                    <option value="flute">🎶 Flute</option>
+                </select>
+            </div>
+
 		    <div id="songCount" style="font-size: 12px; color: var(--ink-light); margin-bottom: 10px; font-style: italic; padding: 0 4px;"></div>
             <ul class="song-list" id="songList"></ul>
             <div class="admin-toggle" id="adminToggleBtn" onclick="toggleAdmin()">Quyền quản trị</div>
@@ -492,9 +490,85 @@
     </div>
 
     <script>
-	<script type="module">
-    import { playSkyNote, changeInstrument } from './audio.js';
-    window.changeInstrument = changeInstrument;
+        // ==========================================
+        // 🎵 HỆ THỐNG ÂM THANH ĐA NHẠC CỤ (0.mp3 -> 14.mp3)
+        // ==========================================
+        let currentInstrument = 'piano';
+        let audioCtx = null;
+        let activeAudios = []; // Giúp giữ các nốt nhạc để đánh được nhiều nốt cùng lúc (hợp âm)
+
+        const INSTRUMENT_AUDIO_URLS = {
+            piano: generateInstrumentUrls('piano'),
+            winterpiano: generateInstrumentUrls('winterpiano'),
+            kalimba: generateInstrumentUrls('kalimba'),
+            ocarina: generateInstrumentUrls('ocarina'),
+            guitar: generateInstrumentUrls('guitar'),
+            flute: generateInstrumentUrls('flute')
+        };
+
+        function generateInstrumentUrls(instName) {
+            let urls = {};
+            for (let i = 1; i <= 15; i++) {
+                // File chạy từ 0.mp3 đến 14.mp3 ứng với nốt từ 1 đến 15
+                urls[i] = `assets/sounds/${instName}/${i - 1}.mp3`;
+            }
+            return urls;
+        }
+
+        function changeInstrument(inst) {
+            currentInstrument = inst;
+        }
+
+        function playSkyNote(noteNum, duration = 0.6, chordSize = 1) {
+            if (!noteNum) return;
+            const audioUrl = INSTRUMENT_AUDIO_URLS[currentInstrument][noteNum];
+
+            if (audioUrl) {
+                const sampleAudio = new Audio(audioUrl);
+                sampleAudio.volume = 1.0; // Đặt âm lượng tối đa (to rõ hơn)
+                sampleAudio.currentTime = 0;
+
+                // Thêm vào mảng quản lý để tránh bị Garbage Collection cắt ngang khi đánh hợp âm
+                activeAudios.push(sampleAudio);
+                sampleAudio.onended = () => {
+                    const index = activeAudios.indexOf(sampleAudio);
+                    if (index > -1) activeAudios.splice(index, 1);
+                };
+
+                sampleAudio.play().catch(e => {
+                    playSynthFallback(noteNum, duration, chordSize);
+                });
+                return;
+            }
+        }
+
+        function playSynthFallback(noteNum, duration, chordSize) {
+            const freq = SKY_PITCHES[noteNum];
+            if (!freq) return;
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now);
+
+            const gainNode = audioCtx.createGain();
+            const peakGain = 0.5; // Tăng âm lượng cho âm dự phòng
+
+            gainNode.gain.setValueAtTime(0.0001, now);
+            gainNode.gain.linearRampToValueAtTime(peakGain, now + 0.008);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + duration);
+        }
+
+        // ==========================================
+        // ⚙️ LOGIC CHÍNH & FIREBASE
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyB5rVXz8quhqatJwYJysLl5IBc_wZUJ8cQ",
             authDomain: "sky-sheet-bfc38.firebaseapp.com",
@@ -525,10 +599,7 @@
         let scrollSpeed = 1.0;
         let displayMode = 'grid'; 
 
-        // --- QUẢN LÝ YÊU THÍCH (FAVORITES) ---
         let favorites = JSON.parse(localStorage.getItem('sky_music_favorites') || '[]');
-
-        // --- QUẢN LÝ LỊCH SỬ RANDOM TRÁNH LẶP ---
         let playedRandomIds = [];
 
         function toggleFavorite(event, id) {
@@ -543,17 +614,13 @@
             renderList();
         }
 
-        // --- CHỌN BÀI HÁT NGẪU NHIÊN THÔNG MINH (TRÁNH LẶP) ---
         function selectRandomSong() {
             if (!currentFilteredSongs || currentFilteredSongs.length === 0) {
                 alert("Không có bài hát nào trong danh sách để chọn!");
                 return;
             }
 
-            // Lọc ra các bài chưa phát trong vòng hiện tại
             let availableSongs = currentFilteredSongs.filter(song => !playedRandomIds.includes(song.id));
-
-            // Nếu đã phát hết toàn bộ danh sách, reset lại vòng mới
             if (availableSongs.length === 0) {
                 playedRandomIds = [];
                 availableSongs = [...currentFilteredSongs];
@@ -561,22 +628,16 @@
 
             const randomIndex = Math.floor(Math.random() * availableSongs.length);
             const randomSong = availableSongs[randomIndex];
-
-            // Đánh dấu bài này đã phát
             playedRandomIds.push(randomSong.id);
-
             selectSong(randomSong.id);
             
-            // Tự đóng sidebar nếu đang trên màn hình di động
             if (window.innerWidth <= 768) {
                 document.body.classList.remove('sidebar-open');
             }
         }
 
-        let audioCtx = null;
         let previewTimeouts = [];
         let playingPreviewId = null;
-        
         let editorBeats = [];
         let selectedEditorBeatIndex = 0;
 
@@ -618,8 +679,6 @@
                 .map(n => parseInt(n.trim(), 10))
                 .filter(n => !isNaN(n) && n >= 1 && n <= 15);
         }
-
-   
 
         function clearAllHighlights() {
             document.querySelectorAll('.beat-item.playing-now').forEach(el => el.classList.remove('playing-now'));
@@ -837,7 +896,6 @@
                 return matchesQuery && matchesTag;
             });
 
-            // --- SẮP XẾP DANH SÁCH TỪ A-Z THEO TIÊU ĐỀ BÀI HÁT ---
             currentFilteredSongs.sort((a, b) => {
                 const titleA = (a.title || '').toLowerCase();
                 const titleB = (b.title || '').toLowerCase();
@@ -880,7 +938,7 @@
                 const isThisPlaying = playingPreviewId === song.id;
                 const playBtn = document.createElement('button');
                 playBtn.className = `btn-action play-preview ${isThisPlaying ? 'is-playing' : ''}`;
-                playBtn.innerHTML = isThisPlaying ? '⏹' : '▶'; playBtn.title = isThisPlaying ? 'Dừng nghe' : 'Nghe giai điệu (Harp Sky)';
+                playBtn.innerHTML = isThisPlaying ? '⏹' : '▶'; playBtn.title = isThisPlaying ? 'Dừng nghe' : 'Nghe giai điệu';
                 playBtn.onclick = (e) => togglePreview(e, song.id); rightContainer.appendChild(playBtn);
 
                 const actionsDiv = document.createElement('div'); actionsDiv.className = 'song-actions';
@@ -910,17 +968,17 @@
 
             let html = `
                 <div class="zoom-toolbar">
-                    <button class="zoom-btn btn-top" onclick="scrollToTop()" title="Kéo lên trên cùng (Phím Home hoặc T)">▲ Top</button>
+                    <button class="zoom-btn btn-top" onclick="scrollToTop()" title="Kéo lên trên cùng">▲ Top</button>
                     <button class="zoom-btn btn-scroll" id="scrollBtn" onclick="toggleAutoScroll()" title="Tự động cuộn trang">▶ Scroll</button>
                     <button class="zoom-btn" onclick="changeSpeed(-0.25)" title="Giảm tốc độ">-</button>
                     <span class="zoom-text" id="speedVal" title="Tốc độ cuộn">${scrollSpeed.toFixed(1)}x</span>
                     <button class="zoom-btn" onclick="changeSpeed(0.25)" title="Tăng tốc độ">+</button>
                     <div class="toolbar-divider"></div>
-                    <button class="zoom-btn ${displayMode !== 'grid' ? 'active-mode' : ''}" id="modeToggleBtn" onclick="cycleDisplayMode()" title="Đổi dạng hiển thị: Lưới / Số / Chữ">${getModeButtonText()}</button>
+                    <button class="zoom-btn ${displayMode !== 'grid' ? 'active-mode' : ''}" id="modeToggleBtn" onclick="cycleDisplayMode()" title="Đổi dạng hiển thị">${getModeButtonText()}</button>
                     <div class="toolbar-divider"></div>
-                    <button class="zoom-btn" onclick="changeZoom(10)" title="Phóng to (Phím ])">+</button>
+                    <button class="zoom-btn" onclick="changeZoom(10)" title="Phóng to">+</button>
                     <span class="zoom-text" id="zoomVal">${zoomPercent}%</span>
-                    <button class="zoom-btn" onclick="changeZoom(-10)" title="Thu nhỏ (Phím [)">-</button>
+                    <button class="zoom-btn" onclick="changeZoom(-10)" title="Thu nhỏ">-</button>
                     <button class="zoom-btn" onclick="resetZoom()" title="Về mặc định">↺</button>
                 </div>
                 <div class="sheet-title">${escapeHtml(song.title)}</div>
@@ -1012,10 +1070,7 @@
             let invalidTokens = [];
 
             tokens.forEach(token => {
-                if (!token) return;
-                if (token === '/' || token === '|') return;
-                if (token === '.' || token === '-' || token === '0') return;
-
+                if (!token || token === '/' || token === '|' || token === '.' || token === '-' || token === '0') return;
                 if (/[A-C]/i.test(token)) {
                     const letterMatches = token.toUpperCase().match(/[ABC][1-5]/g);
                     const cleaned = token.toUpperCase();
@@ -1023,7 +1078,6 @@
                     if (!letterMatches || joinedLetters.length !== cleaned.length) invalidTokens.push(token);
                     return;
                 }
-
                 const parts = token.split(',');
                 let isNumberValid = true;
                 for (let p of parts) {
@@ -1034,7 +1088,7 @@
             });
 
             if (invalidTokens.length > 0) {
-                msgEl.textContent = `⚠ Phát hiện ký tự/cú pháp chưa đúng: "${invalidTokens.join(', ')}"`;
+                msgEl.textContent = `⚠ Phát hiện cú pháp chưa đúng: "${invalidTokens.join(', ')}"`;
                 msgEl.style.color = "#e74c3c";
             } else {
                 msgEl.textContent = "✔ Cú pháp nốt nhạc hợp lệ!";
@@ -1045,16 +1099,12 @@
         function checkAllSongsSyntax() {
             if (!songs || songs.length === 0) { alert("Kho nhạc hiện đang trống."); return; }
             let invalidSongs = [];
-
             songs.forEach((song) => {
                 const notes = song.notes || '';
                 const tokens = notes.trim().split(/\s+/);
                 let hasError = false;
-
                 tokens.forEach(token => {
-                    if (!token || hasError) return;
-                    if (token === '/' || token === '|' || token === '.' || token === '-' || token === '0') return;
-
+                    if (!token || hasError || token === '/' || token === '|' || token === '.' || token === '-' || token === '0') return;
                     if (/[A-C]/i.test(token)) {
                         const letterMatches = token.toUpperCase().match(/[ABC][1-5]/g);
                         const cleaned = token.toUpperCase();
@@ -1062,23 +1112,18 @@
                         if (!letterMatches || joinedLetters.length !== cleaned.length) hasError = true;
                         return;
                     }
-
                     const parts = token.split(',');
                     for (let p of parts) {
                         const num = parseInt(p.trim(), 10);
                         if (isNaN(num) || num < 1 || num > 15) { hasError = true; break; }
                     }
                 });
-
                 if (hasError) invalidSongs.push(`${song.title} (${song.artist || 'Unknown'})`);
             });
-
             if (invalidSongs.length === 0) {
-                alert(`Cả ${songs.length} bài hát trong kho đều có cú pháp nốt nhạc hoàn toàn hợp lệ.`);
+                alert(`Cả ${songs.length} bài hát đều hợp lệ.`);
             } else {
-                let reportText = `⚠️ Quét xong ${songs.length} bài và phát hiện ${invalidSongs.length} bài có cú pháp lỗi:\n\n`;
-                invalidSongs.forEach((item, idx) => { reportText += `${idx + 1}. ${item}\n`; });
-                alert(reportText);
+                alert(`Phát hiện ${invalidSongs.length} bài có cú pháp lỗi.`);
             }
         }
 
@@ -1094,21 +1139,15 @@
         function renderGridEditor() {
             const container = document.getElementById('gridEditorContainer');
             let html = '';
-            
             editorBeats.forEach((beat, index) => {
                 if (beat === '/' || beat === '|') {
-                    html += `<div class="editor-line-break ${index === selectedEditorBeatIndex ? 'selected-beat' : ''}" onclick="selectEditorBeat(${index})" title="Chọn vị trí này"></div>`;
+                    html += `<div class="editor-line-break ${index === selectedEditorBeatIndex ? 'selected-beat' : ''}" onclick="selectEditorBeat(${index})"></div>`;
                 } else {
                     const isRest = (beat === '-' || beat === '0' || beat === '.');
                     const activeKeys = parseBeatToKeys(beat);
                     const isSelected = (index === selectedEditorBeatIndex);
-                    
                     if (isRest) {
-                        html += `
-                            <div class="editor-rest-block ${isSelected ? 'selected-beat' : ''}" onclick="selectEditorBeat(${index})" title="Khoảng lặng">
-                                <span style="font-size: 20px; color: var(--ink-light); font-weight: bold;">•</span>
-                            </div>
-                        `;
+                        html += `<div class="editor-rest-block ${isSelected ? 'selected-beat' : ''}" onclick="selectEditorBeat(${index})"><span style="font-size: 20px; color: var(--ink-light); font-weight: bold;">•</span></div>`;
                     } else {
                         html += `<div class="editor-beat-block ${isSelected ? 'selected-beat' : ''}" onclick="selectEditorBeat(${index})">`;
                         for (let k = 1; k <= 15; k++) {
@@ -1119,7 +1158,6 @@
                     }
                 }
             });
-            
             container.innerHTML = html;
             syncGridToText();
         }
@@ -1133,11 +1171,8 @@
             if (type === 'grid') editorBeats.push('');
             else if (type === '.') editorBeats.push('.');
             else if (type === '/') editorBeats.push('/');
-            
             selectedEditorBeatIndex = editorBeats.length - 1;
             renderGridEditor();
-            const container = document.getElementById('gridEditorContainer');
-            container.scrollTop = container.scrollHeight;
         }
 
         function removeLastGridBeat() {
@@ -1180,7 +1215,6 @@
                 titleInput.value = ''; artistInput.value = '';
                 bpmInput.value = ''; tagSelect.value = 'Việt Nam'; notesInput.value = '';
             }
-            
             modal.style.display = 'flex';
             switchEditorMode('text');
             validateTextNotes();
@@ -1197,14 +1231,10 @@
             const bpm = parseInt(document.getElementById('songBpm').value) || 300;
             const tag = document.getElementById('songTag').value;
             const notes = document.getElementById('songNotes').value.trim();
-
             if (!title || !notes) { alert("Vui lòng nhập đầy đủ Tên bản nhạc và Nốt nhạc!"); return; }
-
             const songData = { title, artist, bpm, tag, notes };
-
             if (editingSongId) db.ref('songs/' + editingSongId).update(songData);
             else db.ref('songs').push(songData);
-
             closeModal();
         }
 
@@ -1212,131 +1242,93 @@
         let chordTimeout = null;
 
         document.addEventListener('keydown', function(e) {
-    const modal = document.getElementById('addModal');
-    const isModalOpen = modal && modal.style.display === 'flex';
-    const gridEditorVisible = document.getElementById('gridEditor').style.display !== 'none';
-    const keyChar = e.key.toLowerCase();
+            const modal = document.getElementById('addModal');
+            const isModalOpen = modal && modal.style.display === 'flex';
+            const gridEditorVisible = document.getElementById('gridEditor').style.display !== 'none';
+            const keyChar = e.key.toLowerCase();
 
-    // 1. Xử lý khi đang mở Modal và ở chế độ Lưới (Grid Editor)
-    if (isModalOpen && gridEditorVisible) {
-        if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            if (selectedEditorBeatIndex > 0) { selectedEditorBeatIndex--; renderGridEditor(); }
-            return;
-        }
-        if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            if (selectedEditorBeatIndex < editorBeats.length - 1) { selectedEditorBeatIndex++; renderGridEditor(); }
-            return;
-        }
-        if (e.key === 'Backspace' || e.key === 'Delete') {
-            e.preventDefault();
-            if (editorBeats.length > 0) {
-                editorBeats.splice(selectedEditorBeatIndex, 1);
-                if (editorBeats.length === 0) editorBeats.push('');
-                selectedEditorBeatIndex = Math.max(0, Math.min(selectedEditorBeatIndex, editorBeats.length - 1));
-                renderGridEditor();
+            if (isModalOpen && gridEditorVisible) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    if (selectedEditorBeatIndex > 0) { selectedEditorBeatIndex--; renderGridEditor(); }
+                    return;
+                }
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    if (selectedEditorBeatIndex < editorBeats.length - 1) { selectedEditorBeatIndex++; renderGridEditor(); }
+                    return;
+                }
+                if (e.key === 'Backspace' || e.key === 'Delete') {
+                    e.preventDefault();
+                    if (editorBeats.length > 0) {
+                        editorBeats.splice(selectedEditorBeatIndex, 1);
+                        if (editorBeats.length === 0) editorBeats.push('');
+                        selectedEditorBeatIndex = Math.max(0, Math.min(selectedEditorBeatIndex, editorBeats.length - 1));
+                        renderGridEditor();
+                    }
+                    return;
+                }
+                if (e.key === ' ' || e.key === '-') {
+                    e.preventDefault();
+                    if (editorBeats.length === 0) { editorBeats.push('.'); selectedEditorBeatIndex = 0; }
+                    else if (editorBeats[selectedEditorBeatIndex] === '') { editorBeats[selectedEditorBeatIndex] = '.'; }
+                    else { editorBeats.splice(selectedEditorBeatIndex + 1, 0, '.'); selectedEditorBeatIndex++; }
+                    renderGridEditor();
+                    return;
+                }
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (editorBeats.length === 0) { editorBeats.push('/'); selectedEditorBeatIndex = 0; }
+                    else { editorBeats.splice(selectedEditorBeatIndex + 1, 0, '/'); selectedEditorBeatIndex++; }
+                    renderGridEditor();
+                    return;
+                }
+                if (KEYBOARD_MAP[keyChar] !== undefined) {
+                    e.preventDefault();
+                    if (e.repeat) return;
+                    if (!activeKeysDown.has(keyChar)) {
+                        activeKeysDown.add(keyChar);
+                        playSkyNote(KEYBOARD_MAP[keyChar], 0.3, 1);
+                    }
+                    clearTimeout(chordTimeout);
+                    chordTimeout = setTimeout(() => { commitChordToGrid(); }, 50);
+                    return;
+                }
             }
-            return;
-        }
-        if (e.key === ' ' || e.key === '-') {
-            e.preventDefault();
-            if (editorBeats.length === 0) { editorBeats.push('.'); selectedEditorBeatIndex = 0; }
-            else if (editorBeats[selectedEditorBeatIndex] === '') { editorBeats[selectedEditorBeatIndex] = '.'; }
-            else { editorBeats.splice(selectedEditorBeatIndex + 1, 0, '.'); selectedEditorBeatIndex++; }
-            renderGridEditor();
-            return;
-        }
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            if (editorBeats.length === 0) { editorBeats.push('/'); selectedEditorBeatIndex = 0; }
-            else { editorBeats.splice(selectedEditorBeatIndex + 1, 0, '/'); selectedEditorBeatIndex++; }
-            renderGridEditor();
-            return;
-        }
-        if (KEYBOARD_MAP[keyChar] !== undefined) {
-            e.preventDefault();
-            if (e.repeat) return;
-            if (!activeKeysDown.has(keyChar)) {
-                activeKeysDown.add(keyChar);
-                playSkyNote(KEYBOARD_MAP[keyChar], 0.3, 1);
+
+            if (isModalOpen) {
+                if (e.key === 'Escape') { e.preventDefault(); closeModal(); } 
+                else if (e.key === 'Enter') {
+                    if (e.target.tagName === 'TEXTAREA' && e.shiftKey) return;
+                    e.preventDefault(); saveSong();
+                }
+            } else {
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                    if (e.key === 'Escape' && e.target.id === 'searchInput') clearSearch();
+                    return;
+                }
+                if (KEYBOARD_MAP[keyChar] !== undefined) {
+                    e.preventDefault();
+                    if (e.repeat) return;
+                    playSkyNote(KEYBOARD_MAP[keyChar], 0.4, 1);
+                    return;
+                }
+                if (e.key === '/') {
+                    e.preventDefault();
+                    const searchInput = document.getElementById('searchInput');
+                    if (searchInput) { searchInput.focus(); searchInput.select(); }
+                }
+                else if (e.key.toLowerCase() === 'r') { e.preventDefault(); selectRandomSong(); }
+                else if (e.key === '[') { e.preventDefault(); changeZoom(-10); }
+                else if (e.key === ']') { e.preventDefault(); changeZoom(10); }
+                else if (e.key === 'Home' || e.key.toLowerCase() === 't') { e.preventDefault(); scrollToTop(); } 
+                else if (e.key === ' ') { e.preventDefault(); if (activeSongId) togglePreview(event, activeSongId); } 
+                else if (e.key === 'Tab') { e.preventDefault(); toggleSidebar(); } 
+                else if (e.key === 'Enter') { e.preventDefault(); toggleAutoScroll(); } 
+                else if (e.key === 'ArrowUp') { e.preventDefault(); changeSpeed(-0.25); } 
+                else if (e.key === 'ArrowDown') { e.preventDefault(); changeSpeed(0.25); }
             }
-            clearTimeout(chordTimeout);
-            chordTimeout = setTimeout(() => { commitChordToGrid(); }, 50);
-            return;
-        }
-    }
-
-    // 2. Xử lý khi đang mở Modal chung
-    if (isModalOpen) {
-        if (e.key === 'Escape') { e.preventDefault(); closeModal(); } 
-        else if (e.key === 'Enter') {
-            if (e.target.tagName === 'TEXTAREA' && e.shiftKey) return;
-            e.preventDefault(); saveSong();
-        }
-    } 
-    // 3. Xử lý ở MÀN HÌNH CHÍNH (Khi không edit / không gõ ô nhập liệu)
-    else {
-        // Nếu đang đứng ở ô tìm kiếm hoặc input khác thì không bắt phím đàn
-        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
-            if (e.key === 'Escape' && e.target.id === 'searchInput') {
-                clearSearch();
-            }
-            return;
-        }
-
-        // Bắt sự kiện bấm phím đàn trực tiếp y,u,i,o,p,h,j,k,l,;,n,m,,,.,/
-        if (KEYBOARD_MAP[keyChar] !== undefined) {
-            e.preventDefault();
-            if (e.repeat) return; // Tránh lặp âm khi giữ phím quá lâu
-            playSkyNote(KEYBOARD_MAP[keyChar], 0.4, 1);
-            return;
-        }
-
-        // Các phím tắt chức năng khác ở màn hình chính
-        if (e.key === '/') {
-            e.preventDefault();
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) { searchInput.focus(); searchInput.select(); }
-        }
-        else if (e.key.toLowerCase() === 'r') {
-            e.preventDefault();
-            selectRandomSong();
-        }
-        else if (e.key === '[') {
-            e.preventDefault();
-            changeZoom(-10);
-        }
-        else if (e.key === ']') {
-            e.preventDefault();
-            changeZoom(10);
-        }
-        else if (e.key === 'Home' || e.key.toLowerCase() === 't') { 
-            e.preventDefault(); 
-            scrollToTop(); 
-        } 
-        else if (e.key === ' ') { 
-            e.preventDefault(); 
-            if (activeSongId) togglePreview(e, activeSongId); 
-        } 
-        else if (e.key === 'Tab') { 
-            e.preventDefault(); 
-            toggleSidebar(); 
-        } 
-        else if (e.key === 'Enter') { 
-            e.preventDefault(); 
-            toggleAutoScroll(); 
-        } 
-        else if (e.key === 'ArrowUp') { 
-            e.preventDefault(); 
-            changeSpeed(-0.25); 
-        } 
-        else if (e.key === 'ArrowDown') { 
-            e.preventDefault(); 
-            changeSpeed(0.25); 
-        }
-    }
-});
+        });
 
         document.addEventListener('keyup', function(e) {
             const keyChar = e.key.toLowerCase();

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haru's Sky Music | Yass! </title>
+    <title>Haru's Sky Music | Yass!</title>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -29,7 +29,11 @@
             --num-sheet-font: 16px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
 
         body {
             font-family: 'Lora', serif;
@@ -44,320 +48,998 @@
 
         .menu-toggle-btn {
             position: fixed;
-            top: 15px; left: 15px; z-index: 200;
-            background: #ffffff; border: 1.5px solid var(--border-color);
-            width: 46px; height: 46px;
+            top: 15px; 
+            left: 15px; 
+            z-index: 200;
+            background: #ffffff; 
+            border: 1.5px solid var(--border-color);
+            width: 46px; 
+            height: 46px;
             border-radius: 50%;
             padding: 0;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease; user-select: none;
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            transition: all 0.2s ease; 
+            user-select: none;
         }
+
         .menu-toggle-btn img {
-            width: 100%; height: 100%;
+            width: 100%; 
+            height: 100%;
             border-radius: 50%;
             object-fit: cover;
         }
-        .menu-toggle-btn:hover { background: var(--dusty-blue); border-color: var(--key-active); }
 
-        .container { display: flex; width: 100%; height: 100%; max-width: 100%; margin: 0 auto; position: relative; }
+        .menu-toggle-btn:hover { 
+            background: var(--dusty-blue); 
+            border-color: var(--key-active); 
+        }
+
+        .container { 
+            display: flex; 
+            width: 100%; 
+            height: 100%; 
+            max-width: 100%; 
+            margin: 0 auto; 
+            position: relative; 
+        }
 
         .sidebar {
-            width: 380px; min-width: 380px;
+            width: 380px; 
+            min-width: 380px;
             background: rgba(255, 255, 255, 0.98);
             border-right: 1.5px solid var(--border-color);
             padding: 70px 20px 30px 20px;
-            display: flex; flex-direction: column;
-            position: relative; z-index: 100;
+            display: flex; 
+            flex-direction: column;
+            position: relative; 
+            z-index: 100;
             transition: margin-left 0.3s ease, transform 0.3s ease;
         }
 
-        body.sidebar-closed .sidebar { margin-left: -380px; }
+        body.sidebar-closed .sidebar { 
+            margin-left: -380px; 
+        }
 
         .sidebar h1 {
-            font-size: 22px; font-weight: 600; color: var(--ink-dark);
-            margin-bottom: 20px; text-align: center; letter-spacing: 0.5px;
-            font-style: italic; border-bottom: 1.5px solid var(--border-color);
-            padding-bottom: 15px; white-space: nowrap;
+            font-size: 22px; 
+            font-weight: 600; 
+            color: var(--ink-dark);
+            margin-bottom: 20px; 
+            text-align: center; 
+            letter-spacing: 0.5px;
+            font-style: italic; 
+            border-bottom: 1.5px solid var(--border-color);
+            padding-bottom: 15px; 
+            white-space: nowrap;
         }
 
-        .search-box { margin-bottom: 8px; position: relative; }
+        .search-box { 
+            margin-bottom: 8px; 
+            position: relative; 
+        }
+
         .search-box input {
-            width: 100%; padding: 8px 32px 8px 12px; border: 1.5px solid var(--border-color);
-            background: var(--paper-white); color: var(--ink-dark); font-family: inherit; font-size: 13px;
-            border-radius: 6px; outline: none; transition: border-color 0.2s;
+            width: 100%; 
+            padding: 8px 32px 8px 12px; 
+            border: 1.5px solid var(--border-color);
+            background: var(--paper-white); 
+            color: var(--ink-dark); 
+            font-family: inherit; 
+            font-size: 13px;
+            border-radius: 6px; 
+            outline: none; 
+            transition: border-color 0.2s;
         }
-        .search-box input:focus { border-color: var(--key-active); }
+
+        .search-box input:focus { 
+            border-color: var(--key-active); 
+        }
+
         .search-clear-btn {
-            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; color: var(--ink-light); cursor: pointer;
-            font-size: 14px; display: none; padding: 2px;
+            position: absolute; 
+            right: 10px; 
+            top: 50%; 
+            transform: translateY(-50%);
+            background: none; 
+            border: none; 
+            color: var(--ink-light); 
+            cursor: pointer;
+            font-size: 14px; 
+            display: none; 
+            padding: 2px;
         }
-        .search-clear-btn:hover { color: #e74c3c; }
+
+        .search-clear-btn:hover { 
+            color: #e74c3c; 
+        }
 
         .filter-controls {
-            display: flex; gap: 8px; margin-bottom: 10px;
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 10px;
         }
+
         .filter-controls select {
-            flex: 1; padding: 7px 10px; border: 1.5px solid var(--border-color); border-radius: 6px;
-            font-family: inherit; font-size: 12px; background: var(--paper-white); color: var(--ink-dark);
-            outline: none; cursor: pointer;
+            flex: 1; 
+            padding: 7px 10px; 
+            border: 1.5px solid var(--border-color); 
+            border-radius: 6px;
+            font-family: inherit; 
+            font-size: 12px; 
+            background: var(--paper-white); 
+            color: var(--ink-dark);
+            outline: none; 
+            cursor: pointer;
         }
-        .filter-controls select:focus { border-color: var(--key-active); }
+
+        .filter-controls select:focus { 
+            border-color: var(--key-active); 
+        }
 
         .btn-random {
-            background: var(--dusty-blue); color: var(--key-active); border: 1.5px solid var(--border-color);
-            padding: 7px 12px; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 600;
-            cursor: pointer; transition: all 0.2s ease; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 4px;
+            background: var(--dusty-blue); 
+            color: var(--key-active); 
+            border: 1.5px solid var(--border-color);
+            padding: 7px 12px; 
+            border-radius: 6px; 
+            font-family: inherit; 
+            font-size: 12px; 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            white-space: nowrap; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 4px;
         }
-        .btn-random:hover { background: var(--key-active); color: #ffffff; border-color: var(--key-active); }
+
+        .btn-random:hover { 
+            background: var(--key-active); 
+            color: #ffffff; 
+            border-color: var(--key-active); 
+        }
 
         .btn-add {
-            background: var(--paper-white); color: var(--ink-dark); border: 1.5px dashed var(--key-border);
-            padding: 9px; font-family: inherit; font-size: 13px; font-style: italic;
-            cursor: pointer; transition: all 0.3s ease; margin-bottom: 8px;
-            display: none; white-space: nowrap; border-radius: 6px; text-align: center;
+            background: var(--paper-white); 
+            color: var(--ink-dark); 
+            border: 1.5px dashed var(--key-border);
+            padding: 9px; 
+            font-family: inherit; 
+            font-size: 13px; 
+            font-style: italic;
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            margin-bottom: 8px;
+            display: none; 
+            white-space: nowrap; 
+            border-radius: 6px; 
+            text-align: center;
         }
-        .btn-add:hover { background: var(--dusty-blue); border-color: var(--key-active); }
 
-        .song-list { list-style: none; overflow-y: auto; flex-grow: 1; padding-right: 5px; }
-        .song-list::-webkit-scrollbar, .main-content::-webkit-scrollbar { width: 5px; }
-        .song-list::-webkit-scrollbar-thumb, .main-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        .btn-add:hover { 
+            background: var(--dusty-blue); 
+            border-color: var(--key-active); 
+        }
+
+        .song-list { 
+            list-style: none; 
+            overflow-y: auto; 
+            flex-grow: 1; 
+            padding-right: 5px; 
+        }
+
+        .song-list::-webkit-scrollbar, 
+        .main-content::-webkit-scrollbar { 
+            width: 5px; 
+        }
+
+        .song-list::-webkit-scrollbar-thumb, 
+        .main-content::-webkit-scrollbar-thumb { 
+            background: var(--border-color); 
+            border-radius: 4px; 
+        }
 
         .song-item {
-            padding: 10px 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s ease;
-            font-size: 15px; color: var(--ink-light); border-left: 3px solid transparent;
-            display: flex; justify-content: space-between; align-items: center; overflow: hidden; border-radius: 4px;
+            padding: 10px 12px; 
+            margin-bottom: 8px; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            font-size: 15px; 
+            color: var(--ink-light); 
+            border-left: 3px solid transparent;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            overflow: hidden; 
+            border-radius: 4px;
         }
-        .song-info-wrapper { display: flex; flex-direction: column; flex: 1; min-width: 0; padding-right: 6px; }
-        .song-title-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; font-size: 14px; font-weight: 500; }
-        .song-artist-text { font-size: 11px; color: var(--ink-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; opacity: 0.8; margin-top: -1px; font-style: italic; }
+
+        .song-info-wrapper { 
+            display: flex; 
+            flex-direction: column; 
+            flex: 1; 
+            min-width: 0; 
+            padding-right: 6px; 
+        }
+
+        .song-title-text { 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            display: block; 
+            font-size: 14px; 
+            font-weight: 500; 
+        }
+
+        .song-artist-text { 
+            font-size: 11px; 
+            color: var(--ink-light); 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            display: block; 
+            opacity: 0.8; 
+            margin-top: -1px; 
+            font-style: italic; 
+        }
         
-        .song-item-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-        .fav-btn {
-            background: none; border: none; font-size: 14px; cursor: pointer; color: #b0bec5; transition: all 0.2s; padding: 2px;
+        .song-item-right { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            flex-shrink: 0; 
         }
-        .fav-btn.is-fav { color: #f1c40f; }
-        .fav-btn:hover { transform: scale(1.2); }
 
-        .song-tag-badge { font-size: 13px; background: transparent; border: none; margin-left: 2px; }
+        .fav-btn {
+            background: none; 
+            border: none; 
+            font-size: 14px; 
+            cursor: pointer; 
+            color: #b0bec5; 
+            transition: all 0.2s; 
+            padding: 2px;
+        }
 
-        .song-item:hover, .song-item.active { color: var(--ink-dark); background: var(--dusty-blue); border-left-color: var(--key-active); }
-        .song-item:hover .song-artist-text, .song-item.active .song-artist-text { color: var(--key-active); opacity: 0.9; }
+        .fav-btn.is-fav { 
+            color: #f1c40f; 
+        }
 
-        .song-actions { display: none; gap: 6px; margin-left: 4px; flex-shrink: 0; }
-        .btn-action { background: none; border: none; color: #b0bec5; cursor: pointer; font-size: 13px; transition: all 0.2s; }
-        .btn-action.play-preview { opacity: 0.5; padding: 2px 4px; border-radius: 4px; flex-shrink: 0; }
-        .btn-action.play-preview:hover, .btn-action.play-preview.is-playing { opacity: 1; color: var(--key-active); }
-        .btn-action.edit:hover { color: var(--key-active); }
-        .btn-action.delete:hover { color: #e74c3c; }
+        .fav-btn:hover { 
+            transform: scale(1.2); 
+        }
+
+        .song-tag-badge { 
+            font-size: 13px; 
+            background: transparent; 
+            border: none; 
+            margin-left: 2px; 
+        }
+
+        .song-item:hover, 
+        .song-item.active { 
+            color: var(--ink-dark); 
+            background: var(--dusty-blue); 
+            border-left-color: var(--key-active); 
+        }
+
+        .song-item:hover .song-artist-text, 
+        .song-item.active .song-artist-text { 
+            color: var(--key-active); 
+            opacity: 0.9; 
+        }
+
+        .song-actions { 
+            display: none; 
+            gap: 6px; 
+            margin-left: 4px; 
+            flex-shrink: 0; 
+        }
+
+        .btn-action { 
+            background: none; 
+            border: none; 
+            color: #b0bec5; 
+            cursor: pointer; 
+            font-size: 13px; 
+            transition: all 0.2s; 
+        }
+
+        .btn-action.play-preview { 
+            opacity: 0.5; 
+            padding: 2px 4px; 
+            border-radius: 4px; 
+            flex-shrink: 0; 
+        }
+
+        .btn-action.play-preview:hover, 
+        .btn-action.play-preview.is-playing { 
+            opacity: 1; 
+            color: var(--key-active); 
+        }
+
+        .btn-action.edit:hover { 
+            color: var(--key-active); 
+        }
+
+        .btn-action.delete:hover { 
+            color: #e74c3c; 
+        }
 
         .admin-toggle {
-            font-size: 12px; color: var(--ink-light); opacity: 0.5; text-align: center;
-            margin-top: 10px; cursor: pointer; transition: all 0.4s; font-style: italic; padding: 8px 0; user-select: none;
+            font-size: 12px; 
+            color: var(--ink-light); 
+            opacity: 0.5; 
+            text-align: center;
+            margin-top: 10px; 
+            cursor: pointer; 
+            transition: all 0.4s; 
+            font-style: italic; 
+            padding: 8px 0; 
+            user-select: none;
         }
-        .admin-toggle:hover { opacity: 1; color: var(--key-active); }
 
-        body.admin-mode .btn-add { display: block; }
-        body.admin-mode .song-actions { display: flex; align-items: center; }
-        body.admin-mode .admin-toggle { opacity: 1; color: var(--key-active); font-weight: 600; }
+        .admin-toggle:hover { 
+            opacity: 1; 
+            color: var(--key-active); 
+        }
+
+        body.admin-mode .btn-add { 
+            display: block; 
+        }
+
+        body.admin-mode .song-actions { 
+            display: flex; 
+            align-items: center; 
+        }
+
+        body.admin-mode .admin-toggle { 
+            opacity: 1; 
+            color: var(--key-active); 
+            font-weight: 600; 
+        }
 
         .main-content {
-            flex-grow: 1; padding: 80px 4vw 120px 4vw; overflow-y: auto;
-            display: flex; flex-direction: column; background: radial-gradient(circle at center, #ffffff 0%, #f7fafc 100%);
-            position: relative; transition: all 0.3s ease;
+            flex-grow: 1; 
+            padding: 80px 4vw 120px 4vw; 
+            overflow-y: auto;
+            display: flex; 
+            flex-direction: column; 
+            background: radial-gradient(circle at center, #ffffff 0%, #f7fafc 100%);
+            position: relative; 
+            transition: all 0.3s ease;
         }
 
         .zoom-toolbar {
-            position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
-            display: flex; flex-direction: column; align-items: center; gap: 8px;
-            background: rgba(255, 255, 255, 0.95); border: 1.5px solid var(--border-color);
-            padding: 12px 8px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            z-index: 90; backdrop-filter: blur(5px);
+            position: fixed; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.95); 
+            border: 1.5px solid var(--border-color);
+            padding: 12px 8px; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            z-index: 90; 
+            backdrop-filter: blur(5px);
         }
 
         .zoom-btn {
-            background: none; border: none; color: var(--ink-dark); font-size: 13px; font-weight: bold;
-            cursor: pointer; padding: 0 8px; height: 28px; border-radius: 14px;
-            display: flex; align-items: center; justify-content: center; transition: all 0.2s; user-select: none; white-space: nowrap;
+            background: none; 
+            border: none; 
+            color: var(--ink-dark); 
+            font-size: 13px; 
+            font-weight: bold;
+            cursor: pointer; 
+            padding: 0 8px; 
+            height: 28px; 
+            border-radius: 14px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: all 0.2s; 
+            user-select: none; 
+            white-space: nowrap;
         }
-        .zoom-btn:hover { background: var(--dusty-blue); color: var(--key-active); }
-        .zoom-btn.active-mode { background: var(--key-active); color: #ffffff !important; }
-        .btn-scroll { background: #e17055; color: #fff; }
-        .btn-scroll.scrolling { background: #00b894; }
-        .btn-top { background: var(--dusty-blue); color: var(--key-active); }
-        .btn-top:hover { background: var(--key-active); color: #ffffff; }
 
-        .toolbar-divider { width: 14px; height: 1px; background: var(--border-color); margin: 2px 0; }
-        .zoom-text { font-size: 11px; color: var(--ink-light); min-width: 35px; text-align: center; user-select: none; font-family: sans-serif; }
+        .zoom-btn:hover { 
+            background: var(--dusty-blue); 
+            color: var(--key-active); 
+        }
 
-        .sheet-title { font-size: clamp(20px, 2vw, 26px); font-weight: 500; color: var(--ink-dark); margin-bottom: 4px; text-align: center; letter-spacing: 0.5px; padding: 0 20px; }
-        .sheet-artist { font-size: clamp(13px, 1.2vw, 15px); color: var(--ink-light); text-align: center; margin-bottom: 25px; font-style: italic; opacity: 0.9; }
+        .zoom-btn.active-mode { 
+            background: var(--key-active); 
+            color: #ffffff !important; 
+        }
+
+        .btn-scroll { 
+            background: #e17055; 
+            color: #fff; 
+        }
+
+        .btn-scroll.scrolling { 
+            background: #00b894; 
+        }
+
+        .btn-top { 
+            background: var(--dusty-blue); 
+            color: var(--key-active); 
+        }
+
+        .btn-top:hover { 
+            background: var(--key-active); 
+            color: #ffffff; 
+        }
+
+        .toolbar-divider { 
+            width: 14px; 
+            height: 1px; 
+            background: var(--border-color); 
+            margin: 2px 0; 
+        }
+
+        .zoom-text { 
+            font-size: 11px; 
+            color: var(--ink-light); 
+            min-width: 35px; 
+            text-align: center; 
+            user-select: none; 
+            font-family: sans-serif; 
+        }
+
+        .sheet-title { 
+            font-size: clamp(20px, 2vw, 26px); 
+            font-weight: 500; 
+            color: var(--ink-dark); 
+            margin-bottom: 4px; 
+            text-align: center; 
+            letter-spacing: 0.5px; 
+            padding: 0 20px; 
+        }
+
+        .sheet-artist { 
+            font-size: clamp(13px, 1.2vw, 15px); 
+            color: var(--ink-light); 
+            text-align: center; 
+            margin-bottom: 25px; 
+            font-style: italic; 
+            opacity: 0.9; 
+        }
 
         .sheet-container {
-            display: flex; flex-wrap: wrap; gap: clamp(8px, 1.2vw, 18px); justify-content: flex-start;
-            align-content: flex-start; padding-bottom: 60px; padding-right: 60px;
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: clamp(8px, 1.2vw, 18px); 
+            justify-content: flex-start;
+            align-content: flex-start; 
+            padding-bottom: 60px; 
+            padding-right: 60px;
         }
 
-        .line-break { flex-basis: 100%; width: 100%; height: 0; margin: 12px 0; border-top: 1.5px dashed var(--border-color); opacity: 0.6; }
+        .line-break { 
+            flex-basis: 100%; 
+            width: 100%; 
+            height: 0; 
+            margin: 12px 0; 
+            border-top: 1.5px dashed var(--border-color); 
+            opacity: 0.6; 
+        }
 
         .beat-block {
-            background: #ffffff; padding: var(--beat-padding); display: grid;
-            grid-template-columns: repeat(5, var(--key-size)); grid-template-rows: repeat(3, var(--key-size));
-            gap: var(--beat-gap); border: 1.5px solid var(--key-border); border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.04); position: relative; transition: all 0.15s ease-out;
+            background: #ffffff; 
+            padding: var(--beat-padding); 
+            display: grid;
+            grid-template-columns: repeat(5, var(--key-size)); 
+            grid-template-rows: repeat(3, var(--key-size));
+            gap: var(--beat-gap); 
+            border: 1.5px solid var(--key-border); 
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.04); 
+            position: relative; 
+            transition: all 0.15s ease-out;
         }
-        .beat-block:hover { border-color: var(--key-active); }
-        .beat-block.rest-beat { border-style: dashed; border-color: #b0bec5; background: rgba(248, 249, 250, 0.6); }
+
+        .beat-block:hover { 
+            border-color: var(--key-active); 
+        }
+
+        .beat-block.rest-beat { 
+            border-style: dashed; 
+            border-color: #b0bec5; 
+            background: rgba(248, 249, 250, 0.6); 
+        }
 
         .rest-mark {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: var(--rest-font); color: var(--ink-light); pointer-events: none; font-weight: bold; opacity: 0.8; line-height: 1;
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            font-size: var(--rest-font); 
+            color: var(--ink-light); 
+            pointer-events: none; 
+            font-weight: bold; 
+            opacity: 0.8; 
+            line-height: 1;
         }
 
-        .key { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; position: relative; overflow: hidden; }
+        .key { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: all 0.2s ease; 
+            position: relative; 
+            overflow: hidden; 
+        }
 
-        .key:nth-child(-n+5) { background: #ebf5fb; border: 1.5px solid #a9cce3; }
-        .key:nth-child(-n+5).active { background: #2980b9; border-color: #1a5276; box-shadow: 0 0 10px rgba(41, 128, 185, 0.7); }
-        .key:nth-child(n+6):nth-child(-n+10) { background: #f4ecf7; border: 1.5px solid #d2b4de; }
-        .key:nth-child(n+6):nth-child(-n+10).active { background: #8e44ad; border-color: #512e5f; box-shadow: 0 0 10px rgba(142, 68, 173, 0.7); }
-        .key:nth-child(n+11) { background: #fdf2e9; border: 1.5px solid #f5cba7; }
-        .key:nth-child(n+11).active { background: #e67e22; border-color: #a04000; box-shadow: 0 0 10px rgba(230, 126, 34, 0.7); }
+        .key:nth-child(-n+5) { 
+            background: #ebf5fb; 
+            border: 1.5px solid #a9cce3; 
+        }
+
+        .key:nth-child(-n+5).active { 
+            background: #2980b9; 
+            border-color: #1a5276; 
+            box-shadow: 0 0 10px rgba(41, 128, 185, 0.7); 
+        }
+
+        .key:nth-child(n+6):nth-child(-n+10) { 
+            background: #f4ecf7; 
+            border: 1.5px solid #d2b4de; 
+        }
+
+        .key:nth-child(n+6):nth-child(-n+10).active { 
+            background: #8e44ad; 
+            border-color: #512e5f; 
+            box-shadow: 0 0 10px rgba(142, 68, 173, 0.7); 
+        }
+
+        .key:nth-child(n+11) { 
+            background: #fdf2e9; 
+            border: 1.5px solid #f5cba7; 
+        }
+
+        .key:nth-child(n+11).active { 
+            background: #e67e22; 
+            border-color: #a04000; 
+            box-shadow: 0 0 10px rgba(230, 126, 34, 0.7); 
+        }
 
         .key.active::after {
-            content: '✦'; color: #ffffff; font-size: calc(var(--key-size) * 0.55); font-weight: bold;
-            line-height: 1; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+            content: '✦'; 
+            color: #ffffff; 
+            font-size: calc(var(--key-size) * 0.55); 
+            font-weight: bold;
+            line-height: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
         }
 
-        .beat-block.rest-beat .key { border-color: #cfd8dc !important; background: transparent !important; opacity: 0.3; }
+        .beat-block.rest-beat .key { 
+            border-color: #cfd8dc !important; 
+            background: transparent !important; 
+            opacity: 0.3; 
+        }
 
         .num-block {
-            background: #ffffff; border: 1.5px solid var(--key-border); border-radius: 8px; padding: 6px 10px;
-            min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
-            gap: 5px; box-shadow: 0 3px 8px rgba(0,0,0,0.04); transition: all 0.15s ease-out;
+            background: #ffffff; 
+            border: 1.5px solid var(--key-border); 
+            border-radius: 8px; 
+            padding: 6px 10px;
+            min-width: 44px; 
+            min-height: 44px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 5px; 
+            box-shadow: 0 3px 8px rgba(0,0,0,0.04); 
+            transition: all 0.15s ease-out;
         }
-        .num-block:hover { border-color: var(--key-active); }
+
+        .num-block:hover { 
+            border-color: var(--key-active); 
+        }
 
         .num-badge {
-            background: var(--dusty-blue); color: var(--key-active); font-weight: 700;
-            font-size: var(--num-sheet-font, 16px); font-family: system-ui, -apple-system, sans-serif;
-            padding: 4px 8px; border-radius: 6px; border: 1px solid #b3cbe5; min-width: 28px; text-align: center; line-height: 1.2;
-        }
-        .num-block.rest-block {
-            border-style: dashed; border-color: #b0bec5; background: rgba(248, 249, 250, 0.6);
-            color: var(--ink-light); font-size: var(--num-sheet-font, 18px); font-weight: bold;
+            background: var(--dusty-blue); 
+            color: var(--key-active); 
+            font-weight: 700;
+            font-size: var(--num-sheet-font, 16px); 
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 4px 8px; 
+            border-radius: 6px; 
+            border: 1px solid #b3cbe5; 
+            min-width: 28px; 
+            text-align: center; 
+            line-height: 1.2;
         }
 
-        .beat-block.playing-now, .num-block.playing-now {
+        .num-block.rest-block {
+            border-style: dashed; 
+            border-color: #b0bec5; 
+            background: rgba(248, 249, 250, 0.6);
+            color: var(--ink-light); 
+            font-size: var(--num-sheet-font, 18px); 
+            font-weight: bold;
+        }
+
+        .beat-block.playing-now, 
+        .num-block.playing-now {
             border-color: var(--key-active) !important;
             box-shadow: 0 0 15px rgba(75, 123, 236, 0.8), 0 0 25px rgba(75, 123, 236, 0.4) !important;
-            transform: scale(1.08); z-index: 10;
+            transform: scale(1.08); 
+            z-index: 10;
         }
 
-        .empty-state { text-align: center; color: var(--ink-light); font-size: 16px; font-style: italic; margin-top: 20%; opacity: 0.8; }
+        .empty-state { 
+            text-align: center; 
+            color: var(--ink-light); 
+            font-size: 16px; 
+            font-style: italic; 
+            margin-top: 20%; 
+            opacity: 0.8; 
+        }
 
         .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(44, 62, 80, 0.3); backdrop-filter: blur(4px);
-            justify-content: center; align-items: center; z-index: 1000;
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(44, 62, 80, 0.3); 
+            backdrop-filter: blur(4px);
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000;
         }
+
         .modal-content {
-            background: #fff; padding: 30px; width: 95%; max-width: 900px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 1.5px solid var(--border-color); border-radius: 12px;
+            background: #fff; 
+            padding: 30px; 
+            width: 95%; 
+            max-width: 900px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+            border: 1.5px solid var(--border-color); 
+            border-radius: 12px;
         }
-        .modal h2 { font-size: 18px; font-weight: 500; color: var(--ink-dark); margin-bottom: 20px; font-style: italic; }
 
-        .modal-body-flex { display: flex; gap: 25px; }
-        .modal-body-left { flex: 0 0 300px; }
-        .modal-body-right { flex: 1; min-width: 0; }
-        
-        .form-group { margin-bottom: 15px; }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%; padding: 12px; border: 1.5px solid var(--border-color); background: var(--paper-white);
-            font-family: inherit; color: var(--ink-dark); outline: none; border-radius: 6px; transition: border 0.3s; font-size: 14px;
+        .modal h2 { 
+            font-size: 18px; 
+            font-weight: 500; 
+            color: var(--ink-dark); 
+            margin-bottom: 20px; 
+            font-style: italic; 
         }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--key-active); }
-        .form-group textarea { height: 280px; resize: none; line-height: 1.6; }
 
-        .note-guide { font-size: 12px; color: var(--ink-light); margin-top: 6px; font-style: italic; line-height: 1.4; }
+        .modal-body-flex { 
+            display: flex; 
+            gap: 25px; 
+        }
+
+        .modal-body-left { 
+            flex: 0 0 300px; 
+        }
+
+        .modal-body-right { 
+            flex: 1; 
+            min-width: 0; 
+        }
         
-        .modal-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
-        .btn-cancel { background: transparent; color: var(--ink-light); border: none; cursor: pointer; font-family: inherit; font-size: 14px; }
-        .btn-save { background: var(--key-active); color: white; border: none; padding: 8px 22px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 14px; transition: background 0.2s; }
-        .btn-save:hover { background: #1e3799; }
+        .form-group { 
+            margin-bottom: 15px; 
+        }
 
-        .editor-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%; 
+            padding: 12px; 
+            border: 1.5px solid var(--border-color); 
+            background: var(--paper-white);
+            font-family: inherit; 
+            color: var(--ink-dark); 
+            outline: none; 
+            border-radius: 6px; 
+            transition: border 0.3s; 
+            font-size: 14px;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus, 
+        .form-group select:focus { 
+            border-color: var(--key-active); 
+        }
+
+        .form-group textarea { 
+            height: 280px; 
+            resize: none; 
+            line-height: 1.6; 
+        }
+
+        .note-guide { 
+            font-size: 12px; 
+            color: var(--ink-light); 
+            margin-top: 6px; 
+            font-style: italic; 
+            line-height: 1.4; 
+        }
+        
+        .modal-actions { 
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 15px; 
+            margin-top: 20px; 
+        }
+
+        .btn-cancel { 
+            background: transparent; 
+            color: var(--ink-light); 
+            border: none; 
+            cursor: pointer; 
+            font-family: inherit; 
+            font-size: 14px; 
+        }
+
+        .btn-save { 
+            background: var(--key-active); 
+            color: white; 
+            border: none; 
+            padding: 8px 22px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-family: inherit; 
+            font-size: 14px; 
+            transition: background 0.2s; 
+        }
+
+        .btn-save:hover { 
+            background: #1e3799; 
+        }
+
+        .editor-tabs { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 15px; 
+        }
+
         .editor-tab {
-            flex: 1; padding: 10px; border: 1.5px solid var(--border-color); background: var(--paper-white);
-            color: var(--ink-light); border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 14px;
-            font-weight: 500; transition: all 0.2s; text-align: center; user-select: none;
+            flex: 1; 
+            padding: 10px; 
+            border: 1.5px solid var(--border-color); 
+            background: var(--paper-white);
+            color: var(--ink-light); 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-family: inherit; 
+            font-size: 14px;
+            font-weight: 500; 
+            transition: all 0.2s; 
+            text-align: center; 
+            user-select: none;
         }
-        .editor-tab:hover { background: var(--dusty-blue); }
-        .editor-tab.active { background: var(--dusty-blue); border-color: var(--key-active); color: var(--key-active); font-weight: 600; }
+
+        .editor-tab:hover { 
+            background: var(--dusty-blue); 
+        }
+
+        .editor-tab.active { 
+            background: var(--dusty-blue); 
+            border-color: var(--key-active); 
+            color: var(--key-active); 
+            font-weight: 600; 
+        }
         
         .grid-editor-container {
-            display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; 
-            height: 320px; overflow-y: auto;
-            background: rgba(248, 249, 250, 0.8); border: 1.5px solid var(--border-color); border-radius: 6px;
-            margin-bottom: 12px; align-content: flex-start;
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+            padding: 12px; 
+            height: 320px; 
+            overflow-y: auto;
+            background: rgba(248, 249, 250, 0.8); 
+            border: 1.5px solid var(--border-color); 
+            border-radius: 6px;
+            margin-bottom: 12px; 
+            align-content: flex-start;
         }
         
         .editor-beat-block {
-            background: #ffffff; padding: 4px; display: grid;
-            grid-template-columns: repeat(5, 14px); grid-template-rows: repeat(3, 14px);
-            gap: 2px; border: 1.5px solid var(--key-border); border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: all 0.15s ease-out;
+            background: #ffffff; 
+            padding: 4px; 
+            display: grid;
+            grid-template-columns: repeat(5, 14px); 
+            grid-template-rows: repeat(3, 14px);
+            gap: 2px; 
+            border: 1.5px solid var(--key-border); 
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04); 
+            transition: all 0.15s ease-out;
             cursor: pointer;
         }
-        .editor-beat-block:hover { border-color: var(--key-active); }
-        .editor-beat-block.selected-beat { border-color: var(--key-active); box-shadow: 0 0 8px rgba(56, 103, 214, 0.5); }
-        .editor-beat-block .key { width: 100%; height: 100%; border-radius: 50%; pointer-events: none; }
+
+        .editor-beat-block:hover { 
+            border-color: var(--key-active); 
+        }
+
+        .editor-beat-block.selected-beat { 
+            border-color: var(--key-active); 
+            box-shadow: 0 0 8px rgba(56, 103, 214, 0.5); 
+        }
+
+        .editor-beat-block .key { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 50%; 
+            pointer-events: none; 
+        }
         
-        .editor-beat-block .key:nth-child(-n+5) { background: #ebf5fb; border: 1px solid #a9cce3; }
-        .editor-beat-block .key:nth-child(-n+5).active { background: #2980b9; border-color: #1a5276; box-shadow: 0 0 5px rgba(41,128,185,0.6); }
-        .editor-beat-block .key:nth-child(n+6):nth-child(-n+10) { background: #f4ecf7; border: 1px solid #d2b4de; }
-        .editor-beat-block .key:nth-child(n+6):nth-child(-n+10).active { background: #8e44ad; border-color: #512e5f; box-shadow: 0 0 5px rgba(142,68,173,0.6); }
-        .editor-beat-block .key:nth-child(n+11) { background: #fdf2e9; border: 1px solid #f5cba7; }
-        .editor-beat-block .key:nth-child(n+11).active { background: #e67e22; border-color: #a04000; box-shadow: 0 0 5px rgba(230,126,34,0.6); }
+        .editor-beat-block .key:nth-child(-n+5) { 
+            background: #ebf5fb; 
+            border: 1px solid #a9cce3; 
+        }
+
+        .editor-beat-block .key:nth-child(-n+5).active { 
+            background: #2980b9; 
+            border-color: #1a5276; 
+            box-shadow: 0 0 5px rgba(41,128,185,0.6); 
+        }
+
+        .editor-beat-block .key:nth-child(n+6):nth-child(-n+10) { 
+            background: #f4ecf7; 
+            border: 1px solid #d2b4de; 
+        }
+
+        .editor-beat-block .key:nth-child(n+6):nth-child(-n+10).active { 
+            background: #8e44ad; 
+            border-color: #512e5f; 
+            box-shadow: 0 0 5px rgba(142,68,173,0.6); 
+        }
+
+        .editor-beat-block .key:nth-child(n+11) { 
+            background: #fdf2e9; 
+            border: 1px solid #f5cba7; 
+        }
+
+        .editor-beat-block .key:nth-child(n+11).active { 
+            background: #e67e22; 
+            border-color: #a04000; 
+            box-shadow: 0 0 5px rgba(230,126,34,0.6); 
+        }
         
         .editor-beat-block .key.active::after {
-            content: '✦'; color: #ffffff; font-size: 8px; font-weight: bold; line-height: 1;
-            display: flex; align-items: center; justify-content: center; text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+            content: '✦'; 
+            color: #ffffff; 
+            font-size: 8px; 
+            font-weight: bold; 
+            line-height: 1;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
         }
 
         .editor-rest-block {
-            border: 1.5px dashed #b0bec5; background: rgba(248, 249, 250, 0.6);
-            display: flex; align-items: center; justify-content: center;
-            width: 78px; height: 50px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+            border: 1.5px dashed #b0bec5; 
+            background: rgba(248, 249, 250, 0.6);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            width: 78px; 
+            height: 50px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            transition: all 0.2s;
         }
-        .editor-rest-block:hover { border-color: #ff7675; background: #ffeaa7; }
-        .editor-rest-block.selected-beat { border-color: var(--key-active); box-shadow: 0 0 8px rgba(56, 103, 214, 0.5); }
+
+        .editor-rest-block:hover { 
+            border-color: #ff7675; 
+            background: #ffeaa7; 
+        }
+
+        .editor-rest-block.selected-beat { 
+            border-color: var(--key-active); 
+            box-shadow: 0 0 8px rgba(56, 103, 214, 0.5); 
+        }
         
         .editor-line-break {
-            flex-basis: 100%; width: 100%; height: 8px; margin: 2px 0;
-            border-top: 2px dashed #b2bec3; cursor: pointer; transition: all 0.2s;
+            flex-basis: 100%; 
+            width: 100%; 
+            height: 8px; 
+            margin: 2px 0;
+            border-top: 2px dashed #b2bec3; 
+            cursor: pointer; 
+            transition: all 0.2s;
         }
-        .editor-line-break:hover { border-color: #ff7675; }
+
+        .editor-line-break:hover { 
+            border-color: #ff7675; 
+        }
         
-        .grid-editor-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-        .grid-editor-actions .btn-action {
-            background: var(--paper-white); border: 1.5px solid var(--border-color); padding: 8px 14px;
-            border-radius: 6px; font-size: 13px; cursor: pointer; transition: all 0.2s;
-            font-family: inherit; color: var(--ink-dark); font-weight: 500;
+        .grid-editor-actions { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 8px; 
         }
-        .grid-editor-actions .btn-action:hover { border-color: var(--key-active); color: var(--key-active); background: var(--dusty-blue); }
-        .grid-editor-actions .btn-action.btn-delete { border-color: #ff7675; color: #d63031; margin-left: auto; }
-        .grid-editor-actions .btn-action.btn-delete:hover { background: #ff7675; color: white; }
+
+        .grid-editor-actions .btn-action {
+            background: var(--paper-white); 
+            border: 1.5px solid var(--border-color); 
+            padding: 8px 14px;
+            border-radius: 6px; 
+            font-size: 13px; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            font-family: inherit; 
+            color: var(--ink-dark); 
+            font-weight: 500;
+        }
+
+        .grid-editor-actions .btn-action:hover { 
+            border-color: var(--key-active); 
+            color: var(--key-active); 
+            background: var(--dusty-blue); 
+        }
+
+        .grid-editor-actions .btn-action.btn-delete { 
+            border-color: #ff7675; 
+            color: #d63031; 
+            margin-left: auto; 
+        }
+
+        .grid-editor-actions .btn-action.btn-delete:hover { 
+            background: #ff7675; 
+            color: white; 
+        }
 
         @media (max-width: 768px) {
-            .sidebar { position: fixed; top: 0; left: 0; height: 100%; margin-left: 0 !important; transform: translateX(-100%); }
-            body.sidebar-open .sidebar { transform: translateX(0); }
-            .main-content { padding: 65px 12px 100px 12px; }
-            .zoom-toolbar { right: 8px; top: 70px; transform: none; padding: 8px 4px; gap: 5px; }
-            .sheet-title { font-size: 18px; padding: 0; }
-            .sheet-container { padding-right: 45px; }
-            .modal-body-flex { flex-direction: column; gap: 0; }
-            .modal-body-left { flex: 1; }
+            .sidebar { 
+                position: fixed; 
+                top: 0; 
+                left: 0; 
+                height: 100%; 
+                margin-left: 0 !important; 
+                transform: translateX(-100%); 
+            }
+            body.sidebar-open .sidebar { 
+                transform: translateX(0); 
+            }
+            .main-content { 
+                padding: 65px 12px 100px 12px; 
+            }
+            .zoom-toolbar { 
+                right: 8px; 
+                top: 70px; 
+                transform: none; 
+                padding: 8px 4px; 
+                gap: 5px; 
+            }
+            .sheet-title { 
+                font-size: 18px; 
+                padding: 0; 
+            }
+            .sheet-container { 
+                padding-right: 45px; 
+            }
+            .modal-body-flex { 
+                flex-direction: column; 
+                gap: 0; 
+            }
+            .modal-body-left { 
+                flex: 1; 
+            }
         }
     </style>
 </head>
@@ -374,7 +1056,7 @@
             <button class="btn-add" id="checkAllBtn" onclick="checkAllSongsSyntax()" style="background: var(--dusty-blue); border-color: var(--key-active);">🔍 Kiểm tra lỗi toàn bộ kho nhạc</button>
             
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Tìm tên bài hát, tác giả... (Nhấn /)" oninput="handleSearchInput()">
+                <input type="text" id="searchInput" placeholder="Tìm tên bài hát, tác giả..." oninput="handleSearchInput()">
                 <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" title="Xóa tìm kiếm">✕</button>
             </div>
 
@@ -405,7 +1087,7 @@
                 </select>
             </div>
 
-		    <div id="songCount" style="font-size: 12px; color: var(--ink-light); margin-bottom: 10px; font-style: italic; padding: 0 4px;"></div>
+            <div id="songCount" style="font-size: 12px; color: var(--ink-light); margin-bottom: 10px; font-style: italic; padding: 0 4px;"></div>
             <ul class="song-list" id="songList"></ul>
             <div class="admin-toggle" id="adminToggleBtn" onclick="toggleAdmin()">Quyền quản trị</div>
         </div>
@@ -491,10 +1173,11 @@
 
     <script>
         // ==========================================
-        // 🎵 HỆ THỐNG ÂM THANH CHUẨN ĐỐI TƯỢNG AUDIO (KHÔNG BAO GIỜ LỖI)
+        // 🎵 HỆ THỐNG ÂM THANH ĐÃ TỐI ƯU (KHÔNG DELAY)
         // ==========================================
         let currentInstrument = 'piano';
-        let activeAudios = []; // Quản lý đa nốt (chơi hợp âm mượt mà)
+        let activeAudios = []; 
+        let preloadedAudios = {}; // Lưu trữ bộ đệm âm thanh chuẩn
 
         const INSTRUMENT_AUDIO_URLS = {
             piano: generateInstrumentUrls('piano'),
@@ -508,19 +1191,20 @@
         function generateInstrumentUrls(instName) {
             let urls = {};
             for (let i = 1; i <= 15; i++) {
-                // Ánh xạ nốt 1 -> 15 tương ứng tệp 0.mp3 -> 14.mp3
                 urls[i] = `assets/sounds/${instName}/${i - 1}.mp3`;
             }
             return urls;
         }
 
-        // Tải ngầm (preload) toàn bộ file âm thanh vào trình duyệt để loại bỏ hoàn toàn độ trễ (lag)
+        // Tải ngầm và lưu sẵn bộ đệm Audio vào bộ nhớ để bấm là phát ngay lập tức
         function preloadAllSounds() {
             for (let inst in INSTRUMENT_AUDIO_URLS) {
+                preloadedAudios[inst] = {};
                 for (let i = 1; i <= 15; i++) {
                     const audio = new Audio(INSTRUMENT_AUDIO_URLS[inst][i]);
                     audio.preload = 'auto';
                     audio.load();
+                    preloadedAudios[inst][i] = audio;
                 }
             }
         }
@@ -528,7 +1212,6 @@
 
         function changeInstrument(inst) {
             currentInstrument = inst;
-            // Tự động bỏ focus khỏi dropdown để có thể bấm phím chơi đàn ngay lập tức
             if (document.activeElement) {
                 document.activeElement.blur();
             }
@@ -536,14 +1219,14 @@
 
         function playSkyNote(noteNum, duration = 0.6, chordSize = 1) {
             if (!noteNum) return;
-            const audioUrl = INSTRUMENT_AUDIO_URLS[currentInstrument][noteNum];
+            const baseAudio = preloadedAudios[currentInstrument] && preloadedAudios[currentInstrument][noteNum];
 
-            if (audioUrl) {
-                const sampleAudio = new Audio(audioUrl);
-                sampleAudio.volume = 1.0; // Âm lượng tối đa
+            if (baseAudio) {
+                // Sử dụng cloneNode() để tái sử dụng bộ đệm đã load, triệt tiêu hoàn toàn độ trễ (delay)
+                const sampleAudio = baseAudio.cloneNode();
+                sampleAudio.volume = 1.0;
                 sampleAudio.currentTime = 0;
 
-                // Thêm vào mảng quản lý để trình duyệt không xóa ngang khi đánh hợp âm
                 activeAudios.push(sampleAudio);
                 sampleAudio.onended = () => {
                     const index = activeAudios.indexOf(sampleAudio);
@@ -551,7 +1234,7 @@
                 };
 
                 sampleAudio.play().catch(e => {
-                    console.error("Không thể phát file:", audioUrl);
+                    console.error("Không thể phát file âm thanh:", e);
                 });
             }
         }
@@ -676,12 +1359,18 @@
 
         function stopPreview() {
             previewTimeouts.forEach(t => clearTimeout(t));
-            previewTimeouts = []; playingPreviewId = null; clearAllHighlights();
+            previewTimeouts = []; 
+            playingPreviewId = null; 
+            clearAllHighlights();
         }
 
         function togglePreview(event, id) {
             event.stopPropagation();
-            if (playingPreviewId === id) { stopPreview(); renderList(); return; }
+            if (playingPreviewId === id) { 
+                stopPreview(); 
+                renderList(); 
+                return; 
+            }
             stopPreview();
 
             const song = songs.find(s => s.id === id);
@@ -696,10 +1385,14 @@
             const beats = normalizedNotes.trim().split(/\s+/);
             const bpm = song.bpm || 300;
             const tempo = 60000 / bpm; 
-            let delay = 0; let beatIndex = 0;
+            let delay = 0; 
+            let beatIndex = 0;
 
             beats.forEach(beat => {
-                if (beat === '/' || beat === '|') { delay += tempo * 0.8; return; }
+                if (beat === '/' || beat === '|') { 
+                    delay += tempo * 0.8; 
+                    return; 
+                }
                 const currentBeatIndex = beatIndex;
                 const keys = parseBeatToKeys(beat);
 
@@ -710,14 +1403,20 @@
                         targetBlock.classList.add('playing-now');
                         targetBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
                     }
-                    if (keys.length > 0) { keys.forEach(key => playSkyNote(key, 0.45, keys.length)); }
+                    if (keys.length > 0) { 
+                        keys.forEach(key => playSkyNote(key, 0.45, keys.length)); 
+                    }
                 }, delay);
 
                 previewTimeouts.push(tHighlight);
-                beatIndex++; delay += tempo;
+                beatIndex++; 
+                delay += tempo;
             });
 
-            const endT = setTimeout(() => { stopPreview(); renderList(); }, delay + 300);
+            const endT = setTimeout(() => { 
+                stopPreview(); 
+                renderList(); 
+            }, delay + 300);
             previewTimeouts.push(endT);
         }
 
@@ -725,7 +1424,9 @@
             const data = snapshot.val();
             songs = [];
             if (data) {
-                Object.keys(data).forEach(key => { songs.push({ id: key, ...data[key] }); });
+                Object.keys(data).forEach(key => { 
+                    songs.push({ id: key, ...data[key] }); 
+                });
             } else {
                 const defaultSongs = [
                     { title: "Khúc hát của gió (Mẫu)", artist: "Trịnh Công Sơn", tag: "Việt Nam", bpm: 250, notes: "A1 A1 A5 A5 . / B1 B1 A5 . / A4 A4 A3 A3 . / A2 A2 A1" },
@@ -768,11 +1469,18 @@
         function toggleAutoScroll() {
             const btn = document.getElementById('scrollBtn');
             if (isScrolling) {
-                clearInterval(scrollTimer); isScrolling = false;
-                if (btn) { btn.classList.remove('scrolling'); btn.textContent = '▶ Scroll'; }
+                clearInterval(scrollTimer); 
+                isScrolling = false;
+                if (btn) { 
+                    btn.classList.remove('scrolling'); 
+                    btn.textContent = '▶ Scroll'; 
+                }
             } else {
                 isScrolling = true;
-                if (btn) { btn.classList.add('scrolling'); btn.textContent = '⏸ Stop'; }
+                if (btn) { 
+                    btn.classList.add('scrolling'); 
+                    btn.textContent = '⏸ Stop'; 
+                }
                 startScrollTimer();
             }
         }
@@ -798,8 +1506,15 @@
             return 'Lưới';
         }
 
-        function changeZoom(delta) { zoomPercent = Math.max(50, Math.min(160, zoomPercent + delta)); applyZoom(); }
-        function resetZoom() { zoomPercent = 100; applyZoom(); }
+        function changeZoom(delta) { 
+            zoomPercent = Math.max(50, Math.min(160, zoomPercent + delta)); 
+            applyZoom(); 
+        }
+
+        function resetZoom() { 
+            zoomPercent = 100; 
+            applyZoom(); 
+        }
 
         function applyZoom() {
             const scale = zoomPercent / 100;
@@ -823,11 +1538,13 @@
             if (!isAdmin) {
                 const password = prompt("Nhập mật khẩu quản trị:");
                 if (password === "Harudz123") {
-                    isAdmin = true; document.body.classList.add('admin-mode');
+                    isAdmin = true; 
+                    document.body.classList.add('admin-mode');
                     document.getElementById('adminToggleBtn').innerHTML = "✦ Đang mở quyền quản trị ✦";
                 } else if (password !== null) alert("Mật khẩu không chính xác.");
             } else {
-                isAdmin = false; document.body.classList.remove('admin-mode');
+                isAdmin = false; 
+                document.body.classList.remove('admin-mode');
                 document.getElementById('adminToggleBtn').innerHTML = "Quyền quản trị";
             }
         }
@@ -868,7 +1585,8 @@
             };
 
             currentFilteredSongs = songs.filter(song => {
-                const titleStr = song.title || ''; const artistStr = song.artist || '';
+                const titleStr = song.title || ''; 
+                const artistStr = song.artist || '';
                 const matchesQuery = titleStr.toLowerCase().includes(query) || artistStr.toLowerCase().includes(query);
                 
                 let matchesTag = true;
@@ -904,12 +1622,22 @@
             currentFilteredSongs.forEach((song) => {
                 const li = document.createElement('li');
                 li.className = `song-item ${song.id === activeSongId ? 'active' : ''}`;
-                li.onclick = () => { selectSong(song.id); if (window.innerWidth <= 768) document.body.classList.remove('sidebar-open'); };
+                li.onclick = () => { 
+                    selectSong(song.id); 
+                    if (window.innerWidth <= 768) document.body.classList.remove('sidebar-open'); 
+                };
                 
                 const infoWrapper = document.createElement('div');
                 infoWrapper.className = 'song-info-wrapper';
-                const titleSpan = document.createElement('span'); titleSpan.className = 'song-title-text'; titleSpan.textContent = song.title; infoWrapper.appendChild(titleSpan);
-                const artistSpan = document.createElement('span'); artistSpan.className = 'song-artist-text'; artistSpan.textContent = song.artist ? song.artist : 'Unknown'; infoWrapper.appendChild(artistSpan);
+                const titleSpan = document.createElement('span'); 
+                titleSpan.className = 'song-title-text'; 
+                titleSpan.textContent = song.title; 
+                infoWrapper.appendChild(titleSpan);
+
+                const artistSpan = document.createElement('span'); 
+                artistSpan.className = 'song-artist-text'; 
+                artistSpan.textContent = song.artist ? song.artist : 'Unknown'; 
+                infoWrapper.appendChild(artistSpan);
                 li.appendChild(infoWrapper);
 
                 const rightContainer = document.createElement('div');
@@ -923,18 +1651,36 @@
                 favBtn.onclick = (e) => toggleFavorite(e, song.id);
                 rightContainer.appendChild(favBtn);
 
-                const tagBadge = document.createElement('span'); tagBadge.className = 'song-tag-badge'; tagBadge.textContent = TAG_MAP[song.tag] || '🌐'; rightContainer.appendChild(tagBadge);
+                const tagBadge = document.createElement('span'); 
+                tagBadge.className = 'song-tag-badge'; 
+                tagBadge.textContent = TAG_MAP[song.tag] || '🌐'; 
+                rightContainer.appendChild(tagBadge);
 
                 const isThisPlaying = playingPreviewId === song.id;
                 const playBtn = document.createElement('button');
                 playBtn.className = `btn-action play-preview ${isThisPlaying ? 'is-playing' : ''}`;
-                playBtn.innerHTML = isThisPlaying ? '⏹' : '▶'; playBtn.title = isThisPlaying ? 'Dừng nghe' : 'Nghe giai điệu';
-                playBtn.onclick = (e) => togglePreview(e, song.id); rightContainer.appendChild(playBtn);
+                playBtn.innerHTML = isThisPlaying ? '⏹' : '▶'; 
+                playBtn.title = isThisPlaying ? 'Dừng nghe' : 'Nghe giai điệu';
+                playBtn.onclick = (e) => togglePreview(e, song.id); 
+                rightContainer.appendChild(playBtn);
 
-                const actionsDiv = document.createElement('div'); actionsDiv.className = 'song-actions';
-                const editBtn = document.createElement('button'); editBtn.className = 'btn-action edit'; editBtn.innerHTML = '✎'; editBtn.title = 'Hiệu chỉnh'; editBtn.onclick = (e) => openModal(e, song.id);
-                const deleteBtn = document.createElement('button'); deleteBtn.className = 'btn-action delete'; deleteBtn.innerHTML = '✖'; deleteBtn.title = 'Xóa'; deleteBtn.onclick = (e) => deleteSong(e, song.id);
-                actionsDiv.appendChild(editBtn); actionsDiv.appendChild(deleteBtn); rightContainer.appendChild(actionsDiv);
+                const actionsDiv = document.createElement('div'); 
+                actionsDiv.className = 'song-actions';
+                const editBtn = document.createElement('button'); 
+                editBtn.className = 'btn-action edit'; 
+                editBtn.innerHTML = '✎'; 
+                editBtn.title = 'Hiệu chỉnh'; 
+                editBtn.onclick = (e) => openModal(e, song.id);
+
+                const deleteBtn = document.createElement('button'); 
+                deleteBtn.className = 'btn-action delete'; 
+                deleteBtn.innerHTML = '✖'; 
+                deleteBtn.title = 'Xóa'; 
+                deleteBtn.onclick = (e) => deleteSong(e, song.id);
+
+                actionsDiv.appendChild(editBtn); 
+                actionsDiv.appendChild(deleteBtn); 
+                rightContainer.appendChild(actionsDiv);
 
                 li.appendChild(rightContainer);
                 listEl.appendChild(li);
@@ -948,7 +1694,8 @@
 
         function selectSong(id) {
             if (isScrolling) toggleAutoScroll();
-            activeSongId = id; renderList();
+            activeSongId = id; 
+            renderList();
             const song = songs.find(s => s.id === id);
             if (!song) return;
 
@@ -978,7 +1725,10 @@
 
             let beatIndex = 0;
             beats.forEach(beat => {
-                if (beat === '/' || beat === '|') { html += `<div class="line-break"></div>`; return; }
+                if (beat === '/' || beat === '|') { 
+                    html += `<div class="line-break"></div>`; 
+                    return; 
+                }
 
                 const isRest = (beat === '-' || beat === '0' || beat === '.');
                 const activeKeys = parseBeatToKeys(beat);
@@ -1019,7 +1769,8 @@
 
         function escapeHtml(text) {
             const div = document.createElement('div');
-            div.innerText = text; return div.innerHTML;
+            div.innerText = text; 
+            return div.innerHTML;
         }
 
         window.onclick = function(event) {
@@ -1054,7 +1805,10 @@
             if (!textarea || !msgEl) return;
 
             const text = textarea.value.trim();
-            if (!text) { msgEl.textContent = ""; return; }
+            if (!text) { 
+                msgEl.textContent = ""; 
+                return; 
+            }
 
             const tokens = text.split(/\s+/);
             let invalidTokens = [];
@@ -1072,7 +1826,10 @@
                 let isNumberValid = true;
                 for (let p of parts) {
                     const num = parseInt(p.trim(), 10);
-                    if (isNaN(num) || num < 1 || num > 15) { isNumberValid = false; break; }
+                    if (isNaN(num) || num < 1 || num > 15) { 
+                        isNumberValid = false; 
+                        break; 
+                    }
                 }
                 if (!isNumberValid) invalidTokens.push(token);
             });
@@ -1087,7 +1844,10 @@
         }
 
         function checkAllSongsSyntax() {
-            if (!songs || songs.length === 0) { alert("Kho nhạc hiện đang trống."); return; }
+            if (!songs || songs.length === 0) { 
+                alert("Kho nhạc hiện đang trống."); 
+                return; 
+            }
             let invalidSongs = [];
             songs.forEach((song) => {
                 const notes = song.notes || '';
@@ -1105,7 +1865,10 @@
                     const parts = token.split(',');
                     for (let p of parts) {
                         const num = parseInt(p.trim(), 10);
-                        if (isNaN(num) || num < 1 || num > 15) { hasError = true; break; }
+                        if (isNaN(num) || num < 1 || num > 15) { 
+                            hasError = true; 
+                            break; 
+                        }
                     }
                 });
                 if (hasError) invalidSongs.push(`${song.title} (${song.artist || 'Unknown'})`);
@@ -1202,8 +1965,11 @@
                 }
             } else {
                 modalTitle.textContent = "Ghi chép ký ức mới";
-                titleInput.value = ''; artistInput.value = '';
-                bpmInput.value = ''; tagSelect.value = 'Việt Nam'; notesInput.value = '';
+                titleInput.value = ''; 
+                artistInput.value = '';
+                bpmInput.value = ''; 
+                tagSelect.value = 'Việt Nam'; 
+                notesInput.value = '';
             }
             modal.style.display = 'flex';
             switchEditorMode('text');
@@ -1221,7 +1987,10 @@
             const bpm = parseInt(document.getElementById('songBpm').value) || 300;
             const tag = document.getElementById('songTag').value;
             const notes = document.getElementById('songNotes').value.trim();
-            if (!title || !notes) { alert("Vui lòng nhập đầy đủ Tên bản nhạc và Nốt nhạc!"); return; }
+            if (!title || !notes) { 
+                alert("Vui lòng nhập đầy đủ Tên bản nhạc và Nốt nhạc!"); 
+                return; 
+            }
             const songData = { title, artist, bpm, tag, notes };
             if (editingSongId) db.ref('songs/' + editingSongId).update(songData);
             else db.ref('songs').push(songData);
@@ -1240,12 +2009,18 @@
             if (isModalOpen && gridEditorVisible) {
                 if (e.key === 'ArrowLeft') {
                     e.preventDefault();
-                    if (selectedEditorBeatIndex > 0) { selectedEditorBeatIndex--; renderGridEditor(); }
+                    if (selectedEditorBeatIndex > 0) { 
+                        selectedEditorBeatIndex--; 
+                        renderGridEditor(); 
+                    }
                     return;
                 }
                 if (e.key === 'ArrowRight') {
                     e.preventDefault();
-                    if (selectedEditorBeatIndex < editorBeats.length - 1) { selectedEditorBeatIndex++; renderGridEditor(); }
+                    if (selectedEditorBeatIndex < editorBeats.length - 1) { 
+                        selectedEditorBeatIndex++; 
+                        renderGridEditor(); 
+                    }
                     return;
                 }
                 if (e.key === 'Backspace' || e.key === 'Delete') {
@@ -1260,16 +2035,30 @@
                 }
                 if (e.key === ' ' || e.key === '-') {
                     e.preventDefault();
-                    if (editorBeats.length === 0) { editorBeats.push('.'); selectedEditorBeatIndex = 0; }
-                    else if (editorBeats[selectedEditorBeatIndex] === '') { editorBeats[selectedEditorBeatIndex] = '.'; }
-                    else { editorBeats.splice(selectedEditorBeatIndex + 1, 0, '.'); selectedEditorBeatIndex++; }
+                    if (editorBeats.length === 0) { 
+                        editorBeats.push('.'); 
+                        selectedEditorBeatIndex = 0; 
+                    }
+                    else if (editorBeats[selectedEditorBeatIndex] === '') { 
+                        editorBeats[selectedEditorBeatIndex] = '.'; 
+                    }
+                    else { 
+                        editorBeats.splice(selectedEditorBeatIndex + 1, 0, '.'); 
+                        selectedEditorBeatIndex++; 
+                    }
                     renderGridEditor();
                     return;
                 }
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    if (editorBeats.length === 0) { editorBeats.push('/'); selectedEditorBeatIndex = 0; }
-                    else { editorBeats.splice(selectedEditorBeatIndex + 1, 0, '/'); selectedEditorBeatIndex++; }
+                    if (editorBeats.length === 0) { 
+                        editorBeats.push('/'); 
+                        selectedEditorBeatIndex = 0; 
+                    }
+                    else { 
+                        editorBeats.splice(selectedEditorBeatIndex + 1, 0, '/'); 
+                        selectedEditorBeatIndex++; 
+                    }
                     renderGridEditor();
                     return;
                 }
@@ -1287,10 +2076,14 @@
             }
 
             if (isModalOpen) {
-                if (e.key === 'Escape') { e.preventDefault(); closeModal(); } 
+                if (e.key === 'Escape') { 
+                    e.preventDefault(); 
+                    closeModal(); 
+                } 
                 else if (e.key === 'Enter') {
                     if (e.target.tagName === 'TEXTAREA' && e.shiftKey) return;
-                    e.preventDefault(); saveSong();
+                    e.preventDefault(); 
+                    saveSong();
                 }
             } else {
                 if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
@@ -1306,17 +2099,47 @@
                 if (e.key === '/') {
                     e.preventDefault();
                     const searchInput = document.getElementById('searchInput');
-                    if (searchInput) { searchInput.focus(); searchInput.select(); }
+                    if (searchInput) { 
+                        searchInput.focus(); 
+                        searchInput.select(); 
+                    }
                 }
-                else if (e.key.toLowerCase() === 'r') { e.preventDefault(); selectRandomSong(); }
-                else if (e.key === '[') { e.preventDefault(); changeZoom(-10); }
-                else if (e.key === ']') { e.preventDefault(); changeZoom(10); }
-                else if (e.key === 'Home' || e.key.toLowerCase() === 't') { e.preventDefault(); scrollToTop(); } 
-                else if (e.key === ' ') { e.preventDefault(); if (activeSongId) togglePreview(event, activeSongId); } 
-                else if (e.key === 'Tab') { e.preventDefault(); toggleSidebar(); } 
-                else if (e.key === 'Enter') { e.preventDefault(); toggleAutoScroll(); } 
-                else if (e.key === 'ArrowUp') { e.preventDefault(); changeSpeed(-0.25); } 
-                else if (e.key === 'ArrowDown') { e.preventDefault(); changeSpeed(0.25); }
+                else if (e.key.toLowerCase() === 'r') { 
+                    e.preventDefault(); 
+                    selectRandomSong(); 
+                }
+                else if (e.key === '[') { 
+                    e.preventDefault(); 
+                    changeZoom(-10); 
+                }
+                else if (e.key === ']') { 
+                    e.preventDefault(); 
+                    changeZoom(10); 
+                }
+                else if (e.key === 'Home' || e.key.toLowerCase() === 't') { 
+                    e.preventDefault(); 
+                    scrollToTop(); 
+                } 
+                else if (e.key === ' ') { 
+                    e.preventDefault(); 
+                    if (activeSongId) togglePreview(event, activeSongId); 
+                } 
+                else if (e.key === 'Tab') { 
+                    e.preventDefault(); 
+                    toggleSidebar(); 
+                } 
+                else if (e.key === 'Enter') { 
+                    e.preventDefault(); 
+                    toggleAutoScroll(); 
+                } 
+                else if (e.key === 'ArrowUp') { 
+                    e.preventDefault(); 
+                    changeSpeed(-0.25); 
+                } 
+                else if (e.key === 'ArrowDown') { 
+                    e.preventDefault(); 
+                    changeSpeed(0.25); 
+                }
             }
         });
 
